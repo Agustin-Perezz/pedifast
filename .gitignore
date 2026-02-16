@@ -24,3 +24,7 @@ vite.config.ts.timestamp-*
 
 # Coverage
 coverage
+
+# Claude
+.claude
+.agents
