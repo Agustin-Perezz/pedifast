@@ -17,23 +17,6 @@ pnpm test         # Run Playwright E2E tests (builds first, runs on port 4173)
 
 **SvelteKit 2 + Svelte 5** static site using `@sveltejs/adapter-static`. Builds output to `build/` with SPA fallback (`200.html`).
 
-### Authentication
-
-Uses **Supabase Auth** with server-side session management via `@supabase/ssr`.
-
-**Supabase Clients:**
-
-- `$lib/supabase/client.ts` - Browser client for client-side operations
-- `$lib/supabase/server.ts` - Server client with cookie-based session handling
-
-**Auth Routes:**
-
-- `/auth/callback` - OAuth callback handler
-- `/auth/logout` - Logout endpoint
-
-**Protected Routes:**
-Routes starting with `/protected/*` require authentication. Unauthenticated users are redirected to `/login`.
-
 ### Path Aliases
 
 - `$lib` → `src/lib`
@@ -50,11 +33,7 @@ Uses **shadcn-svelte** with Bits UI primitives. Components live in `src/lib/comp
 
 ### Server Hooks (`src/hooks.server.ts`)
 
-Uses `sequence()` to chain multiple handles:
-
-1. **Sentry Handle**: Error tracking initialization
-2. **Supabase Handle**: Creates Supabase server client, populates `event.locals.supabase`, `event.locals.user`, and `event.locals.session`
-3. **Auth Guard Handle**: Protects `/protected/*` routes, redirects unauthenticated users to `/login`
+Uses `sequence()` with Sentry handle for error tracking.
 
 ### Client Hooks (`src/hooks.client.ts`)
 
@@ -67,10 +46,6 @@ Uses **sveltekit-superforms** with **Zod** for validation.
 ### HTTP Client
 
 Axios instance configured in `src/lib/axios.ts`.
-
-### Supabase
-
-Uses **@supabase/ssr** for server-side session management and **@supabase/supabase-js** for the Supabase client.
 
 ## Testing
 
@@ -88,10 +63,6 @@ Create a `.env` file based on `.env.dist`:
 ```bash
 # API
 VITE_API_BASE_URL=your_base_api
-
-# Supabase
-PUBLIC_SUPABASE_URL=your-supabase-project-url
-PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 
 # Sentry
 VITE_SENTRY_DSN=your-sentry-dsn
