@@ -15,7 +15,7 @@ pnpm test         # Run Playwright E2E tests (builds first, runs on port 4173)
 
 ## Architecture
 
-**SvelteKit 2 + Svelte 5** static site using `@sveltejs/adapter-static`. Builds output to `build/` with SPA fallback (`200.html`).
+**SvelteKit 2 + Svelte 5** with SSR enabled (default) using `@sveltejs/adapter-auto` for platform-adaptive deployment.
 
 ### Path Aliases
 
