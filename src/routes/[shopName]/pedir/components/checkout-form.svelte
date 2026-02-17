@@ -58,7 +58,7 @@
   <FormField
     label="Notas (opcional)"
     name="notas"
-    placeholder="Indicaciones especiales..."
+    placeholder="Instrucciones especiales, alergias, etc."
     bind:value={$form.notas}
     error={$errors.notas}
   />
