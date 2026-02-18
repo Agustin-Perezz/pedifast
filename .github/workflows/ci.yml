@@ -78,3 +78,8 @@ jobs:
       - run: pnpm build
         env:
           VITE_API_BASE_URL: 'https://placeholder.api.example.com'
+          MP_APP_ID: 'placeholder'
+          MP_CLIENT_SECRET: 'placeholder'
+          MP_REDIRECT_URI: 'https://placeholder.example.com/api/mp/oauth/callback'
+          SUPABASE_URL: 'https://placeholder.supabase.co'
+          SUPABASE_SERVICE_ROLE_KEY: 'placeholder'
