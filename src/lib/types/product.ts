@@ -19,3 +19,21 @@ export interface OrderSummary {
   notas?: string;
   createdAt: string;
 }
+
+export type ShopItemCategory =
+  | 'comidas'
+  | 'bebidas'
+  | 'postres'
+  | 'acompañamientos';
+
+export interface ShopItem {
+  id: number;
+  shop_id: number;
+  name: string;
+  price: number;
+  category: ShopItemCategory;
+  images: string[];
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+}
