@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import LoaderCircle from '@lucide/svelte/icons/loader-circle';
   import { Button } from '$components/ui/button';
   import { FormField } from '$components/ui/form-field';
@@ -8,7 +8,6 @@
 
   import { cart } from '$lib/cart.svelte';
   import { orderSchema } from '$lib/schemas/order';
-  import type { OrderSummary } from '$lib/types/product';
 
   interface Props {
     onComplete: () => void;
@@ -17,6 +16,7 @@
   let { onComplete }: Props = $props();
 
   let submitting = $state(false);
+  let error = $state('');
 
   const { form, errors, enhance } = superForm(defaults(zod4(orderSchema)), {
     SPA: true,
@@ -25,23 +25,45 @@
       if (!f.valid) return;
 
       submitting = true;
+      error = '';
 
-      await new Promise((r) => setTimeout(r, 1500));
+      const shopName = $page.params.shopName;
 
-      const orderId = crypto.randomUUID().slice(0, 8);
-      const order: OrderSummary = {
-        id: orderId,
-        items: [...cart.items],
-        total: cart.totalPrice,
-        nombre: f.data.nombre as string,
-        notas: f.data.notas as string | undefined,
-        createdAt: new Date().toISOString()
-      };
+      const items = cart.items.map((item) => ({
+        title: item.product.name,
+        quantity: item.quantity,
+        unit_price: item.product.price,
+        currency_id: 'ARS'
+      }));
 
-      sessionStorage.setItem(`order-${orderId}`, JSON.stringify(order));
-      cart.clear();
-      onComplete();
-      goto(`/pedido/${orderId}`);
+      try {
+        const response = await fetch('/api/mp/preference', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            shopName,
+            nombre: f.data.nombre,
+            notas: f.data.notas,
+            items
+          })
+        });
+
+        if (!response.ok) {
+          const data = await response.json().catch(() => null);
+          throw new Error(
+            data?.error ?? 'Error al crear la preferencia de pago'
+          );
+        }
+
+        const { init_point } = await response.json();
+
+        cart.clear();
+        onComplete();
+        window.location.href = init_point;
+      } catch (err) {
+        error = err instanceof Error ? err.message : 'Error inesperado';
+        submitting = false;
+      }
     }
   });
 </script>
@@ -62,6 +84,10 @@
     bind:value={$form.notas}
     error={$errors.notas}
   />
+
+  {#if error}
+    <p class="text-destructive text-sm">{error}</p>
+  {/if}
 
   <Button
     type="submit"
