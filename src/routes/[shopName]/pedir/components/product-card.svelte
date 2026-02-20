@@ -1,10 +1,8 @@
 <script lang="ts">
-  import { Button } from '$components/ui/button';
-
   import { cart } from '$lib/cart.svelte';
   import type { Product } from '$lib/types/product';
   import { formatPrice } from '$lib/utils';
-  import QuantityControl from './quantity-control.svelte';
+  import PillQuantityControl from './pill-quantity-control.svelte';
 
   interface Props {
     product: Product;
@@ -18,34 +16,37 @@
     cart.add(product);
     navigator.vibrate?.(10);
   }
+
+  function handleRemove() {
+    cart.remove(product.id);
+  }
 </script>
 
-<div class="flex flex-col gap-2">
-  <div class="overflow-hidden rounded-lg border border-zinc-200">
-    <img
-      src={product.image}
-      alt={product.name}
-      class="aspect-square w-full object-cover"
-      loading="lazy"
-    />
+<div class="flex w-64 shrink-0 flex-col overflow-hidden rounded-2xl bg-white">
+  <img
+    src={product.image}
+    alt={product.name}
+    class="aspect-[4/3] w-full object-cover"
+    loading="lazy"
+  />
+  <div class="flex flex-col gap-2 p-3">
+    <p class="line-clamp-2 text-sm leading-snug font-semibold text-zinc-900">
+      {product.name}
+    </p>
+    {#if product.description}
+      <p class="line-clamp-2 text-xs leading-snug text-zinc-400">
+        {product.description}
+      </p>
+    {/if}
+    <div class="flex items-center justify-between">
+      <p class="text-sm font-bold text-zinc-900">
+        {formatPrice(product.price)}
+      </p>
+      <PillQuantityControl
+        {quantity}
+        onAdd={handleAdd}
+        onRemove={handleRemove}
+      />
+    </div>
   </div>
-  <div class="flex flex-col gap-1">
-    <p class="text-sm font-medium text-zinc-950">{product.name}</p>
-    <p class="font-mono text-sm text-zinc-500">{formatPrice(product.price)}</p>
-  </div>
-  {#if quantity > 0}
-    <QuantityControl
-      {quantity}
-      onIncrement={() => cart.add(product)}
-      onDecrement={() => cart.remove(product.id)}
-    />
-  {:else}
-    <Button
-      variant="outline"
-      class="min-h-[44px] w-full rounded-lg"
-      onclick={handleAdd}
-    >
-      Agregar
-    </Button>
-  {/if}
 </div>
