@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
   const { data: items, error: itemsError } = await supabase
     .from('shop_items')
-    .select('id, name, price, category, images')
+    .select('id, name, price, category, images, description')
     .eq('shop_id', shop.id)
     .order('id');
 
@@ -31,7 +31,9 @@ export const load: PageServerLoad = async ({ params }) => {
     id: String(item.id),
     name: item.name,
     price: Number(item.price),
-    image: item.images[0] ?? ''
+    image: item.images[0] ?? '',
+    category: item.category,
+    description: item.description ?? undefined
   }));
 
   return { products };
