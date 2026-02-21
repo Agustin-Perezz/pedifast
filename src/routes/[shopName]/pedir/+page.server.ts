@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
   const { data: shop, error: shopError } = await supabase
     .from('shops')
-    .select('id')
+    .select('id, address, delivery_price')
     .eq('shop_name', shopName)
     .single();
 
@@ -36,5 +36,12 @@ export const load: PageServerLoad = async ({ params }) => {
     description: item.description ?? undefined
   }));
 
-  return { products };
+  return {
+    products,
+    shop: {
+      address: shop.address ?? null,
+      deliveryPrice:
+        shop.delivery_price != null ? Number(shop.delivery_price) : null
+    }
+  };
 };

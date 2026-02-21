@@ -9,6 +9,8 @@ const preferenceSchema = z.object({
   shopName: z.string().min(1),
   nombre: z.string().min(1),
   notas: z.string().optional(),
+  deliveryMethod: z.enum(['pickup', 'delivery']),
+  address: z.string().optional(),
   items: z
     .array(
       z.object({
@@ -34,7 +36,8 @@ export const POST: RequestHandler = async ({ request, url }) => {
     return json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { shopName, nombre, notas, items } = parsed.data;
+  const { shopName, nombre, notas, deliveryMethod, address, items } =
+    parsed.data;
 
   let accessToken: string;
   try {
@@ -62,7 +65,9 @@ export const POST: RequestHandler = async ({ request, url }) => {
     metadata: {
       shop_name: shopName,
       nombre,
-      notas: notas ?? ''
+      notas: notas ?? '',
+      delivery_method: deliveryMethod,
+      address: address ?? ''
     }
   };
 

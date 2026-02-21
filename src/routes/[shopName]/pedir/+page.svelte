@@ -46,4 +46,4 @@
 </div>
 
 <CartBottomBar onConfirm={() => (checkoutOpen = true)} />
-<CheckoutOverlay bind:open={checkoutOpen} />
+<CheckoutOverlay bind:open={checkoutOpen} shop={data.shop} />
