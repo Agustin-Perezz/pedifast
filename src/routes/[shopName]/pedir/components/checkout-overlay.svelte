@@ -5,7 +5,12 @@
   import CheckoutForm from './checkout-form.svelte';
   import OrderSummary from './order-summary.svelte';
 
-  let { open = $bindable(false) }: { open: boolean } = $props();
+  interface Props {
+    open: boolean;
+    shop: { address: string | null; deliveryPrice: number | null };
+  }
+
+  let { open = $bindable(false), shop }: Props = $props();
 
   let isDesktop = $state(false);
 
@@ -24,7 +29,7 @@
 {#snippet content()}
   <div class="flex flex-col gap-6">
     <OrderSummary />
-    <CheckoutForm onComplete={() => (open = false)} />
+    <CheckoutForm onComplete={() => (open = false)} {shop} />
   </div>
 {/snippet}
 
