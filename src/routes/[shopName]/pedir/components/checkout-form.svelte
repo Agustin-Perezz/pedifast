@@ -8,7 +8,16 @@
   import { zod4 } from 'sveltekit-superforms/adapters';
 
   import { cart } from '$lib/cart.svelte';
-  import { DeliveryMethod, orderSchema } from '$lib/schemas/order';
+  import {
+    DeliveryMethod,
+    orderSchema,
+    PaymentMethod,
+    type PaymentMethodValue
+  } from '$lib/schemas/order';
+  import MercadoPagoLogo from './mercado-pago-logo.svelte';
+
+  const CURRENCY_ID = 'ARS';
+  const MP_PREFERENCE_API = '/api/mp/preference';
 
   interface Props {
     onComplete: () => void;
@@ -17,7 +26,7 @@
 
   let { onComplete, shop }: Props = $props();
 
-  let submitting = $state(false);
+  let submitting = $state<PaymentMethodValue | null>(null);
   let error = $state('');
 
   const { form, errors, enhance } = superForm(defaults(zod4(orderSchema)), {
@@ -26,7 +35,7 @@
     onUpdate: async ({ form: f }) => {
       if (!f.valid) return;
 
-      submitting = true;
+      submitting = f.data.paymentMethod;
       error = '';
 
       const shopName = $page.params.shopName;
@@ -35,11 +44,18 @@
         title: item.product.name,
         quantity: item.quantity,
         unit_price: item.product.price,
-        currency_id: 'ARS'
+        currency_id: CURRENCY_ID
       }));
 
       try {
-        const response = await fetch('/api/mp/preference', {
+        if (f.data.paymentMethod === PaymentMethod.enum.efectivo) {
+          cart.clear();
+          onComplete();
+          window.location.href = `/pedido/resultado?status=${PaymentMethod.enum.efectivo}`;
+          return;
+        }
+
+        const response = await fetch(MP_PREFERENCE_API, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -66,7 +82,7 @@
         window.location.href = init_point;
       } catch (err) {
         error = err instanceof Error ? err.message : 'Error inesperado';
-        submitting = false;
+        submitting = null;
       }
     }
   });
@@ -159,16 +175,34 @@
     <p class="text-destructive text-sm">{error}</p>
   {/if}
 
-  <Button
-    type="submit"
-    class="min-h-[44px] w-full rounded-lg"
-    disabled={submitting}
-  >
-    {#if submitting}
-      <LoaderCircle class="size-4 animate-spin" />
-      Procesando...
-    {:else}
-      Pagar con Mercado Pago
-    {/if}
-  </Button>
+  <div class="flex flex-col gap-2">
+    <Button
+      type="submit"
+      variant="outline"
+      class="min-h-[44px] w-full rounded-lg"
+      disabled={submitting !== null}
+      onclick={() => ($form.paymentMethod = PaymentMethod.enum.efectivo)}
+    >
+      {#if submitting === PaymentMethod.enum.efectivo}
+        <LoaderCircle class="size-4 animate-spin" />
+        Procesando...
+      {:else}
+        Pagar en efectivo
+      {/if}
+    </Button>
+
+    <Button
+      type="submit"
+      class="min-h-[44px] w-full rounded-lg bg-[#FFE600] text-[#0A0080] shadow-none hover:bg-[#FFE600]/90"
+      disabled={submitting !== null}
+      onclick={() => ($form.paymentMethod = PaymentMethod.enum.mercadopago)}
+    >
+      {#if submitting === PaymentMethod.enum.mercadopago}
+        <LoaderCircle class="size-4 animate-spin" />
+        Procesando...
+      {:else}
+        Pagar con mercado pago <MercadoPagoLogo />
+      {/if}
+    </Button>
+  </div>
 </form>

@@ -22,6 +22,14 @@
           description: 'Tu pedido fue confirmado correctamente.',
           color: 'text-green-600'
         };
+      case 'efectivo':
+        return {
+          icon: CircleCheck,
+          title: 'Pedido confirmado',
+          description:
+            'Tu pedido fue recibido. Abonás en efectivo al momento de la entrega.',
+          color: 'text-green-600'
+        };
       case 'rejected':
         return {
           icon: CircleX,
