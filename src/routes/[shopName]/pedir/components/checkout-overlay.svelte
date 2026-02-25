@@ -48,11 +48,11 @@
   </Dialog.Root>
 {:else}
   <Drawer.Root bind:open>
-    <Drawer.Content>
+    <Drawer.Content class="overflow-hidden">
       <Drawer.Header>
         <Drawer.Title>Finalizar Pedido</Drawer.Title>
       </Drawer.Header>
-      <div class="px-4 pb-6">
+      <div class="min-h-0 flex-1 overflow-y-auto px-4 pb-6">
         {@render content()}
       </div>
     </Drawer.Content>
