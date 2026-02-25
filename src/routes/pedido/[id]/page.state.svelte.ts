@@ -12,7 +12,6 @@ import {
 } from '$lib/whatsapp';
 
 interface StatusConfig {
-  // Component reference passed to the template as <state.statusConfig.icon />
   icon: Component<{ class?: string }>;
   spinning: boolean;
   title: string;
@@ -23,7 +22,6 @@ interface StatusConfig {
 }
 
 export function createOrderPageState() {
-  // Derived directly from $app/state — no legacy $ store prefix needed
   const id = $derived(page.params.id);
   const status = $derived(
     page.url.searchParams.get('status') ??
@@ -46,15 +44,12 @@ export function createOrderPageState() {
       status === MercadoPagoPaymentStatus.approved
   );
 
-  // Pure derivation — no side effects, replaces the previous $state + $effect combo
   const whatsappUrl = $derived.by(() => {
     if (!isConfirmed || !order) return null;
     const message = buildWhatsappMessage(order);
     return buildWhatsappUrl(order.whatsappPhone, message);
   });
 
-  // Load order from sessionStorage whenever id changes; explicitly resets order to null
-  // when the new id has no stored data (guards against stale order from a previous navigation)
   $effect(() => {
     const stored = sessionStorage.getItem(`order-${id}`);
     if (!stored) {
@@ -68,11 +63,8 @@ export function createOrderPageState() {
     }
   });
 
-  // Side effect isolated from derivation: open WhatsApp once the URL is available
   $effect(() => {
     if (!whatsappUrl) return;
-    // Snapshot id at the time this effect fires to avoid removing the wrong entry
-    // if a navigation happens between effect scheduling and execution
     const orderId = id;
     window.open(whatsappUrl, '_blank');
     sessionStorage.removeItem(`order-${orderId}`);
@@ -123,7 +115,6 @@ export function createOrderPageState() {
     }
   });
 
-  // Expose reactive values via getters so the template tracks them correctly
   return {
     get id() {
       return id;

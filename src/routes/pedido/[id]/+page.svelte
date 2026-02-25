@@ -5,7 +5,6 @@
   import ReceiptCard from './components/receipt-card.svelte';
   import { createOrderPageState } from './page.state.svelte';
 
-  // All state and logic lives in the module; this component is presentation-only
   const state = createOrderPageState();
 </script>
 
