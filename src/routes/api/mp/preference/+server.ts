@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
   const externalReference = `${shopName}-${Date.now()}`;
   const baseUrl = url.origin;
-  const resultUrl = `${baseUrl}/pedido/resultado`;
+  const resultUrl = `${baseUrl}/pedido/${externalReference}`;
 
   const preferenceBody: Record<string, unknown> = {
     items: items.map((item) => ({
@@ -102,6 +102,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
   return json({
     init_point: preference.init_point,
-    preference_id: preference.id
+    preference_id: preference.id,
+    externalReference
   });
 };

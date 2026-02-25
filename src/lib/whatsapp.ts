@@ -5,8 +5,6 @@ import {
   type PaymentMethodValue
 } from '$lib/schemas/order';
 
-export const PENDING_WHATSAPP_KEY = 'pedido-whatsapp-pendiente';
-
 export interface PendingWhatsappOrder {
   shopName: string;
   whatsappPhone: string;
