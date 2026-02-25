@@ -7,7 +7,11 @@
 
   interface Props {
     open: boolean;
-    shop: { address: string | null; deliveryPrice: number | null };
+    shop: {
+      address: string | null;
+      deliveryPrice: number | null;
+      whatsappPhone: string;
+    };
   }
 
   let { open = $bindable(false), shop }: Props = $props();
