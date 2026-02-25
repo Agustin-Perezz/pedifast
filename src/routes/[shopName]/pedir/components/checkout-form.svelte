@@ -14,6 +14,10 @@
     PaymentMethod,
     type PaymentMethodValue
   } from '$lib/schemas/order';
+  import {
+    PENDING_WHATSAPP_KEY,
+    type PendingWhatsappOrder
+  } from '$lib/whatsapp';
   import MercadoPagoLogo from './mercado-pago-logo.svelte';
 
   const CURRENCY_ID = 'ARS';
@@ -21,7 +25,11 @@
 
   interface Props {
     onComplete: () => void;
-    shop: { address: string | null; deliveryPrice: number | null };
+    shop: {
+      address: string | null;
+      deliveryPrice: number | null;
+      whatsappPhone: string;
+    };
   }
 
   let { onComplete, shop }: Props = $props();
@@ -47,8 +55,36 @@
         currency_id: CURRENCY_ID
       }));
 
+      const pendingOrder: PendingWhatsappOrder = {
+        shopName,
+        whatsappPhone: shop.whatsappPhone,
+        nombre: f.data.nombre,
+        deliveryMethod: f.data.deliveryMethod,
+        address: f.data.address,
+        notas: f.data.notas,
+        paymentMethod: f.data.paymentMethod,
+        items: cart.items.map((item) => ({
+          name: item.product.name,
+          quantity: item.quantity,
+          unitPrice: item.product.price
+        })),
+        total:
+          cart.items.reduce(
+            (sum, item) => sum + item.product.price * item.quantity,
+            0
+          ) +
+          (f.data.deliveryMethod === DeliveryMethod.enum.delivery &&
+          shop.deliveryPrice != null
+            ? shop.deliveryPrice
+            : 0)
+      };
+
       try {
         if (f.data.paymentMethod === PaymentMethod.enum.efectivo) {
+          sessionStorage.setItem(
+            PENDING_WHATSAPP_KEY,
+            JSON.stringify(pendingOrder)
+          );
           cart.clear();
           onComplete();
           window.location.href = `/pedido/resultado?status=${PaymentMethod.enum.efectivo}`;
@@ -77,6 +113,10 @@
 
         const { init_point } = await response.json();
 
+        sessionStorage.setItem(
+          PENDING_WHATSAPP_KEY,
+          JSON.stringify(pendingOrder)
+        );
         cart.clear();
         onComplete();
         window.location.href = init_point;
