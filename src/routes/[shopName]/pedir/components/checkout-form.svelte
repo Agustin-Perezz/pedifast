@@ -14,10 +14,7 @@
     PaymentMethod,
     type PaymentMethodValue
   } from '$lib/schemas/order';
-  import {
-    PENDING_WHATSAPP_KEY,
-    type PendingWhatsappOrder
-  } from '$lib/whatsapp';
+  import { type PendingWhatsappOrder } from '$lib/whatsapp';
   import MercadoPagoLogo from './mercado-pago-logo.svelte';
 
   const CURRENCY_ID = 'ARS';
@@ -81,13 +78,11 @@
 
       try {
         if (f.data.paymentMethod === PaymentMethod.enum.efectivo) {
-          sessionStorage.setItem(
-            PENDING_WHATSAPP_KEY,
-            JSON.stringify(pendingOrder)
-          );
+          const id = `${shopName}-${Date.now()}`;
+          sessionStorage.setItem(`order-${id}`, JSON.stringify(pendingOrder));
           cart.clear();
           onComplete();
-          window.location.href = `/pedido/resultado?status=${PaymentMethod.enum.efectivo}`;
+          window.location.href = `/pedido/${id}?status=${PaymentMethod.enum.efectivo}`;
           return;
         }
 
@@ -111,10 +106,10 @@
           );
         }
 
-        const { init_point } = await response.json();
+        const { init_point, externalReference } = await response.json();
 
         sessionStorage.setItem(
-          PENDING_WHATSAPP_KEY,
+          `order-${externalReference}`,
           JSON.stringify(pendingOrder)
         );
         cart.clear();
