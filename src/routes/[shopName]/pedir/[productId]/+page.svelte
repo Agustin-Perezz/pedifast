@@ -24,7 +24,7 @@
   }
 
   let quantity = $derived(cart.getQuantity(product.id));
-  let imageIndices = $derived(product.images.map((_, i) => i));
+  let imageIndices = $derived(product.images.map((_: string, i: number) => i));
 
   function handleAdd() {
     cart.add(product);
