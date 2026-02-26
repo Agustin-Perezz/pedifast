@@ -14,7 +14,7 @@
 
 {#if !cart.isEmpty}
   <div
-    class="fixed inset-x-0 bottom-0 z-50 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+    class="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-lg px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
   >
     <div
       class="flex items-center justify-between rounded-2xl bg-white px-4 py-3 shadow-lg ring-1 ring-zinc-200"

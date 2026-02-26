@@ -30,7 +30,7 @@
   );
 </script>
 
-<div class="min-h-screen bg-[#F5F5F5] pt-6 pb-28">
+<div class="mx-auto min-h-screen max-w-lg bg-[#F5F5F5] pt-6 pb-28">
   <h1 class="mb-6 px-4 text-2xl font-semibold text-zinc-950">Menú</h1>
 
   {#each groupedCategories as { key, label, products } (key)}
@@ -38,7 +38,7 @@
       <h2 class="mb-3 px-4 text-base font-semibold text-zinc-700">{label}</h2>
       <div class="scrollbar-hide flex gap-3 overflow-x-auto px-4 pb-2">
         {#each products as product (product.id)}
-          <ProductCard {product} />
+          <ProductCard {product} shopName={data.shopName} />
         {/each}
       </div>
     </section>
