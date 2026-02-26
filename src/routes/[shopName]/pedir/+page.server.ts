@@ -31,12 +31,13 @@ export const load: PageServerLoad = async ({ params }) => {
     id: String(item.id),
     name: item.name,
     price: Number(item.price),
-    image: item.images[0] ?? '',
+    images: item.images,
     category: item.category,
     description: item.description ?? undefined
   }));
 
   return {
+    shopName,
     products,
     shop: {
       address: shop.address ?? null,
