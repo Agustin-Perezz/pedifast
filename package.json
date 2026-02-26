@@ -33,6 +33,7 @@
     "@types/node": "^25.0.6",
     "bits-ui": "^2.15.4",
     "clsx": "^2.1.1",
+    "embla-carousel-svelte": "^8.6.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-svelte": "^3.0.0",
