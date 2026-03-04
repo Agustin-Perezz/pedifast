@@ -1,5 +1,9 @@
 <script lang="ts">
-  import type { ShopItemCategory } from '$lib/types/product';
+  import {
+    CATEGORY_LABELS,
+    ShopItemCategory,
+    type ShopItemCategory as ShopItemCategoryType
+  } from '$lib/types/product';
   import CartBottomBar from './components/cart-bottom-bar.svelte';
   import CheckoutOverlay from './components/checkout-overlay.svelte';
   import ProductCard from './components/product-card.svelte';
@@ -7,19 +11,16 @@
   let { data } = $props();
   let checkoutOpen = $state(false);
 
-  const CATEGORY_ORDER: ShopItemCategory[] = [
-    'comidas',
-    'bebidas',
-    'postres',
-    'acompañamientos'
+  const CATEGORY_ORDER: ShopItemCategoryType[] = [
+    ShopItemCategory.hamburguesas,
+    ShopItemCategory.pizzas,
+    ShopItemCategory.empanadas,
+    ShopItemCategory.papas,
+    ShopItemCategory.milanesas,
+    ShopItemCategory.bebidas,
+    ShopItemCategory.sandwiches,
+    ShopItemCategory.ensaladas
   ];
-
-  const CATEGORY_LABELS: Record<ShopItemCategory, string> = {
-    comidas: 'Comidas',
-    bebidas: 'Bebidas',
-    postres: 'Postres',
-    acompañamientos: 'Acompañamientos'
-  };
 
   const groupedCategories = $derived(
     CATEGORY_ORDER.map((cat) => ({

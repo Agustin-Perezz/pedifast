@@ -4,6 +4,7 @@
   import { cart } from '$lib/cart.svelte';
   import type { CarouselAPI } from '$lib/components/ui/carousel/context.js';
   import * as Carousel from '$lib/components/ui/carousel/index.js';
+  import { CATEGORY_LABELS } from '$lib/types/product';
   import { formatPrice } from '$lib/utils';
   import type { PageData } from './$types';
 
@@ -24,7 +25,7 @@
   }
 
   let quantity = $derived(cart.getQuantity(product.id));
-  let imageIndices = $derived(product.images.map((_: string, i: number) => i));
+  let imageIndices = $derived(product.images.map((_, i) => i));
 
   function handleAdd() {
     cart.add(product);
@@ -80,7 +81,9 @@
     class="z-10 -mt-2 flex-1 rounded-t-3xl bg-white px-6 pt-7 pb-10 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] shadow-slate-300 md:text-center"
   >
     <h1 class="text-2xl font-bold text-zinc-900">{product.name}</h1>
-    <p class="mt-0.5 text-sm text-zinc-400 italic">{product.category}</p>
+    <p class="mt-0.5 text-sm text-zinc-400 italic">
+      {CATEGORY_LABELS[product.category]}
+    </p>
 
     {#if product.description}
       <p class="mt-6 text-sm leading-relaxed text-zinc-400">
