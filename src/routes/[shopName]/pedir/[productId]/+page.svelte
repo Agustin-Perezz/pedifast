@@ -52,6 +52,9 @@
                 src={image}
                 alt="{product.name} {i + 1}"
                 class="max-h-[280px] w-full object-contain"
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding={i === 0 ? 'sync' : 'async'}
+                fetchpriority={i === 0 ? 'high' : 'auto'}
               />
             </div>
           </Carousel.Item>
