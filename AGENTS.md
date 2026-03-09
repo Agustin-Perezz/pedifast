@@ -1,78 +1,158 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with this repository.
 
-## Commands
-
-```bash
-pnpm dev          # Start development server
-pnpm build        # Build for production
-pnpm check        # Run TypeScript/Svelte type checks
-pnpm lint         # Run Prettier check + ESLint
-pnpm format       # Format code with Prettier
-pnpm test         # Run Playwright E2E tests (builds first, runs on port 4173)
-```
+---
 
 ## Architecture
 
-**SvelteKit 2 + Svelte 5** with SSR enabled (default) using `@sveltejs/adapter-auto` for platform-adaptive deployment.
+### Key Directories
 
-### Path Aliases
-
-- `$lib` → `src/lib`
-- `$components` → `src/lib/components`
-- `$schemas` → `src/lib/schemas`
-
-### UI Components
-
-Uses **shadcn-svelte** with Bits UI primitives. Components live in `src/lib/components/ui/`. Styling uses:
-
-- Tailwind CSS v4
-- `tailwind-variants` for component variants
-- `cn()` utility from `$lib/utils.ts` for class merging
-
-### Server Hooks (`src/hooks.server.ts`)
-
-Uses `sequence()` with Sentry handle for error tracking.
-
-### Client Hooks (`src/hooks.client.ts`)
-
-- Sentry client-side initialization with session replay
+- `src/routes/` — File-based routing; `+page.svelte` for pages, `+layout.svelte` for layouts
+- `src/lib/components/ui/` — Reusable UI components following shadcn-svelte patterns
+- `src/lib/server/` — Server-only code (auth, etc.)
+- `src/hooks.client.ts` / `src/hooks.server.ts` — SvelteKit lifecycle hooks with Sentry integration
+- `e2e/` — Playwright E2E tests with V8 code coverage
 
 ### Forms
 
-Uses **sveltekit-superforms** with **Zod** for validation.
+Uses **sveltekit-superforms** with **Zod** schemas for validation. Form components in `$components/ui/form-field/` handle error display automatically.
 
-### HTTP Client
+---
 
-Axios instance configured in `src/lib/axios.ts`.
+## Svelte 5 & SvelteKit Standards
 
-## Testing
+### Runes API
 
-E2E tests in `e2e/` directory using Playwright. Tests must import from `e2e/_shared/app-fixtures.ts` (not directly from `@playwright/test`) to get V8 code coverage.
+- Use `$state()` for reactive data and `$derived()` for computed values. Abandon Svelte 4's `let` and `$:`.
+- Use `$effect` only for side effects (DOM manipulation, third-party libs). Never use it to sync state.
+- Use `let { prop } = $props()`. Use `$bindable()` only when two-way binding is strictly necessary.
+- Extract logic into `.svelte.ts` files using runes to keep components lean and testable.
 
-```bash
-pnpm test:show-report      # View test results
-pnpm coverage:show-report  # View V8 coverage report
+### SvelteKit Patterns
+
+- **Server-First:** Use `+page.server.ts` for data fetching and Form Actions for mutations.
+- **Progressive Enhancement:** Always use `use:enhance` on forms.
+- **Event Handling:** Use Svelte 5 attribute pattern (`onclick={...}`) instead of `on:click`.
+- **Error Handling:** Use SvelteKit's `error()` and `redirect()` helpers within load functions.
+
+### Reactivity with `$props()` — CRITICAL
+
+NEVER destructure `$props()` or pass values directly into constructors at the top level. Always wrap in `$derived`.
+
+```ts
+// BAD — loses reactivity
+const { pokemon } = data;
+const detail = new MyClass(data.foo);
+
+// GOOD
+const pokemon = $derived(data.pokemon);
+const detail = $derived(new MyClass(data.foo));
 ```
 
-## Environment Variables
+---
 
-Create a `.env` file based on `.env.dist`:
+## SOLID Principles (Adapted for Svelte)
 
-```bash
-# API
-VITE_API_BASE_URL=your_base_api
+### S — Single Responsibility
 
-# Sentry
-VITE_SENTRY_DSN=your-sentry-dsn
-SENTRY_DSN=your-sentry-dsn
-SENTRY_ORG=your-sentry-org
-SENTRY_PROJECT=your-sentry-project
-SENTRY_AUTH_TOKEN=your-sentry-auth-token
+Every new SvelteKit page MUST be decomposed into three layers:
+
+**Layer 1 — `.svelte.ts` class (all logic)**
+
+- State, constants, helper functions, derived values
+- Nothing from this list belongs in `+page.svelte`
+
+**Layer 2 — Focused sub-components (one concern each)**
+
+- Each distinct visual concern gets its own `.svelte` file
+- Sub-components receive only the props they need
+
+**Layer 3 — `+page.svelte` (pure orchestration)**
+
+- Instantiates the `.svelte.ts` class via `$derived(new MyClass(data.x))`
+- Imports and composes sub-components
+- Contains zero inline logic, constants, or helper functions
+
+```ts
+// userDashboard.svelte.ts — owns ALL state & logic
+export class UserDashboardState {
+  user = $state<User | null>(null);
+  activities = $derived(this.user?.activities ?? []);
+
+  get formattedJoinDate() {
+    return new Intl.DateTimeFormat('en').format(this.user?.joinedAt);
+  }
+}
 ```
 
-## Git Hooks (Husky)
+```svelte
+<!-- +page.svelte — orchestrates, owns no logic -->
+<script lang="ts">
+  import UserAvatar from './UserAvatar.svelte';
+  import { UserDashboardState } from './userDashboard.svelte';
+  import UserStats from './UserStats.svelte';
 
-- **pre-commit**: lint-staged runs Prettier + ESLint on staged files
-- **pre-push**: runs full E2E test suite
+  const { data } = $props();
+  const dashboard = $derived(new UserDashboardState(data.userId));
+</script>
+```
+
+### O — Open/Closed
+
+Use Svelte 5 **Snippets** (`{#snippet ...}`) to let consumers extend component UI without modifying the component's source.
+
+### L — Liskov Substitution
+
+Wrapper components (e.g. a custom `Button`) must accept and spread all standard HTML attributes of the element they wrap (`HTMLButtonAttributes`).
+
+### I — Interface Segregation
+
+Pass only the specific props a component needs. Never pass a large object when only one field is used.
+
+### D — Dependency Inversion
+
+Use `getContext`/`setContext` (wrapped in type-safe helpers) to inject dependencies instead of hard-coding imports to specific instances.
+
+---
+
+## TypeScript Standards
+
+### `satisfies` Operator
+
+Use `satisfies` to validate an object matches a type while retaining the most specific inferred type.
+
+```ts
+const config = {
+  endpoint: '/api/v1',
+  retries: 3
+} satisfies Record<string, string | number>;
+```
+
+### Type Guards & Assertion Functions
+
+```ts
+function isAdmin(user: User): user is Admin {
+  return (user as Admin).role === Role.Admin;
+}
+
+function assertIsString(val: unknown): asserts val is string {
+  if (typeof val !== 'string') {
+    throw new Error('Not a string');
+  }
+}
+```
+
+### Utility Types
+
+Prefer built-in utilities to keep types DRY:
+
+- `Pick<T, K>` / `Omit<T, K>` — narrow down props
+- `ReturnType<T>` — capture the output type of a function
+- `ComponentProps<T>` — extract props from a Svelte component for wrapping
+
+### Strict Rules
+
+- `any` is forbidden. Use `unknown` with type guards when the type is truly uncertain.
+- Use `satisfies` instead of explicit type annotations when you need both validation and inference.
+- No magic strings: never inline raw string literals for finite named sets; always use an `enum`.
