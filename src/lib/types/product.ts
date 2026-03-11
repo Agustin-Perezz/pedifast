@@ -1,3 +1,33 @@
+export const AccessorySelectionMode = {
+  single: 'single',
+  multi: 'multi'
+} as const;
+
+export type AccessorySelectionMode =
+  (typeof AccessorySelectionMode)[keyof typeof AccessorySelectionMode];
+
+export interface AccessoryOption {
+  id: number;
+  name: string;
+  priceDelta: number;
+}
+
+export interface AccessoryGroup {
+  id: number;
+  name: string;
+  selectionMode: AccessorySelectionMode;
+  isRequired: boolean;
+  options: AccessoryOption[];
+}
+
+export interface SelectedAccessory {
+  groupId: number;
+  groupName: string;
+  optionId: number;
+  optionName: string;
+  priceDelta: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -5,11 +35,13 @@ export interface Product {
   images: string[];
   category: ShopItemCategory;
   description?: string;
+  accessoryGroups?: AccessoryGroup[];
 }
 
 export interface CartItem {
   product: Product;
   quantity: number;
+  selectedAccessories: SelectedAccessory[];
 }
 
 export interface OrderSummary {
