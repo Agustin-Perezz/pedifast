@@ -13,7 +13,7 @@
 </script>
 
 <div
-  class="scrollbar-hide sticky top-0 z-10 flex gap-2 overflow-x-auto bg-[#F5F5F5] px-4 py-3"
+  class="scrollbar-hide sticky top-0 z-10 flex gap-2 overflow-x-auto bg-[#F5F5F5] px-4 py-3 md:flex-wrap md:justify-center"
 >
   {#each groupedCategories as { key, label, emoji } (key)}
     <button

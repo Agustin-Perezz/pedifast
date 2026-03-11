@@ -24,7 +24,9 @@
   }
 </script>
 
-<div class="flex w-64 shrink-0 flex-col overflow-hidden rounded-2xl bg-white">
+<div
+  class="flex w-64 shrink-0 flex-col overflow-hidden rounded-2xl bg-white md:w-full"
+>
   <a
     href="/{shopName}/pedir/{product.id}"
     data-sveltekit-preload-data="hover"
