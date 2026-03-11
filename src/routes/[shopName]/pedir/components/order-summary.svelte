@@ -13,9 +13,23 @@
           {item.product.name}
         </span>
         <span class="font-mono font-medium text-zinc-900">
-          {formatPrice(item.product.price * item.quantity)}
+          {formatPrice(cart.getItemUnitPrice(item) * item.quantity)}
         </span>
       </div>
+      {#if item.selectedAccessories.length > 0}
+        <div class="ml-6 flex flex-col gap-0.5 pb-1">
+          {#each item.selectedAccessories as acc (acc.optionId)}
+            <span class="text-xs text-zinc-500">
+              └ {acc.optionName}
+              {#if acc.priceDelta > 0}
+                <span class="text-zinc-400">
+                  (+{formatPrice(acc.priceDelta)})
+                </span>
+              {/if}
+            </span>
+          {/each}
+        </div>
+      {/if}
     {/each}
     <div
       class="mt-2 flex items-center justify-between border-t border-zinc-100 pt-2 text-sm"
