@@ -45,12 +45,21 @@
 
       const shopName = $page.params.shopName;
 
-      const items = cart.items.map((item) => ({
-        title: item.product.name,
-        quantity: item.quantity,
-        unit_price: item.product.price,
-        currency_id: CURRENCY_ID
-      }));
+      const items = cart.items.map((item) => {
+        const accNames = item.selectedAccessories.map((a) => {
+          return a.optionName;
+        });
+        const title =
+          accNames.length > 0
+            ? `${item.product.name} (${accNames.join(', ')})`
+            : item.product.name;
+        return {
+          title,
+          quantity: item.quantity,
+          unit_price: cart.getItemUnitPrice(item),
+          currency_id: CURRENCY_ID
+        };
+      });
 
       const pendingOrder: PendingWhatsappOrder = {
         shopName,
@@ -60,16 +69,27 @@
         address: f.data.address,
         notas: f.data.notas,
         paymentMethod: f.data.paymentMethod,
-        items: cart.items.map((item) => ({
-          name: item.product.name,
-          quantity: item.quantity,
-          unitPrice: item.product.price
-        })),
+        items: cart.items.map((item) => {
+          const accNames = item.selectedAccessories.map((a) => {
+            return a.optionName;
+          });
+          return {
+            name:
+              accNames.length > 0
+                ? `${item.product.name} (${accNames.join(', ')})`
+                : item.product.name,
+            quantity: item.quantity,
+            unitPrice: cart.getItemUnitPrice(item),
+            accessories: item.selectedAccessories.map((a) => ({
+              name: a.optionName,
+              priceDelta: a.priceDelta
+            }))
+          };
+        }),
         total:
-          cart.items.reduce(
-            (sum, item) => sum + item.product.price * item.quantity,
-            0
-          ) +
+          cart.items.reduce((sum, item) => {
+            return sum + cart.getItemUnitPrice(item) * item.quantity;
+          }, 0) +
           (f.data.deliveryMethod === DeliveryMethod.enum.delivery &&
           shop.deliveryPrice != null
             ? shop.deliveryPrice
