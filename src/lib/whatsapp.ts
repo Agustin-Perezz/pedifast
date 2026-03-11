@@ -5,6 +5,11 @@ import {
   type PaymentMethodValue
 } from '$lib/schemas/order';
 
+export interface WhatsappOrderAccessory {
+  name: string;
+  priceDelta: number;
+}
+
 export interface PendingWhatsappOrder {
   shopName: string;
   whatsappPhone: string;
@@ -13,7 +18,12 @@ export interface PendingWhatsappOrder {
   address?: string;
   notas?: string;
   paymentMethod: PaymentMethodValue;
-  items: Array<{ name: string; quantity: number; unitPrice: number }>;
+  items: Array<{
+    name: string;
+    quantity: number;
+    unitPrice: number;
+    accessories?: WhatsappOrderAccessory[];
+  }>;
   total: number;
 }
 
@@ -29,10 +39,17 @@ export function buildWhatsappMessage(order: PendingWhatsappOrder): string {
       : 'MercadoPago ✅';
 
   const productLines = order.items
-    .map(
-      (item) =>
-        `• ${item.quantity}x ${item.name} - $${item.unitPrice.toLocaleString('es-AR')}`
-    )
+    .map((item) => {
+      const mainLine = `• ${item.quantity}x ${item.name} - $${item.unitPrice.toLocaleString('es-AR')}`;
+      const accLines = (item.accessories ?? [])
+        .filter((a) => {
+          return a.priceDelta > 0;
+        })
+        .map((a) => {
+          return `  └ ${a.name} (+$${a.priceDelta.toLocaleString('es-AR')})`;
+        });
+      return [mainLine, ...accLines].join('\n');
+    })
     .join('\n');
 
   const lines = [
