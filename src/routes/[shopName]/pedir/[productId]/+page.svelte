@@ -33,83 +33,89 @@
   }
 </script>
 
-<div class="flex min-h-screen flex-col bg-[#E0E0E0]">
-  <!-- ── White image section ── -->
-
-  <div class="relative flex flex-col overflow-hidden bg-white">
-    <div class="px-5 pt-5 pb-2">
-      <a href="/{shopName}/pedir" class="inline-flex">
-        <ArrowLeft class="h-5 w-5 text-zinc-400" />
-      </a>
-    </div>
-
-    <Carousel.Root setApi={handleSetApi} class="w-full">
-      <Carousel.Content>
-        {#each product.images as image, i (i)}
-          <Carousel.Item>
-            <div class="flex items-center justify-center px-10 py-6">
-              <img
-                src={image}
-                alt="{product.name} {i + 1}"
-                class="max-h-[280px] w-full object-contain"
-                loading={i === 0 ? 'eager' : 'lazy'}
-                decoding={i === 0 ? 'sync' : 'async'}
-                fetchpriority={i === 0 ? 'high' : 'auto'}
-              />
-            </div>
-          </Carousel.Item>
-        {/each}
-      </Carousel.Content>
-    </Carousel.Root>
-
-    {#if product.images.length > 1}
-      <div
-        class="absolute right-0 bottom-10 left-0 flex items-center justify-center gap-2.5"
-      >
-        {#each imageIndices as i (i)}
-          <button
-            aria-label="Imagen {i + 1}"
-            onclick={() => carouselApi?.scrollTo(i)}
-            class="rounded-full transition-all duration-200 {i === selectedIndex
-              ? 'h-3 w-3 border border-zinc-400'
-              : 'h-2 w-2 bg-zinc-300'}"
-          ></button>
-        {/each}
-      </div>
-    {/if}
+<div class="flex min-h-screen flex-col bg-[#E0E0E0] md:bg-white">
+  <div class="px-5 pt-5 pb-2 md:mx-auto md:w-full md:max-w-5xl">
+    <a href="/{shopName}/pedir" class="inline-flex">
+      <ArrowLeft class="h-5 w-5 text-zinc-400" />
+    </a>
   </div>
 
-  <!-- ── Info card ── -->
   <div
-    class="z-10 -mt-2 flex-1 rounded-t-3xl bg-white px-6 pt-7 pb-10 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] shadow-slate-300 md:text-center"
+    class="flex flex-col md:mx-auto md:w-full md:max-w-5xl md:flex-row md:gap-12 md:px-8 md:py-8"
   >
-    <h1 class="text-2xl font-bold text-zinc-900">{product.name}</h1>
-    <p class="mt-0.5 text-sm text-zinc-400 italic">
-      {CATEGORY_LABELS[product.category]}
-    </p>
-
-    {#if product.description}
-      <p class="mt-6 text-sm leading-relaxed text-zinc-400">
-        {product.description}
-      </p>
-    {/if}
-
+    <!-- ── Image section ── -->
     <div
-      class="mt-10 flex items-center justify-between md:justify-center md:gap-10"
+      class="relative flex flex-col overflow-hidden bg-white md:w-1/2 md:rounded-2xl"
     >
-      <span class="text-2xl font-bold text-zinc-900"
-        >{formatPrice(product.price)}</span
-      >
-      <button
-        onclick={handleAdd}
-        class="rounded-full border-2 border-zinc-800 px-6 py-2.5 text-sm font-bold text-zinc-900 transition-colors active:bg-zinc-900 active:text-white"
-      >
-        {#if quantity > 0}
-          En carrito ({quantity})
-        {:else}
-          Agregar al carrito
-        {/if}
-      </button>
+      <Carousel.Root setApi={handleSetApi} class="w-full">
+        <Carousel.Content>
+          {#each product.images as image, i (i)}
+            <Carousel.Item>
+              <div class="flex items-center justify-center px-10 py-6">
+                <img
+                  src={image}
+                  alt="{product.name} {i + 1}"
+                  class="max-h-[280px] w-full object-contain md:max-h-[400px]"
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  decoding={i === 0 ? 'sync' : 'async'}
+                  fetchpriority={i === 0 ? 'high' : 'auto'}
+                />
+              </div>
+            </Carousel.Item>
+          {/each}
+        </Carousel.Content>
+      </Carousel.Root>
+
+      {#if product.images.length > 1}
+        <div
+          class="absolute right-0 bottom-10 left-0 flex items-center justify-center gap-2.5"
+        >
+          {#each imageIndices as i (i)}
+            <button
+              aria-label="Imagen {i + 1}"
+              onclick={() => carouselApi?.scrollTo(i)}
+              class="rounded-full transition-all duration-200 {i ===
+              selectedIndex
+                ? 'h-3 w-3 border border-zinc-400'
+                : 'h-2 w-2 bg-zinc-300'}"
+            ></button>
+          {/each}
+        </div>
+      {/if}
+    </div>
+
+    <!-- ── Info card ── -->
+    <div
+      class="z-10 -mt-2 flex-1 rounded-t-3xl bg-white px-6 pt-7 pb-10 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] shadow-slate-300 md:-mt-0 md:rounded-none md:px-0 md:shadow-none"
+    >
+      <h1 class="text-2xl font-bold text-zinc-900 md:text-3xl">
+        {product.name}
+      </h1>
+      <p class="mt-0.5 text-sm text-zinc-400 italic">
+        {CATEGORY_LABELS[product.category]}
+      </p>
+
+      {#if product.description}
+        <p class="mt-6 text-sm leading-relaxed text-zinc-400 md:text-base">
+          {product.description}
+        </p>
+      {/if}
+
+      <div class="mt-10 flex items-center justify-between">
+        <span class="text-2xl font-bold text-zinc-900 md:text-3xl"
+          >{formatPrice(product.price)}</span
+        >
+        <button
+          onclick={handleAdd}
+          class="rounded-full border-2 border-zinc-800 px-6 py-2.5 text-sm font-bold text-zinc-900 transition-colors active:bg-zinc-900 active:text-white md:hover:bg-zinc-900 md:hover:text-white"
+        >
+          {#if quantity > 0}
+            En carrito ({quantity})
+          {:else}
+            Agregar al carrito
+          {/if}
+        </button>
+      </div>
     </div>
   </div>
 </div>
