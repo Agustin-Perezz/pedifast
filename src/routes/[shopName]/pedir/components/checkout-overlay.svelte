@@ -2,6 +2,7 @@
   import * as Dialog from '$components/ui/dialog';
   import * as Drawer from '$components/ui/drawer';
 
+  import { keyboardViewport } from '$lib/actions/keyboard-viewport';
   import { cart } from '$lib/cart.svelte';
   import CartAccessoriesView from './cart-accessories-view.svelte';
   import CheckoutForm from './checkout-form.svelte';
@@ -81,12 +82,15 @@
     </Dialog.Content>
   </Dialog.Root>
 {:else}
-  <Drawer.Root bind:open>
+  <Drawer.Root bind:open repositionInputs={false}>
     <Drawer.Content class="overflow-hidden">
       <Drawer.Header>
         <Drawer.Title>{title}</Drawer.Title>
       </Drawer.Header>
-      <div class="min-h-0 flex-1 overflow-y-auto px-4 pb-6">
+      <div
+        use:keyboardViewport
+        class="min-h-0 flex-1 overflow-y-auto px-4 pb-6"
+      >
         {@render content()}
       </div>
     </Drawer.Content>
