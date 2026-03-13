@@ -43,22 +43,24 @@ export const GET: RequestHandler = async ({ url }) => {
     Date.now() + tokenData.expires_in * 1000
   ).toISOString();
 
-  const { error: dbError } = await supabase.from('shops').upsert(
-    {
-      shop_name: shopName,
+  const { error: dbError, count } = await supabase
+    .from('shops')
+    .update({
       mp_access_token: tokenData.access_token,
       mp_refresh_token: tokenData.refresh_token,
       mp_token_expires_at: expiresAt,
       mp_user_id: String(tokenData.user_id),
       mp_public_key: tokenData.public_key,
       connected_at: new Date().toISOString()
-    },
-    { onConflict: 'shop_name' }
-  );
+    })
+    .eq('shop_name', shopName);
 
   if (dbError) {
-    console.error('Failed to save MP tokens:', dbError);
-    return new Response('Failed to save credentials', { status: 500 });
+    return new Response('Faled to save credentials', { status: 500 });
+  }
+
+  if (count === 0) {
+    return new Response(`Shop "${shopName}" not found`, { status: 404 });
   }
 
   redirect(302, `/${shopName}/pedir?mp_connected=true`);
