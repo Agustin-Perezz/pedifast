@@ -18,7 +18,7 @@ jobs:
           version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: pnpm
       - run: pnpm install
       - run: pnpm lint
@@ -32,7 +32,7 @@ jobs:
           version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: pnpm
       - run: pnpm install
       - run: pnpm check
@@ -46,7 +46,7 @@ jobs:
           version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: pnpm
       - run: pnpm install
       - name: Cache Playwright browsers
@@ -79,7 +79,7 @@ jobs:
           version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: pnpm
       - run: pnpm install
       - run: pnpm build
