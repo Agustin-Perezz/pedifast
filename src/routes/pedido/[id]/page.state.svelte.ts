@@ -52,7 +52,7 @@ export function createOrderPageState() {
   });
 
   $effect(() => {
-    const stored = sessionStorage.getItem(`order-${id}`);
+    const stored = localStorage.getItem(`order-${id}`);
     if (!stored) {
       order = null;
       return;
@@ -66,7 +66,7 @@ export function createOrderPageState() {
 
   $effect(() => {
     if (!whatsappUrl) return;
-    sessionStorage.removeItem(`order-${id}`);
+    localStorage.removeItem(`order-${id}`);
 
     if (isSafari()) {
       window.location.href = whatsappUrl;
