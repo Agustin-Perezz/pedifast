@@ -5,6 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function isSafari(): boolean {
+  return (
+    /Safari/.test(navigator.userAgent) &&
+    !/Chrome|CriOS|FxiOS/.test(navigator.userAgent)
+  );
+}
+
 export function formatPrice(price: number): string {
   return new Intl.NumberFormat('es-AR', {
     style: 'currency',
