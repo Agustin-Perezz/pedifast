@@ -132,8 +132,6 @@
           `order-${externalReference}`,
           JSON.stringify(pendingOrder)
         );
-        cart.clear();
-        onComplete();
         window.location.href = init_point;
       } catch (err) {
         error = err instanceof Error ? err.message : 'Error inesperado';
