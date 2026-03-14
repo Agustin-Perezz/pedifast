@@ -5,6 +5,7 @@ import CircleX from '@lucide/svelte/icons/circle-x';
 import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 
 import { MercadoPagoPaymentStatus, PaymentMethod } from '$lib/schemas/order';
+import { isSafari } from '$lib/utils';
 import {
   buildWhatsappMessage,
   buildWhatsappUrl,
@@ -65,9 +66,13 @@ export function createOrderPageState() {
 
   $effect(() => {
     if (!whatsappUrl) return;
-    const orderId = id;
-    window.open(whatsappUrl, '_blank');
-    sessionStorage.removeItem(`order-${orderId}`);
+    sessionStorage.removeItem(`order-${id}`);
+
+    if (isSafari()) {
+      window.location.href = whatsappUrl;
+    } else {
+      window.open(whatsappUrl, '_blank');
+    }
   });
 
   const statusConfig = $derived.by((): StatusConfig => {
