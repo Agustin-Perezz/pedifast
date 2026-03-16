@@ -99,7 +99,7 @@
       try {
         if (f.data.paymentMethod === PaymentMethod.enum.efectivo) {
           const id = `${shopName}-${Date.now()}`;
-          sessionStorage.setItem(`order-${id}`, JSON.stringify(pendingOrder));
+          localStorage.setItem(`order-${id}`, JSON.stringify(pendingOrder));
           cart.clear();
           onComplete();
           window.location.href = `/pedido/${id}?status=${PaymentMethod.enum.efectivo}`;
@@ -128,7 +128,7 @@
 
         const { init_point, externalReference } = await response.json();
 
-        sessionStorage.setItem(
+        localStorage.setItem(
           `order-${externalReference}`,
           JSON.stringify(pendingOrder)
         );
