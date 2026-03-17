@@ -1,20 +1,58 @@
+import { createHmac, timingSafeEqual } from 'crypto';
 import { redirect } from '@sveltejs/kit';
 
 import {
   MP_API_BASE_URL,
   MP_APP_ID,
   MP_CLIENT_SECRET,
+  MP_OAUTH_STATE_SECRET,
   MP_REDIRECT_URI
 } from '$lib/server/env';
 import { supabase } from '$lib/server/supabase';
 import type { RequestHandler } from './$types';
 
+const STATE_MAX_AGE_MS = 10 * 60 * 1000;
+
 export const GET: RequestHandler = async ({ url }) => {
   const code = url.searchParams.get('code');
-  const shopName = url.searchParams.get('state');
+  const stateParam = url.searchParams.get('state');
 
-  if (!code || !shopName) {
+  if (!code || !stateParam) {
     return new Response('Missing "code" or "state" parameter', { status: 400 });
+  }
+
+  let shop: string;
+  let timestamp: number;
+  let signature: string;
+  try {
+    const decoded = JSON.parse(
+      Buffer.from(stateParam, 'base64url').toString('utf-8')
+    );
+    shop = decoded.shop;
+    timestamp = decoded.timestamp;
+    signature = decoded.signature;
+    if (!shop || !timestamp || !signature) {
+      throw new Error('Invalid state payload');
+    }
+  } catch {
+    return new Response('OAuth callback failed', { status: 403 });
+  }
+
+  if (Date.now() - timestamp > STATE_MAX_AGE_MS) {
+    return new Response('OAuth state expired', { status: 403 });
+  }
+
+  const expectedSignature = createHmac('sha256', MP_OAUTH_STATE_SECRET)
+    .update(`${shop}:${timestamp}`)
+    .digest('hex');
+
+  const sigBuffer = Buffer.from(signature, 'hex');
+  const expectedBuffer = Buffer.from(expectedSignature, 'hex');
+  if (
+    sigBuffer.length !== expectedBuffer.length ||
+    !timingSafeEqual(sigBuffer, expectedBuffer)
+  ) {
+    return new Response('OAuth callback failed', { status: 403 });
   }
 
   const tokenResponse = await fetch(`${MP_API_BASE_URL}/oauth/token`, {
@@ -53,15 +91,16 @@ export const GET: RequestHandler = async ({ url }) => {
       mp_public_key: tokenData.public_key,
       connected_at: new Date().toISOString()
     })
-    .eq('shop_name', shopName);
+    .eq('shop_name', shop);
 
   if (dbError) {
-    return new Response('Faled to save credentials', { status: 500 });
+    return new Response('OAuth callback failed', { status: 500 });
   }
 
   if (count === 0) {
-    return new Response(`Shop "${shopName}" not found`, { status: 404 });
+    console.error(`OAuth callback: shop "${shop}" not found in database`);
+    return new Response('OAuth callback failed', { status: 404 });
   }
 
-  redirect(302, `/${shopName}/pedir?mp_connected=true`);
+  redirect(302, `/${shop}/pedir?mp_connected=true`);
 };
