@@ -5,7 +5,8 @@
   import ReceiptCard from './components/receipt-card.svelte';
   import { createOrderPageState } from './page.state.svelte';
 
-  const state = createOrderPageState();
+  const { data } = $props();
+  const state = createOrderPageState(data);
 </script>
 
 <div class="flex min-h-screen flex-col">
