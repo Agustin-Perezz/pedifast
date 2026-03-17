@@ -69,6 +69,7 @@ jobs:
           MP_REDIRECT_URI: 'https://placeholder.example.com/api/mp/oauth/callback'
           SUPABASE_URL: 'https://placeholder.supabase.co'
           SUPABASE_SERVICE_ROLE_KEY: 'placeholder'
+          MP_OAUTH_STATE_SECRET: 'placholder'
 
   build:
     runs-on: ubuntu-latest
@@ -90,3 +91,4 @@ jobs:
           MP_REDIRECT_URI: 'https://placeholder.example.com/api/mp/oauth/callback'
           SUPABASE_URL: 'https://placeholder.supabase.co'
           SUPABASE_SERVICE_ROLE_KEY: 'placeholder'
+          MP_OAUTH_STATE_SECRET: 'placholder'

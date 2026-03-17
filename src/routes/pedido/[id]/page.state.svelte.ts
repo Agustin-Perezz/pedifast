@@ -22,13 +22,15 @@ interface StatusConfig {
   badgeClass: string;
 }
 
-export function createOrderPageState() {
+interface ServerData {
+  verifiedStatus: string;
+  paymentId: string | null;
+}
+
+export function createOrderPageState(serverData: ServerData) {
   const id = $derived(page.params.id);
-  const status = $derived(
-    page.url.searchParams.get('status') ??
-      page.url.searchParams.get('collection_status')
-  );
-  const paymentId = $derived(page.url.searchParams.get('payment_id'));
+  const status = $derived(serverData.verifiedStatus);
+  const paymentId = $derived(serverData.paymentId);
 
   let order = $state<PendingWhatsappOrder | null>(null);
 
