@@ -1,6 +1,5 @@
 import { PaymentMethod } from '$lib/schemas/order';
-import { MP_API_BASE_URL } from '$lib/server/env';
-import { getSellerAccessToken } from '$lib/server/mp-token';
+import { mpService } from '$lib/server/mp-client';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, url }) => {
@@ -25,33 +24,17 @@ export const load: PageServerLoad = async ({ params, url }) => {
   }
 
   try {
-    const accessToken = await getSellerAccessToken(shopName);
+    const payment = await mpService.getPaymentStatus(shopName, paymentIdParam);
 
-    const mpResponse = await fetch(
-      `${MP_API_BASE_URL}/v1/payments/${paymentIdParam}`,
-      {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      }
-    );
-
-    if (!mpResponse.ok) {
+    if (payment.externalReference !== orderId) {
       console.error(
-        `MP payment verification failed (${mpResponse.status}) for payment ${paymentIdParam}`
-      );
-      return { verifiedStatus: 'pending', paymentId: paymentIdParam };
-    }
-
-    const payment = await mpResponse.json();
-
-    if (payment.external_reference !== orderId) {
-      console.error(
-        `Payment external_reference mismatch: expected "${orderId}", got "${payment.external_reference}"`
+        `Payment external_reference mismatch: expected "${orderId}", got "${payment.externalReference}"`
       );
       return { verifiedStatus: 'pending', paymentId: paymentIdParam };
     }
 
     return {
-      verifiedStatus: payment.status as string,
+      verifiedStatus: payment.status,
       paymentId: paymentIdParam
     };
   } catch (err) {

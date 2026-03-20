@@ -1,17 +1,8 @@
-import { createHmac, timingSafeEqual } from 'crypto';
 import { redirect } from '@sveltejs/kit';
 
-import {
-  MP_API_BASE_URL,
-  MP_APP_ID,
-  MP_CLIENT_SECRET,
-  MP_OAUTH_STATE_SECRET,
-  MP_REDIRECT_URI
-} from '$lib/server/env';
+import { mpService } from '$lib/server/mp-client';
 import { supabase } from '$lib/server/supabase';
 import type { RequestHandler } from './$types';
-
-const STATE_MAX_AGE_MS = 10 * 60 * 1000;
 
 export const GET: RequestHandler = async ({ url }) => {
   const code = url.searchParams.get('code');
@@ -22,60 +13,18 @@ export const GET: RequestHandler = async ({ url }) => {
   }
 
   let shop: string;
-  let timestamp: number;
-  let signature: string;
   try {
-    const decoded = JSON.parse(
-      Buffer.from(stateParam, 'base64url').toString('utf-8')
-    );
-    shop = decoded.shop;
-    timestamp = decoded.timestamp;
-    signature = decoded.signature;
-    if (!shop || !timestamp || !signature) {
-      throw new Error('Invalid state payload');
-    }
+    ({ shop } = mpService.validateOAuthState(stateParam));
   } catch {
     return new Response('OAuth callback failed', { status: 403 });
   }
 
-  if (Date.now() - timestamp > STATE_MAX_AGE_MS) {
-    return new Response('OAuth state expired', { status: 403 });
+  let tokenData;
+  try {
+    tokenData = await mpService.exchangeCodeForTokens(code);
+  } catch {
+    return new Response('OAuth callback failed', { status: 502 });
   }
-
-  const expectedSignature = createHmac('sha256', MP_OAUTH_STATE_SECRET)
-    .update(`${shop}:${timestamp}`)
-    .digest('hex');
-
-  const sigBuffer = Buffer.from(signature, 'hex');
-  const expectedBuffer = Buffer.from(expectedSignature, 'hex');
-  if (
-    sigBuffer.length !== expectedBuffer.length ||
-    !timingSafeEqual(sigBuffer, expectedBuffer)
-  ) {
-    return new Response('OAuth callback failed', { status: 403 });
-  }
-
-  const tokenResponse = await fetch(`${MP_API_BASE_URL}/oauth/token`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      client_id: MP_APP_ID,
-      client_secret: MP_CLIENT_SECRET,
-      code,
-      grant_type: 'authorization_code',
-      redirect_uri: MP_REDIRECT_URI
-    })
-  });
-
-  if (!tokenResponse.ok) {
-    const error = await tokenResponse.text();
-    console.error('MP OAuth token exchange failed:', error);
-    return new Response('Failed to exchange authorization code', {
-      status: 502
-    });
-  }
-
-  const tokenData = await tokenResponse.json();
 
   const expiresAt = new Date(
     Date.now() + tokenData.expires_in * 1000
