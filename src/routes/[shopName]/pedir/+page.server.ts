@@ -65,7 +65,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
   const { data: shopData, error: shopError } = await supabase
     .from('shops')
     .select(
-      'id, address, delivery_price, whatsapp_phone, shop_items(id, name, price, category, images, description)'
+      'id, address, delivery_price, whatsapp_phone, display_name, logo_url, portrait_url, open_hours, shop_items(id, name, price, category, images, description)'
     )
     .eq('shop_name', shopName)
     .single();
@@ -123,7 +123,11 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
         shopData.delivery_price != null
           ? Number(shopData.delivery_price)
           : null,
-      whatsappPhone: shopData.whatsapp_phone
+      whatsappPhone: shopData.whatsapp_phone,
+      displayName: shopData.display_name ?? null,
+      logoUrl: shopData.logo_url ?? null,
+      portraitUrl: shopData.portrait_url ?? null,
+      openHours: shopData.open_hours ?? null
     }
   };
 };

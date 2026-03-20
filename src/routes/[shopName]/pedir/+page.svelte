@@ -11,7 +11,7 @@
 </script>
 
 <div class="min-h-screen bg-[#F5F5F5]" use:pedir.observeSections>
-  <ShopHeader />
+  <ShopHeader shop={data.shop} shopName={data.shopName} />
 
   <div class="mx-auto max-w-lg pb-28 md:max-w-3xl lg:max-w-5xl">
     <CategoryNav
