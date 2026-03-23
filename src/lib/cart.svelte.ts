@@ -47,7 +47,9 @@ class Cart {
     const existing = this.items.find((item) => {
       return item.product.id === productId;
     });
-    if (!existing) return;
+    if (!existing) {
+      return;
+    }
     if (existing.quantity > 1) {
       existing.quantity--;
     } else {

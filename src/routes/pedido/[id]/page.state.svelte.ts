@@ -48,7 +48,9 @@ export function createOrderPageState(serverData: ServerData) {
   );
 
   const whatsappUrl = $derived.by(() => {
-    if (!isConfirmed || !order) return null;
+    if (!isConfirmed || !order) {
+      return null;
+    }
     const message = buildWhatsappMessage(order);
     return buildWhatsappUrl(order.whatsappPhone, message);
   });
@@ -67,7 +69,9 @@ export function createOrderPageState(serverData: ServerData) {
   });
 
   $effect(() => {
-    if (!whatsappUrl) return;
+    if (!whatsappUrl) {
+      return;
+    }
     localStorage.removeItem(`order-${id}`);
 
     if (isSafari()) {
