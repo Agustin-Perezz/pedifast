@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { z } from 'zod';
 
-import { mpService } from '$lib/server/mp-client';
 import type { RequestHandler } from './$types';
 
 const preferenceSchema = z.object({
@@ -22,7 +21,7 @@ const preferenceSchema = z.object({
     .min(1)
 });
 
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url, locals }) => {
   let body: unknown;
   try {
     body = await request.json();
@@ -39,7 +38,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     parsed.data;
 
   try {
-    const result = await mpService.createPreference({
+    const result = await locals.mpClient.createPreference({
       shopName,
       items,
       nombre,
