@@ -2,30 +2,15 @@
   import { ArrowLeft } from '@lucide/svelte';
 
   import { cart } from '$lib/cart.svelte';
-  import type { CarouselAPI } from '$lib/components/ui/carousel/context.js';
-  import * as Carousel from '$lib/components/ui/carousel/index.js';
-  import { CATEGORY_LABELS } from '$lib/types/product';
-  import { formatPrice } from '$lib/utils';
   import type { PageData } from './$types';
+  import ProductImageCarousel from './components/product-image-carousel.svelte';
+  import ProductInfoCard from './components/product-info-card.svelte';
 
   let { data }: { data: PageData } = $props();
 
   const { product, shopName } = data;
 
-  let carouselApi: CarouselAPI | undefined = $state();
-  let selectedIndex = $state(0);
-
-  function handleSetApi(api: CarouselAPI | undefined) {
-    if (!api) return;
-    carouselApi = api;
-    selectedIndex = api.selectedScrollSnap();
-    api.on('select', () => {
-      selectedIndex = api.selectedScrollSnap();
-    });
-  }
-
   let quantity = $derived(cart.getQuantity(product.id));
-  let imageIndices = $derived(product.images.map((_, i) => i));
 
   function handleAdd() {
     cart.add(product);
@@ -43,79 +28,15 @@
   <div
     class="flex flex-col md:mx-auto md:w-full md:max-w-5xl md:flex-row md:gap-12 md:px-8 md:py-8"
   >
-    <!-- ── Image section ── -->
-    <div
-      class="relative flex flex-col overflow-hidden bg-white md:w-1/2 md:rounded-2xl"
-    >
-      <Carousel.Root setApi={handleSetApi} class="w-full">
-        <Carousel.Content>
-          {#each product.images as image, i (i)}
-            <Carousel.Item>
-              <div class="flex items-center justify-center px-10 py-6">
-                <img
-                  src={image}
-                  alt="{product.name} {i + 1}"
-                  class="max-h-[280px] w-full object-contain md:max-h-[400px]"
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  decoding={i === 0 ? 'sync' : 'async'}
-                  fetchpriority={i === 0 ? 'high' : 'auto'}
-                />
-              </div>
-            </Carousel.Item>
-          {/each}
-        </Carousel.Content>
-      </Carousel.Root>
+    <ProductImageCarousel images={product.images} productName={product.name} />
 
-      {#if product.images.length > 1}
-        <div
-          class="absolute right-0 bottom-10 left-0 flex items-center justify-center gap-2.5"
-        >
-          {#each imageIndices as i (i)}
-            <button
-              aria-label="Imagen {i + 1}"
-              onclick={() => carouselApi?.scrollTo(i)}
-              class="rounded-full transition-all duration-200 {i ===
-              selectedIndex
-                ? 'h-3 w-3 border border-zinc-400'
-                : 'h-2 w-2 bg-zinc-300'}"
-            ></button>
-          {/each}
-        </div>
-      {/if}
-    </div>
-
-    <!-- ── Info card ── -->
-    <div
-      class="z-10 -mt-2 flex-1 rounded-t-3xl bg-white px-6 pt-7 pb-10 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] shadow-slate-300 md:-mt-0 md:rounded-none md:px-0 md:shadow-none"
-    >
-      <h1 class="text-2xl font-bold text-zinc-900 md:text-3xl">
-        {product.name}
-      </h1>
-      <p class="mt-0.5 text-sm text-zinc-400 italic">
-        {CATEGORY_LABELS[product.category]}
-      </p>
-
-      {#if product.description}
-        <p class="mt-6 text-sm leading-relaxed text-zinc-400 md:text-base">
-          {product.description}
-        </p>
-      {/if}
-
-      <div class="mt-10 flex items-center justify-between">
-        <span class="text-2xl font-bold text-zinc-900 md:text-3xl"
-          >{formatPrice(product.price)}</span
-        >
-        <button
-          onclick={handleAdd}
-          class="rounded-full border-2 border-zinc-800 px-6 py-2.5 text-sm font-bold text-zinc-900 transition-colors active:bg-zinc-900 active:text-white md:hover:bg-zinc-900 md:hover:text-white"
-        >
-          {#if quantity > 0}
-            En carrito ({quantity})
-          {:else}
-            Agregar al carrito
-          {/if}
-        </button>
-      </div>
-    </div>
+    <ProductInfoCard
+      name={product.name}
+      category={product.category}
+      description={product.description}
+      price={product.price}
+      {quantity}
+      onAdd={handleAdd}
+    />
   </div>
 </div>
