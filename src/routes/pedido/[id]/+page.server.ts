@@ -1,8 +1,7 @@
 import { PaymentMethod } from '$lib/schemas/order';
-import { mpService } from '$lib/server/mp-client';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params, url }) => {
+export const load: PageServerLoad = async ({ params, url, locals }) => {
   const orderId = params.id;
   const statusParam =
     url.searchParams.get('status') ?? url.searchParams.get('collection_status');
@@ -24,7 +23,10 @@ export const load: PageServerLoad = async ({ params, url }) => {
   }
 
   try {
-    const payment = await mpService.getPaymentStatus(shopName, paymentIdParam);
+    const payment = await locals.mpClient.getPaymentStatus(
+      shopName,
+      paymentIdParam
+    );
 
     if (payment.externalReference !== orderId) {
       console.error(

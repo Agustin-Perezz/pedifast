@@ -1,12 +1,39 @@
 import * as Sentry from '@sentry/sveltekit';
+import { createClient } from '@supabase/supabase-js';
 import type { Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
+
+import { SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL } from '$lib/server/env';
+import { MercadoPagoClient } from '$lib/server/mp-client';
+import { AccessoryGroupsRepository } from '$lib/server/repositories/accessory-groups.repository';
+import { ShopItemsRepository } from '$lib/server/repositories/shop-items.repository';
+import { ShopsRepository } from '$lib/server/repositories/shops.repository';
+import { ShopsService } from '$lib/server/services/shops.service';
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: process.env.NODE_ENV,
   tracesSampleRate: 1.0
 });
+
+const locals: Handle = async ({ event, resolve }) => {
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+  const shopsRepo = new ShopsRepository(supabase);
+  const accessoryGroupsRepo = new AccessoryGroupsRepository(supabase);
+  const shopItemsRepo = new ShopItemsRepository(supabase);
+
+  const shopsService = new ShopsService(
+    shopsRepo,
+    accessoryGroupsRepo,
+    shopItemsRepo
+  );
+
+  event.locals.shopsService = shopsService;
+  event.locals.mpClient = new MercadoPagoClient(shopsService);
+
+  return resolve(event);
+};
 
 const securityHeaders: Handle = async ({ event, resolve }) => {
   const response = await resolve(event);
@@ -38,6 +65,6 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
   return response;
 };
 
-export const handle = sequence(Sentry.sentryHandle(), securityHeaders);
+export const handle = sequence(Sentry.sentryHandle(), locals, securityHeaders);
 
 export const handleError = Sentry.handleErrorWithSentry();

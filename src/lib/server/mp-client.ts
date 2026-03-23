@@ -8,7 +8,7 @@ import {
   MP_OAUTH_STATE_SECRET,
   MP_REDIRECT_URI
 } from './env';
-import { supabase } from './supabase';
+import type { ShopsService } from './services/shops.service';
 
 const EXPIRY_BUFFER_MS = 60 * 60 * 1000; // 1 hour
 const STATE_MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes
@@ -53,7 +53,9 @@ export interface PaymentStatusResult {
   externalReference: string | undefined;
 }
 
-class MercadoPagoService {
+export class MercadoPagoClient {
+  constructor(private readonly shopsService: ShopsService) {}
+
   private createSellerClient(accessToken: string): MercadoPagoConfig {
     return new MercadoPagoConfig({ accessToken });
   }
@@ -79,17 +81,14 @@ class MercadoPagoService {
       Date.now() + tokenData.expires_in! * 1000
     ).toISOString();
 
-    const { error: updateError } = await supabase
-      .from('shops')
-      .update({
-        mp_access_token: tokenData.access_token,
-        mp_refresh_token: tokenData.refresh_token,
+    try {
+      await this.shopsService.updateMpTokens(shopName, {
+        mp_access_token: tokenData.access_token!,
+        mp_refresh_token: tokenData.refresh_token!,
         mp_token_expires_at: newExpiresAt
-      })
-      .eq('shop_name', shopName);
-
-    if (updateError) {
-      console.error('Failed to update refreshed tokens:', updateError);
+      });
+    } catch (err) {
+      console.error('Failed to update refreshed tokens:', err);
     }
 
     return tokenData.access_token!;
@@ -170,26 +169,22 @@ class MercadoPagoService {
   }
 
   async getSellerAccessToken(shopName: string): Promise<string> {
-    const { data: shop, error } = await supabase
-      .from('shops')
-      .select('mp_access_token, mp_refresh_token, mp_token_expires_at')
-      .eq('shop_name', shopName)
-      .single();
+    const tokens = await this.shopsService.getMpTokens(shopName);
 
-    if (error || !shop) {
+    if (!tokens) {
       throw new Error(
         `Shop "${shopName}" not found or not connected to Mercado Pago`
       );
     }
 
-    const expiresAt = new Date(shop.mp_token_expires_at).getTime();
+    const expiresAt = new Date(tokens.mp_token_expires_at).getTime();
     const isExpired = Date.now() + EXPIRY_BUFFER_MS >= expiresAt;
 
     if (!isExpired) {
-      return shop.mp_access_token;
+      return tokens.mp_access_token;
     }
 
-    return this.refreshSellerToken(shopName, shop.mp_refresh_token);
+    return this.refreshSellerToken(shopName, tokens.mp_refresh_token);
   }
 
   async createPreference(
@@ -252,5 +247,3 @@ class MercadoPagoService {
     };
   }
 }
-
-export const mpService = new MercadoPagoService();
