@@ -14,6 +14,7 @@
   } from '$lib/schemas/order';
   import { type PendingWhatsappOrder } from '$lib/whatsapp';
   import DeliveryMethodSelector from './delivery-method-selector.svelte';
+  import MapPicker from './map-picker.svelte';
   import PaymentButtons from './payment-buttons.svelte';
 
   const CURRENCY_ID = 'ARS';
@@ -32,6 +33,7 @@
 
   let submitting = $state<PaymentMethodValue | null>(null);
   let error = $state('');
+  let mapDeliveryCost = $state<number | null>(null);
 
   const { form, errors, enhance } = superForm(defaults(zod4(orderSchema)), {
     SPA: true,
@@ -91,9 +93,8 @@
           cart.items.reduce((sum, item) => {
             return sum + cart.getItemUnitPrice(item) * item.quantity;
           }, 0) +
-          (f.data.deliveryMethod === DeliveryMethod.enum.delivery &&
-          shop.deliveryPrice != null
-            ? shop.deliveryPrice
+          (f.data.deliveryMethod === DeliveryMethod.enum.delivery
+            ? (mapDeliveryCost ?? shop.deliveryPrice ?? 0)
             : 0)
       };
 
@@ -156,13 +157,18 @@
       ? 'grid-rows-[1fr]'
       : 'grid-rows-[0fr]'}"
   >
-    <div class="overflow-hidden">
+    <div class="flex flex-col gap-3 overflow-hidden">
       <FormField
         label="Dirección"
         name="address"
         placeholder="Calle, número, piso, etc."
         bind:value={$form.address}
         error={$errors.address}
+      />
+      <MapPicker
+        onResult={({ shippingCost }) => {
+          mapDeliveryCost = shippingCost;
+        }}
       />
     </div>
   </div>
