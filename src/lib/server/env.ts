@@ -16,3 +16,6 @@ export const MP_OAUTH_STATE_SECRET = required('MP_OAUTH_STATE_SECRET');
 
 export const SUPABASE_URL = required('SUPABASE_URL');
 export const SUPABASE_SERVICE_ROLE_KEY = required('SUPABASE_SERVICE_ROLE_KEY');
+
+export const MAPBOX_ACCESS_TOKEN = required('MAPBOX_ACCESS_TOKEN');
+export const MAPBOX_BASE_URL = required('MAPBOX_BASE_URL');

@@ -1,7 +1,8 @@
-import { env } from '$env/dynamic/private';
 import { json } from '@sveltejs/kit';
 
-export async function POST({ request }) {
+import { MAPBOX_ACCESS_TOKEN, MAPBOX_BASE_URL } from '$lib/server/env';
+
+export async function POST({ request }: { request: Request }) {
   try {
     const body = await request.json();
     const { originLat, originLng, destLat, destLng } = body;
@@ -10,12 +11,7 @@ export async function POST({ request }) {
       return json({ error: 'Missing coordinates' }, { status: 400 });
     }
 
-    const token = env.MAPBOX_ACCESS_TOKEN;
-    if (!token) {
-      return json({ error: 'Missing Mapbox Access Token' }, { status: 500 });
-    }
-
-    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${originLng},${originLat};${destLng},${destLat}?access_token=${token}`;
+    const url = `${MAPBOX_BASE_URL}/directions/v5/mapbox/driving/${originLng},${originLat};${destLng},${destLat}?access_token=${MAPBOX_ACCESS_TOKEN}`;
     const response = await fetch(url);
 
     if (!response.ok) {
