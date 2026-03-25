@@ -70,7 +70,10 @@ export class ShopsService {
         displayName: shopData.display_name ?? null,
         logoUrl: shopData.logo_url ?? null,
         portraitUrl: shopData.portrait_url ?? null,
-        openHours: shopData.open_hours ?? null
+        openHours: shopData.open_hours ?? null,
+        lat: Number(shopData.lat),
+        lng: Number(shopData.lng),
+        pricePerKm: Number(shopData.price_per_km)
       },
       products
     };
