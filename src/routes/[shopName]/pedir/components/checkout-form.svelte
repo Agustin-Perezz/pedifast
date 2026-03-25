@@ -26,6 +26,9 @@
       address: string | null;
       deliveryPrice: number | null;
       whatsappPhone: string;
+      lat: number;
+      lng: number;
+      pricePerKm: number;
     };
   }
 
@@ -34,6 +37,23 @@
   let submitting = $state<PaymentMethodValue | null>(null);
   let error = $state('');
   let mapDeliveryCost = $state<number | null>(null);
+  let mapDistanceKm = $state<number | null>(null);
+
+  let calle = $state('');
+  let numero = $state('');
+  let showMap = $state(false);
+
+  function confirmAddress() {
+    const combined = `${calle.trim()} ${numero.trim()}`.trim();
+    $form.address = combined;
+    showMap = true;
+  }
+
+  function resetMap() {
+    showMap = false;
+    mapDeliveryCost = null;
+    mapDistanceKm = null;
+  }
 
   const { form, errors, enhance } = superForm(defaults(zod4(orderSchema)), {
     SPA: true,
@@ -149,6 +169,8 @@
     onSelect={(method: DeliveryMethodValue) => ($form.deliveryMethod = method)}
     address={shop.address}
     deliveryPrice={shop.deliveryPrice}
+    {mapDeliveryCost}
+    {mapDistanceKm}
   />
 
   <div
@@ -158,18 +180,51 @@
       : 'grid-rows-[0fr]'}"
   >
     <div class="flex flex-col gap-3 overflow-hidden">
-      <FormField
-        label="Dirección"
-        name="address"
-        placeholder="Calle, número, piso, etc."
-        bind:value={$form.address}
-        error={$errors.address}
-      />
-      <MapPicker
-        onResult={({ shippingCost }) => {
-          mapDeliveryCost = shippingCost;
-        }}
-      />
+      <div class="flex gap-2">
+        <div class="flex-1">
+          <FormField
+            label="Calle"
+            name="calle"
+            placeholder="Ej: Alem"
+            bind:value={calle}
+            oninput={resetMap}
+          />
+        </div>
+        <div class="w-28">
+          <FormField
+            label="Número"
+            name="numero"
+            placeholder="Ej: 1510"
+            bind:value={numero}
+            oninput={resetMap}
+          />
+        </div>
+      </div>
+      {#if $errors.address}
+        <p class="text-destructive text-xs">{$errors.address}</p>
+      {/if}
+      {#if !showMap}
+        <button
+          type="button"
+          class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors duration-150 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={!calle.trim() || !numero.trim()}
+          onclick={confirmAddress}
+        >
+          Confirmar en el mapa
+        </button>
+      {:else}
+        <MapPicker
+          originLat={shop.lat}
+          originLng={shop.lng}
+          pricePerKm={shop.pricePerKm}
+          address={$form.address}
+          onResult={({ shippingCost, distanceKm }) => {
+            mapDeliveryCost = shippingCost;
+            mapDistanceKm = distanceKm;
+            showMap = false;
+          }}
+        />
+      {/if}
     </div>
   </div>
 
