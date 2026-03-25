@@ -4,6 +4,8 @@
   interface Props {
     originLat?: number;
     originLng?: number;
+    pricePerKm: number;
+    address?: string;
     onResult?: (result: {
       distanceKm: number;
       shippingCost: number;
@@ -15,22 +17,41 @@
   let {
     originLat = -31.4201,
     originLng = -64.1888,
+    pricePerKm,
+    address,
     onResult
   }: Props = $props();
 
   let mapContainer: HTMLDivElement;
   let loading = $state(false);
   let error = $state('');
-  let result = $state<{ distanceKm: number; shippingCost: number } | null>(
-    null
-  );
 
-  let destLat = $state(-31.4201);
-  let destLng = $state(-64.1888);
+  let destLat = $state(originLat);
+  let destLng = $state(originLng);
+
+  let markerRef = $state<import('leaflet').Marker | undefined>();
+  let mapRef = $state<import('leaflet').Map | undefined>();
+
+  async function geocodeAddress(addr: string) {
+    const res = await fetch('/api/geocode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address: addr })
+    });
+
+    if (!res.ok) {
+      return;
+    }
+
+    const data = await res.json();
+
+    destLat = data.lat;
+    destLng = data.lng;
+    markerRef?.setLatLng([data.lat, data.lng]);
+    mapRef?.setView([data.lat, data.lng], 16);
+  }
 
   onMount(() => {
-    let map: import('leaflet').Map | undefined;
-
     import('leaflet').then((mod) => {
       const L = mod.default;
 
@@ -39,12 +60,12 @@
       link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       document.head.appendChild(link);
 
-      map = L.map(mapContainer).setView([originLat, originLng], 14);
+      mapRef = L.map(mapContainer).setView([originLat, originLng], 14);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution:
           '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }).addTo(map);
+      }).addTo(mapRef);
 
       const icon = L.divIcon({
         html: `<div class="map-marker-pin"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#111827" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
@@ -53,45 +74,47 @@
         iconAnchor: [18, 36]
       });
 
-      const marker = L.marker([originLat, originLng], {
+      markerRef = L.marker([originLat, originLng], {
         draggable: true,
         icon
-      }).addTo(map);
+      }).addTo(mapRef);
 
-      marker.on('dragend', () => {
-        const { lat, lng } = marker.getLatLng();
+      markerRef.on('dragend', () => {
+        const { lat, lng } = markerRef!.getLatLng();
         destLat = lat;
         destLng = lng;
-        result = null;
       });
 
-      map.on('click', (e: L.LeafletMouseEvent) => {
-        marker.setLatLng(e.latlng);
+      mapRef.on('click', (e: L.LeafletMouseEvent) => {
+        markerRef?.setLatLng(e.latlng);
         destLat = e.latlng.lat;
         destLng = e.latlng.lng;
-        result = null;
       });
+
+      if (address && address.trim().length >= 3) {
+        geocodeAddress(address);
+      }
     });
 
     return () => {
-      map?.remove();
+      mapRef?.remove();
     };
   });
 
   async function confirmLocation() {
     loading = true;
     error = '';
-    result = null;
 
     try {
-      const response = await fetch('/api/calcular-envio', {
+      const response = await fetch('/api/delivery-cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           originLat,
           originLng,
           destLat,
-          destLng
+          destLng,
+          pricePerKm
         })
       });
 
@@ -101,7 +124,6 @@
       }
 
       const data = await response.json();
-      result = { distanceKm: data.distanceKm, shippingCost: data.shippingCost };
       onResult?.({
         distanceKm: data.distanceKm,
         shippingCost: data.shippingCost,
@@ -118,7 +140,7 @@
 
 <div class="flex flex-col gap-3">
   <p class="m-0 text-center text-xs text-gray-500">
-    📌 Mové el marcador o tocá el mapa para seleccionar tu dirección de entrega
+    📌 Mové el marcador o tocá el mapa para confirmar tu ubicación de entrega
   </p>
 
   <div
@@ -151,21 +173,6 @@
       {error}
     </p>
   {/if}
-
-  {#if result}
-    <div
-      id="shipping-result"
-      class="fade-in flex flex-wrap items-center gap-2 rounded-lg border-[1.5px] border-green-300 bg-green-50 px-3.5 py-2.5 text-sm text-green-800"
-    >
-      <span>📏 {result.distanceKm} km</span>
-      <span class="text-green-300">·</span>
-      <span
-        >🚚 Costo de envío: <strong
-          >${result.shippingCost.toLocaleString('es-AR')}</strong
-        ></span
-      >
-    </div>
-  {/if}
 </div>
 
 <style>
@@ -175,20 +182,5 @@
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
     cursor: grab;
     user-select: none;
-  }
-
-  .fade-in {
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(4px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 </style>

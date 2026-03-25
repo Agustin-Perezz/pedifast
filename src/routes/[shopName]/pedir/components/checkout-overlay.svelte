@@ -20,6 +20,9 @@
       address: string | null;
       deliveryPrice: number | null;
       whatsappPhone: string;
+      lat: number;
+      lng: number;
+      pricePerKm: number;
     };
   }
 

@@ -9,7 +9,7 @@ export class ShopsRepository {
     const { data, error } = await this.supabase
       .from('shops')
       .select(
-        'id, address, delivery_price, whatsapp_phone, display_name, logo_url, portrait_url, open_hours, shop_items(id, name, price, category, images, description)'
+        'id, address, delivery_price, whatsapp_phone, display_name, logo_url, portrait_url, open_hours, lat, lng, price_per_km, shop_items(id, name, price, category, images, description)'
       )
       .eq('shop_name', shopName)
       .single();
