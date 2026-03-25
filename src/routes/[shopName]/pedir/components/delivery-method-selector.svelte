@@ -8,9 +8,18 @@
     onSelect: (method: DeliveryMethodValue) => void;
     address: string | null;
     deliveryPrice: number | null;
+    mapDeliveryCost: number | null;
+    mapDistanceKm: number | null;
   }
 
-  let { deliveryMethod, onSelect, address, deliveryPrice }: Props = $props();
+  let {
+    deliveryMethod,
+    onSelect,
+    address,
+    deliveryPrice,
+    mapDeliveryCost,
+    mapDistanceKm
+  }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-2">
@@ -51,13 +60,23 @@
     </span>
     <div class="flex flex-col gap-0.5">
       <span class="font-medium">Envío a domicilio</span>
-      <span class="text-xs text-zinc-500">
-        {#if deliveryPrice != null}
-          Costo: ${deliveryPrice.toLocaleString('es-AR')}
-        {:else}
-          Costo a consultar
-        {/if}
-      </span>
+      {#if mapDeliveryCost != null && mapDistanceKm != null}
+        <span class="text-xs text-zinc-500"
+          >{mapDistanceKm} km ·
+          <span
+            class="text-sm font-semibold text-zinc-800 underline underline-offset-2"
+            >${mapDeliveryCost.toLocaleString('es-AR')}</span
+          ></span
+        >
+      {:else if deliveryPrice != null}
+        <span class="text-xs text-zinc-500"
+          >Costo: <span class="font-semibold text-zinc-700"
+            >${deliveryPrice.toLocaleString('es-AR')}</span
+          ></span
+        >
+      {:else}
+        <span class="text-xs text-zinc-400">Costo a consultar</span>
+      {/if}
     </div>
   </button>
 </div>
