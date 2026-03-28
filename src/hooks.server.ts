@@ -6,8 +6,10 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL } from '$lib/server/env';
 import { MercadoPagoClient } from '$lib/server/mp-client';
 import { AccessoryGroupsRepository } from '$lib/server/repositories/accessory-groups.repository';
+import { OrdersRepository } from '$lib/server/repositories/orders.repository';
 import { ShopItemsRepository } from '$lib/server/repositories/shop-items.repository';
 import { ShopsRepository } from '$lib/server/repositories/shops.repository';
+import { OrdersService } from '$lib/server/services/orders.service';
 import { ShopsService } from '$lib/server/services/shops.service';
 
 Sentry.init({
@@ -22,6 +24,7 @@ const locals: Handle = async ({ event, resolve }) => {
   const shopsRepo = new ShopsRepository(supabase);
   const accessoryGroupsRepo = new AccessoryGroupsRepository(supabase);
   const shopItemsRepo = new ShopItemsRepository(supabase);
+  const ordersRepo = new OrdersRepository(supabase);
 
   const shopsService = new ShopsService(
     shopsRepo,
@@ -29,7 +32,10 @@ const locals: Handle = async ({ event, resolve }) => {
     shopItemsRepo
   );
 
+  const ordersService = new OrdersService(ordersRepo, shopsRepo);
+
   event.locals.shopsService = shopsService;
+  event.locals.ordersService = ordersService;
   event.locals.mpClient = new MercadoPagoClient(shopsService);
 
   return resolve(event);

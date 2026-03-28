@@ -25,12 +25,14 @@ interface StatusConfig {
 interface ServerData {
   verifiedStatus: string;
   paymentId: string | null;
+  isDashboardFlow: boolean;
 }
 
 export function createOrderPageState(serverData: ServerData) {
   const id = $derived(page.params.id);
   const status = $derived(serverData.verifiedStatus);
   const paymentId = $derived(serverData.paymentId);
+  const isDashboardFlow = $derived(serverData.isDashboardFlow);
 
   let order = $state<PendingWhatsappOrder | null>(null);
 
@@ -40,7 +42,18 @@ export function createOrderPageState(serverData: ServerData) {
     return isNaN(ts) ? new Date() : new Date(ts);
   });
 
-  const backUrl = $derived(order ? `/${order.shopName}/pedir` : '/');
+  const shopNameFromId = $derived.by(() => {
+    const lastDash = id.lastIndexOf('-');
+    return lastDash > 0 ? id.substring(0, lastDash) : null;
+  });
+
+  const backUrl = $derived(
+    order
+      ? `/${order.shopName}/pedir`
+      : shopNameFromId
+        ? `/${shopNameFromId}/pedir`
+        : '/'
+  );
 
   const isConfirmed = $derived(
     status === PaymentMethod.enum.efectivo ||
@@ -48,7 +61,7 @@ export function createOrderPageState(serverData: ServerData) {
   );
 
   const whatsappUrl = $derived.by(() => {
-    if (!isConfirmed || !order) {
+    if (isDashboardFlow || !isConfirmed || !order) {
       return null;
     }
     const message = buildWhatsappMessage(order);
@@ -56,6 +69,9 @@ export function createOrderPageState(serverData: ServerData) {
   });
 
   $effect(() => {
+    if (isDashboardFlow) {
+      return;
+    }
     const stored = localStorage.getItem(`order-${id}`);
     if (!stored) {
       order = null;
@@ -132,6 +148,9 @@ export function createOrderPageState(serverData: ServerData) {
     },
     get paymentId() {
       return paymentId;
+    },
+    get isDashboardFlow() {
+      return isDashboardFlow;
     },
     get order() {
       return order;
