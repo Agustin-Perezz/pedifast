@@ -1,3 +1,4 @@
+import type { OrderFlowValue } from '$lib/schemas/order';
 import type {
   AccessoryGroupsRepository,
   RawAccessoryGroup
@@ -73,7 +74,8 @@ export class ShopsService {
         openHours: shopData.open_hours ?? null,
         lat: Number(shopData.lat),
         lng: Number(shopData.lng),
-        pricePerKm: Number(shopData.price_per_km)
+        pricePerKm: Number(shopData.price_per_km),
+        orderFlow: (shopData.order_flow ?? 'whatsapp') as OrderFlowValue
       },
       products
     };
@@ -115,6 +117,10 @@ export class ShopsService {
     };
 
     return { product };
+  }
+
+  async getShopMeta(shopName: string) {
+    return this.shopsRepo.getShopMeta(shopName);
   }
 
   async getMpTokens(shopName: string) {
