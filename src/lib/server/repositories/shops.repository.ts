@@ -1,9 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-
-import type { ShopMpTokensUpdate } from '$lib/types/shop';
+import { ProductMapper } from '$domain/mappers/product.mapper';
+import { ShopMapper } from '$domain/mappers/shop.mapper';
+import type { ShopMpTokensUpdate } from '$domain/models/shop';
+import type { Database } from '$domain/types/database.types';
 
 export class ShopsRepository {
-  constructor(private readonly supabase: SupabaseClient) {}
+  constructor(private readonly supabase: SupabaseClient<Database>) {}
 
   async getShopWithItems(shopName: string) {
     const { data, error } = await this.supabase
@@ -18,7 +20,10 @@ export class ShopsRepository {
       return null;
     }
 
-    return data;
+    return {
+      shop: ShopMapper.fromEntityToShop(data),
+      products: ProductMapper.fromEntitiesToProducts(data.shop_items ?? [])
+    };
   }
 
   async getShopId(shopName: string) {
@@ -46,12 +51,7 @@ export class ShopsRepository {
       return null;
     }
 
-    return data as {
-      id: number;
-      shop_name: string;
-      order_flow: string;
-      dashboard_pin_hash: string | null;
-    };
+    return data;
   }
 
   async getMpTokens(shopName: string) {
@@ -65,11 +65,7 @@ export class ShopsRepository {
       return null;
     }
 
-    return data as {
-      mp_access_token: string;
-      mp_refresh_token: string;
-      mp_token_expires_at: string;
-    };
+    return data;
   }
 
   async updateMpTokens(shopName: string, tokens: ShopMpTokensUpdate) {

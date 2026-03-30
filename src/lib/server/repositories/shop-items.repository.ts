@@ -1,9 +1,14 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { ProductMapper } from '$domain/mappers/product.mapper';
+import type { Product } from '$domain/models/product';
+import type { Database } from '$domain/types/database.types';
 
 export class ShopItemsRepository {
-  constructor(private readonly supabase: SupabaseClient) {}
+  constructor(private readonly supabase: SupabaseClient<Database>) {}
 
-  async getItemWithAccessories(itemId: number) {
+  async getItemWithAccessories(
+    itemId: number
+  ): Promise<{ product: Product; shopId: number } | null> {
     const { data, error } = await this.supabase
       .from('shop_items')
       .select(
@@ -16,6 +21,13 @@ export class ShopItemsRepository {
       return null;
     }
 
-    return data;
+    const accessoryGroups = ProductMapper.fromEntitiesToAccessoryGroups(
+      data.accessory_groups
+    );
+
+    return {
+      product: ProductMapper.fromEntityToProduct(data, accessoryGroups),
+      shopId: data.shop_id
+    };
   }
 }

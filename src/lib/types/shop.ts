@@ -1,5 +1,1 @@
-export interface ShopMpTokensUpdate {
-  mp_access_token: string;
-  mp_refresh_token: string;
-  mp_token_expires_at: string;
-}
+export { type Shop, type ShopMpTokensUpdate } from '$domain/models/shop';
