@@ -1,31 +1,16 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-
-export interface RawAccessoryOption {
-  id: number;
-  name: string;
-  price_delta: number;
-  sort_order: number;
-}
-
-export interface RawAccessoryGroup {
-  id: number;
-  name: string;
-  selection_mode: string;
-  is_required: boolean;
-  sort_order: number;
-  accessory_options: RawAccessoryOption[];
-}
-
-export interface RawAccessoryGroupRow extends RawAccessoryGroup {
-  shop_item_id: number;
-}
+import { ProductMapper } from '$domain/mappers/product.mapper';
+import type { AccessoryGroup } from '$domain/models/product';
+import type { Database } from '$domain/types/database.types';
 
 export class AccessoryGroupsRepository {
-  constructor(private readonly supabase: SupabaseClient) {}
+  constructor(private readonly supabase: SupabaseClient<Database>) {}
 
-  async getByItemIds(itemIds: number[]): Promise<RawAccessoryGroupRow[]> {
+  async getByItemIds(
+    itemIds: number[]
+  ): Promise<Map<number, AccessoryGroup[]>> {
     if (itemIds.length === 0) {
-      return [];
+      return new Map();
     }
 
     const { data, error } = await this.supabase
@@ -39,6 +24,17 @@ export class AccessoryGroupsRepository {
       throw new Error(`Failed to load accessory groups: ${error.message}`);
     }
 
-    return (data ?? []) as RawAccessoryGroupRow[];
+    const result = new Map<number, AccessoryGroup[]>();
+
+    for (const row of data ?? []) {
+      const mapped = ProductMapper.fromEntitiesToAccessoryGroups([row]);
+      if (mapped) {
+        const existing = result.get(row.shop_item_id) ?? [];
+        existing.push(...mapped);
+        result.set(row.shop_item_id, existing);
+      }
+    }
+
+    return result;
   }
 }

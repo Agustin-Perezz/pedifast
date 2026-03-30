@@ -171,7 +171,11 @@ export class MercadoPagoClient {
   async getSellerAccessToken(shopName: string): Promise<string> {
     const tokens = await this.shopsService.getMpTokens(shopName);
 
-    if (!tokens) {
+    if (
+      !tokens?.mp_access_token ||
+      !tokens.mp_refresh_token ||
+      !tokens.mp_token_expires_at
+    ) {
       throw new Error(
         `Shop "${shopName}" not found or not connected to Mercado Pago`
       );
