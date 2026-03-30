@@ -1,6 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { ShopMpTokensUpdate } from '$lib/types/shop';
+import type {
+  ShopMpOAuthTokensUpdate,
+  ShopMpTokensUpdate
+} from '$lib/types/shop';
 
 export class ShopsRepository {
   constructor(private readonly supabase: SupabaseClient) {}
@@ -66,17 +69,7 @@ export class ShopsRepository {
     return count;
   }
 
-  async updateMpOAuthTokens(
-    shopName: string,
-    tokens: {
-      mp_access_token: string;
-      mp_refresh_token: string;
-      mp_token_expires_at: string;
-      mp_user_id: string;
-      mp_public_key: string;
-      connected_at: string;
-    }
-  ) {
+  async updateMpOAuthTokens(shopName: string, tokens: ShopMpOAuthTokensUpdate) {
     const { error, count } = await this.supabase
       .from('shops')
       .update(tokens)
