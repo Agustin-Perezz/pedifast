@@ -60,7 +60,7 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
         "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://sdk.mercadopago.com https://http2.mlstatic.com https://vercel.live https://unpkg.com blob:",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
         "img-src 'self' data: https://http2.mlstatic.com https://*.supabase.co https://*.tile.openstreetmap.org",
-        'frame-src https://*.mercadopago.com.ar https://*.mercadopago.com',
+        'frame-src https://*.mercadopago.com.ar https://*.mercadopago.com https://vercel.live',
         "connect-src 'self' https://api.mercadopago.com https://*.sentry.io",
         "font-src 'self' https://fonts.gstatic.com",
         "worker-src 'self' blob:"
