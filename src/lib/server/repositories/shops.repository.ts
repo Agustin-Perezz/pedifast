@@ -9,7 +9,7 @@ export class ShopsRepository {
     const { data, error } = await this.supabase
       .from('shops')
       .select(
-        'id, address, delivery_price, whatsapp_phone, display_name, logo_url, portrait_url, open_hours, lat, lng, price_per_km, shop_items(id, name, price, category, images, description)'
+        'id, address, delivery_price, whatsapp_phone, display_name, logo_url, portrait_url, open_hours, lat, lng, price_per_km, order_flow, shop_items(id, name, price, category, images, description)'
       )
       .eq('shop_name', shopName)
       .single();
@@ -33,6 +33,25 @@ export class ShopsRepository {
     }
 
     return data;
+  }
+
+  async getShopMeta(shopName: string) {
+    const { data, error } = await this.supabase
+      .from('shops')
+      .select('id, shop_name, order_flow, dashboard_pin_hash')
+      .eq('shop_name', shopName)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+
+    return data as {
+      id: number;
+      shop_name: string;
+      order_flow: string;
+      dashboard_pin_hash: string | null;
+    };
   }
 
   async getMpTokens(shopName: string) {

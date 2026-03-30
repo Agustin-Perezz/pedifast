@@ -3,6 +3,7 @@
   import * as Drawer from '$components/ui/drawer';
 
   import { cart } from '$lib/cart.svelte';
+  import type { OrderFlowValue } from '$lib/schemas/order';
   import CartAccessoriesView from './cart-accessories-view.svelte';
   import CheckoutForm from './checkout-form.svelte';
   import OrderSummary from './order-summary.svelte';
@@ -23,6 +24,7 @@
       lat: number;
       lng: number;
       pricePerKm: number;
+      orderFlow: OrderFlowValue;
     };
   }
 

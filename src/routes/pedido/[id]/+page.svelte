@@ -25,7 +25,56 @@
     </div>
   </header>
 
-  {#if state.order}
+  {#if state.isDashboardFlow}
+    <main class="flex flex-1 flex-col items-center gap-6 px-4 py-6">
+      <div class="flex flex-col items-center gap-3 py-4">
+        <div
+          transition:fade
+          class="flex h-14 w-14 items-center justify-center rounded-full {state
+            .statusConfig.iconBg}"
+        >
+          <state.statusConfig.icon
+            class="h-6 w-6 {state.statusConfig.iconColor} {state.statusConfig
+              .spinning
+              ? 'animate-spin'
+              : ''}"
+          />
+        </div>
+        <div class="flex flex-col items-center gap-1">
+          <span class="text-sm font-semibold text-zinc-950"
+            >{state.statusConfig.title}</span
+          >
+          <span
+            class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {state
+              .statusConfig.badgeClass}"
+          >
+            {state.statusConfig.badge}
+          </span>
+        </div>
+      </div>
+
+      <p class="text-center text-sm text-zinc-500">
+        Tu pedido fue recibido. El local lo confirmará en breve.
+      </p>
+
+      <p class="text-center text-xs text-zinc-400">
+        Pedido #{state.id}
+      </p>
+
+      {#if state.paymentId}
+        <p class="text-center text-xs text-zinc-400">
+          ID de pago: {state.paymentId}
+        </p>
+      {/if}
+
+      <a
+        href={state.backUrl}
+        class="flex h-11 w-full max-w-sm items-center justify-center rounded-lg border border-zinc-200 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-50 active:bg-zinc-100"
+      >
+        Realizar otro pedido
+      </a>
+    </main>
+  {:else if state.order}
     <main class="flex flex-1 flex-col gap-6 px-4 py-6">
       <div class="flex flex-col items-center gap-3 py-4">
         <div

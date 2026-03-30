@@ -7,9 +7,11 @@
   import { cart } from '$lib/cart.svelte';
   import {
     DeliveryMethod,
+    OrderFlow,
     orderSchema,
     PaymentMethod,
     type DeliveryMethodValue,
+    type OrderFlowValue,
     type PaymentMethodValue
   } from '$lib/schemas/order';
   import { type PendingWhatsappOrder } from '$lib/whatsapp';
@@ -29,6 +31,7 @@
       lat: number;
       lng: number;
       pricePerKm: number;
+      orderFlow: OrderFlowValue;
     };
   }
 
@@ -55,9 +58,54 @@
     mapDistanceKm = null;
   }
 
-  const { form, errors, enhance } = superForm(defaults(zod4(orderSchema)), {
+  async function createDashboardOrder(
+    shopName: string,
+    externalReference: string,
+    formData: {
+      nombre: string;
+      telefono?: string;
+      notas?: string;
+      deliveryMethod: string;
+      address?: string;
+      paymentMethod: string;
+    },
+    pendingOrder: PendingWhatsappOrder
+  ) {
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        shopName,
+        externalReference,
+        customerName: formData.nombre,
+        customerPhone: formData.telefono ?? '',
+        notes: formData.notas,
+        deliveryMethod: formData.deliveryMethod,
+        address: formData.address,
+        paymentMethod: formData.paymentMethod,
+        paymentStatus:
+          formData.paymentMethod === PaymentMethod.enum.efectivo
+            ? 'approved'
+            : 'pending',
+        items: pendingOrder.items,
+        total: pendingOrder.total,
+        deliveryCost:
+          formData.deliveryMethod === DeliveryMethod.enum.delivery
+            ? (mapDeliveryCost ?? shop.deliveryPrice ?? 0)
+            : 0
+      })
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.error ?? 'Error al crear el pedido');
+    }
+  }
+
+  const schema = orderSchema(shop.orderFlow);
+  const { form, errors, enhance } = superForm(defaults(zod4(schema)), {
     SPA: true,
-    validators: zod4(orderSchema),
+    validators: zod4(schema),
     onUpdate: async ({ form: f }) => {
       if (!f.valid) {
         return;
@@ -118,10 +166,18 @@
             : 0)
       };
 
+      const isDashboard = shop.orderFlow === OrderFlow.enum.dashboard;
+
       try {
         if (f.data.paymentMethod === PaymentMethod.enum.efectivo) {
           const id = `${shopName}-${Date.now()}`;
-          localStorage.setItem(`order-${id}`, JSON.stringify(pendingOrder));
+
+          if (isDashboard) {
+            await createDashboardOrder(shopName, id, f.data, pendingOrder);
+          } else {
+            localStorage.setItem(`order-${id}`, JSON.stringify(pendingOrder));
+          }
+
           cart.clear();
           onComplete();
           window.location.href = `/pedido/${id}?status=${PaymentMethod.enum.efectivo}`;
@@ -150,10 +206,20 @@
 
         const { init_point, externalReference } = await response.json();
 
-        localStorage.setItem(
-          `order-${externalReference}`,
-          JSON.stringify(pendingOrder)
-        );
+        if (isDashboard) {
+          await createDashboardOrder(
+            shopName,
+            externalReference,
+            f.data,
+            pendingOrder
+          );
+        } else {
+          localStorage.setItem(
+            `order-${externalReference}`,
+            JSON.stringify(pendingOrder)
+          );
+        }
+
         window.location.href = init_point;
       } catch (err) {
         error = err instanceof Error ? err.message : 'Error inesperado';
@@ -235,6 +301,16 @@
     bind:value={$form.nombre}
     error={$errors.nombre}
   />
+
+  {#if shop.orderFlow === OrderFlow.enum.dashboard}
+    <FormField
+      label="Teléfono"
+      name="telefono"
+      placeholder="Ej: 3496 123456"
+      bind:value={$form.telefono}
+      error={$errors.telefono}
+    />
+  {/if}
 
   <FormField
     label="Notas (opcional)"

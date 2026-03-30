@@ -19,3 +19,5 @@ export const SUPABASE_SERVICE_ROLE_KEY = required('SUPABASE_SERVICE_ROLE_KEY');
 
 export const GOOGLE_MAPS_API_KEY = required('GOOGLE_MAPS_API_KEY');
 export const GOOGLE_MAPS_BASE_URL = required('GOOGLE_MAPS_BASE_URL');
+
+export const PANEL_SESSION_SECRET = required('PANEL_SESSION_SECRET');

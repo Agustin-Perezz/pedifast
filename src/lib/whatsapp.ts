@@ -78,3 +78,33 @@ export function buildWhatsappUrl(phone: string, message: string): string {
   const sanitizedPhone = phone.replace(/[+\s-]/g, '');
   return `https://wa.me/${sanitizedPhone}?text=${encodeURIComponent(message)}`;
 }
+
+interface ConfirmableOrder {
+  customerName: string;
+  items: Array<{
+    name: string;
+    quantity: number;
+  }>;
+  total: number;
+}
+
+export function buildCustomerConfirmationMessage(
+  order: ConfirmableOrder
+): string {
+  const itemLines = order.items
+    .map((item) => `• ${item.quantity}x ${item.name}`)
+    .join('\n');
+
+  const lines = [
+    `Hola ${order.customerName}! Tu pedido fue *confirmado*.`,
+    '',
+    '*Detalle:*',
+    itemLines,
+    '',
+    `*Total:* $${order.total.toLocaleString('es-AR')}`,
+    '',
+    'Gracias por tu compra!'
+  ];
+
+  return lines.join('\n');
+}
