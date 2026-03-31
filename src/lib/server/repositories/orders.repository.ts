@@ -1,15 +1,19 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { OrderMapper } from '$domain/mappers/order.mapper';
+import type { Order, OrderInsert } from '$domain/models/order';
+import type { Database } from '$domain/types/database.types';
 
 import type { OrderStatusValue } from '$lib/schemas/order';
-import type { OrderInsert } from '$lib/types/order';
+
+type OrderDbInsert = Database['public']['Tables']['orders']['Insert'];
 
 export class OrdersRepository {
-  constructor(private readonly supabase: SupabaseClient) {}
+  constructor(private readonly supabase: SupabaseClient<Database>) {}
 
-  async insert(order: OrderInsert) {
+  async insert(order: OrderInsert): Promise<Order> {
     const { data, error } = await this.supabase
       .from('orders')
-      .insert(order)
+      .insert(order as unknown as OrderDbInsert)
       .select()
       .single();
 
@@ -17,10 +21,13 @@ export class OrdersRepository {
       throw new Error(`Failed to insert order: ${error?.message}`);
     }
 
-    return data;
+    return OrderMapper.fromEntityToOrder(data);
   }
 
-  async getByShopId(shopId: number, status?: OrderStatusValue) {
+  async getByShopId(
+    shopId: number,
+    status?: OrderStatusValue
+  ): Promise<Order[]> {
     let query = this.supabase
       .from('orders')
       .select('*')
@@ -37,10 +44,12 @@ export class OrdersRepository {
       throw new Error(`Failed to fetch orders: ${error.message}`);
     }
 
-    return data ?? [];
+    return OrderMapper.fromEntitiesToOrders(data ?? []);
   }
 
-  async getByExternalReference(externalReference: string) {
+  async getByExternalReference(
+    externalReference: string
+  ): Promise<Order | null> {
     const { data, error } = await this.supabase
       .from('orders')
       .select('*')
@@ -51,10 +60,13 @@ export class OrdersRepository {
       return null;
     }
 
-    return data;
+    return OrderMapper.fromEntityToOrder(data);
   }
 
-  async updateStatus(orderId: number, status: OrderStatusValue) {
+  async updateStatus(
+    orderId: number,
+    status: OrderStatusValue
+  ): Promise<Order> {
     const { data, error } = await this.supabase
       .from('orders')
       .update({ status })
@@ -66,10 +78,13 @@ export class OrdersRepository {
       throw new Error(`Failed to update order status: ${error?.message}`);
     }
 
-    return data;
+    return OrderMapper.fromEntityToOrder(data);
   }
 
-  async updatePaymentStatus(externalReference: string, paymentStatus: string) {
+  async updatePaymentStatus(
+    externalReference: string,
+    paymentStatus: string
+  ): Promise<Order | null> {
     const { data, error } = await this.supabase
       .from('orders')
       .update({ payment_status: paymentStatus })
@@ -81,6 +96,6 @@ export class OrdersRepository {
       return null;
     }
 
-    return data;
+    return OrderMapper.fromEntityToOrder(data);
   }
 }
