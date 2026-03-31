@@ -22,9 +22,6 @@ export const load: PageServerLoad = async ({ params, setHeaders, locals }) => {
       case 'product_not_found':
         error(404, 'Product not found');
         break;
-      case 'invalid_category':
-        error(500, 'Invalid product category');
-        break;
     }
   }
 

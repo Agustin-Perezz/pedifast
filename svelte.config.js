@@ -15,7 +15,9 @@ const config = {
       $components: resolve('./src/lib/components'),
       '$components/*': resolve('./src/lib/components/*'),
       $schemas: resolve('./src/lib/schemas'),
-      '$schemas/*': resolve('./src/lib/schemas/*')
+      '$schemas/*': resolve('./src/lib/schemas/*'),
+      $domain: resolve('./src/lib/domain'),
+      '$domain/*': resolve('./src/lib/domain/*')
     }
   }
 };
