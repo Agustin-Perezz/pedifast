@@ -1,7 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { ProductMapper } from '$domain/mappers/product.mapper';
 import { ShopMapper } from '$domain/mappers/shop.mapper';
-import type { ShopMpTokensUpdate } from '$domain/models/shop';
+import type {
+  ShopMpOAuthTokensUpdate,
+  ShopMpTokensUpdate
+} from '$domain/models/shop';
 import type { Database } from '$domain/types/database.types';
 
 export class ShopsRepository {
@@ -81,17 +84,7 @@ export class ShopsRepository {
     return count;
   }
 
-  async updateMpOAuthTokens(
-    shopName: string,
-    tokens: {
-      mp_access_token: string;
-      mp_refresh_token: string;
-      mp_token_expires_at: string;
-      mp_user_id: string;
-      mp_public_key: string;
-      connected_at: string;
-    }
-  ) {
+  async updateMpOAuthTokens(shopName: string, tokens: ShopMpOAuthTokensUpdate) {
     const { error, count } = await this.supabase
       .from('shops')
       .update(tokens)

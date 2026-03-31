@@ -1,4 +1,7 @@
-import type { ShopMpTokensUpdate } from '$domain/models/shop';
+import type {
+  ShopMpOAuthTokensUpdate,
+  ShopMpTokensUpdate
+} from '$domain/models/shop';
 
 import type { AccessoryGroupsRepository } from '$lib/server/repositories/accessory-groups.repository';
 import type { ShopItemsRepository } from '$lib/server/repositories/shop-items.repository';
@@ -61,17 +64,7 @@ export class ShopsService {
     return this.shopsRepo.updateMpTokens(shopName, tokens);
   }
 
-  async updateMpOAuthTokens(
-    shopName: string,
-    tokens: {
-      mp_access_token: string;
-      mp_refresh_token: string;
-      mp_token_expires_at: string;
-      mp_user_id: string;
-      mp_public_key: string;
-      connected_at: string;
-    }
-  ) {
+  async updateMpOAuthTokens(shopName: string, tokens: ShopMpOAuthTokensUpdate) {
     return this.shopsRepo.updateMpOAuthTokens(shopName, tokens);
   }
 }

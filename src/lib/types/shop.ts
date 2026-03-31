@@ -1,1 +1,5 @@
-export { type Shop, type ShopMpTokensUpdate } from '$domain/models/shop';
+export {
+  type Shop,
+  type ShopMpTokensUpdate,
+  type ShopMpOAuthTokensUpdate
+} from '$domain/models/shop';
