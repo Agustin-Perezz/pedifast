@@ -1,0 +1,52 @@
+# Local Supabase configuration.
+# Only non-default overrides live here — the CLI fills in the rest from defaults.
+# See https://supabase.com/docs/guides/local-development/cli/config for all options.
+
+project_id = "next-supabase-scaffold"
+
+# Ports use env() indirection so each developer picks a distinct 5-port block
+# via supabase/.env (gitignored). Prevents cross-project container conflicts.
+# See docs/supabase.md "Port conflicts between projects".
+[api]
+port = "env(SUPABASE_API_PORT)"
+
+[db]
+port = "env(SUPABASE_DB_PORT)"
+shadow_port = "env(SUPABASE_DB_SHADOW_PORT)"
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[studio]
+port = "env(SUPABASE_STUDIO_PORT)"
+
+[local_smtp]
+port = "env(SUPABASE_INBUCKET_PORT)"
+
+[analytics]
+port = "env(SUPABASE_ANALYTICS_PORT)"
+
+[auth]
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/auth/callback", "http://127.0.0.1:3000/auth/callback"]
+
+# Google OAuth — local development.
+# client_id is not a secret (safe to commit). Get it from Google Cloud Console.
+# secret uses env() indirection — fill in supabase/.env.
+# See https://supabase.com/docs/guides/auth/social-login/auth-google#local-development
+[auth.external.google]
+enabled = true
+client_id = "657969840672-f0l56ve7295lphalqcv8472mvddfattt.apps.googleusercontent.com"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET)"
+skip_nonce_check = false
+
+# Facebook OAuth — local development.
+# client_id is not a secret (safe to commit). Get it from Facebook Developers Console.
+# secret uses env() indirection — fill in supabase/.env.
+# See https://supabase.com/docs/guides/auth/social-login/auth-facebook
+[auth.external.facebook]
+enabled = true
+client_id = "1768823934139140"
+secret = "env(SUPABASE_AUTH_EXTERNAL_FACEBOOK_CLIENT_SECRET)"
+redirect_uri = "http://localhost:55321/auth/v1/callback"
