@@ -1,7 +1,7 @@
-# next-supabase-scaffold
+# pedifast
 
-[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=Agustin-Perezz_next-supabase-scaffold&metric=alert_status&token=488d382bfa2f8608447379c0b9438ba29f899556)](https://sonarcloud.io/summary/new_code?id=Agustin-Perezz_next-supabase-scaffold)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Agustin-Perezz_next-supabase-scaffold&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Agustin-Perezz_next-supabase-scaffold)
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=Agustin-Perezz_pedifast&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Agustin-Perezz_pedifast)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Agustin-Perezz_pedifast&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Agustin-Perezz_pedifast)
 
 A production-ready [Next.js](https://nextjs.org) starter built on Clean Architecture with strict layering. Domain entities and Zod invariant schemas sit at the core. Application use cases depend only on repository interfaces. Infrastructure provides Supabase-backed implementations. The App Router delivery layer composes per-request DI containers, not module-level singletons. Dependencies point inward toward the domain, so framework and I/O concerns stay at the edges. The scaffold takes a shift-left approach to quality: linting, type checking, static analysis, and E2E tests run on every push and pull request. This makes issues surface as early as possible in the development cycle.
 
