@@ -20,3 +20,7 @@ create trigger shop_items_updated_at
 create policy "Public read access" on public.shop_items
   for select
   using (true);
+
+-- Explicit grants per repo standard (see create_books migration).
+grant select on public.shop_items to anon, authenticated;
+grant select, insert, update, delete on public.shop_items to service_role;

@@ -18,3 +18,7 @@ create trigger accessory_options_updated_at
 create policy "Public read access" on public.accessory_options
   for select
   using (true);
+
+-- Explicit grants per repo standard (see create_books migration).
+grant select on public.accessory_options to anon, authenticated;
+grant select, insert, update, delete on public.accessory_options to service_role;

@@ -40,4 +40,9 @@ create policy "Public insert for dashboard flow" on public.orders
     )
   );
 
+-- Anonymous customers may only insert orders (never select) for dashboard-flow shops.
+grant insert on public.orders to anon, authenticated;
+-- Panel reads/writes go through the service role server-side only.
+grant select, insert, update, delete on public.orders to service_role;
+
 alter publication supabase_realtime add table public.orders;
