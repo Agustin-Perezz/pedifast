@@ -49,6 +49,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# legacy svelte app (read-only migration source, nested git repo)
+/pedifast-old/
+
 # sonarqube
 .scannerwork
 .sonar

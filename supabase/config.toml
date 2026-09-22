@@ -2,7 +2,7 @@
 # Only non-default overrides live here — the CLI fills in the rest from defaults.
 # See https://supabase.com/docs/guides/local-development/cli/config for all options.
 
-project_id = "next-supabase-scaffold"
+project_id = "pedifast"
 
 # Ports use env() indirection so each developer picks a distinct 5-port block
 # via supabase/.env (gitignored). Prevents cross-project container conflicts.
