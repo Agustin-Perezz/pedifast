@@ -1,3 +1,4 @@
+import type { DeliveryMethod } from "./delivery-method.enum";
 import { InvalidOrderError } from "./errors";
 import { type OrderSchema, orderSchema } from "./order.schema";
 import { OrderExternalReference } from "./order-external-reference";
@@ -119,7 +120,7 @@ export class Order {
     return this.props.notes;
   }
 
-  get deliveryMethod(): string {
+  get deliveryMethod(): DeliveryMethod {
     return this.props.deliveryMethod;
   }
 
