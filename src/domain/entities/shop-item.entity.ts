@@ -22,6 +22,7 @@ export class ShopItem {
       category: input.category,
       images: input.images ?? [],
       description: input.description ?? null,
+      accessoryGroups: input.accessoryGroups,
       createdAt: input.createdAt ?? new Date().toISOString(),
       updatedAt: input.updatedAt ?? new Date().toISOString(),
     });

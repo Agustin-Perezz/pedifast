@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { AccessoryGroupWithOptions } from "./accessory-group-with-options";
 import { ShopItemCategory } from "./shop-item-category.enum";
 
 export const shopItemSchema = z.object({
@@ -11,6 +12,24 @@ export const shopItemSchema = z.object({
   description: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  accessoryGroups: z
+    .array(
+      z.custom<AccessoryGroupWithOptions>((value) => {
+        return (
+          typeof value === "object" &&
+          value !== null &&
+          "group" in value &&
+          "options" in value &&
+          Array.isArray(value.options)
+        );
+      }),
+    )
+    .default(() => []),
 });
 
-export type ShopItemSchema = z.infer<typeof shopItemSchema>;
+export type ShopItemSchema = Omit<
+  z.infer<typeof shopItemSchema>,
+  "accessoryGroups"
+> & {
+  accessoryGroups?: readonly AccessoryGroupWithOptions[];
+};
