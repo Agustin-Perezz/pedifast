@@ -18,7 +18,6 @@ export function FileDropzonePreviewItem({
   return (
     <li className="flex items-center gap-3 rounded-lg border border-border bg-background p-2">
       {previewUrl ? (
-        // biome-ignore lint/performance/noImgElement: blob URLs from user-selected files are not served by Next.js image optimization
         <img
           src={previewUrl}
           alt={file.name}
