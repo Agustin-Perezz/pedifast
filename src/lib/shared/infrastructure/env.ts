@@ -13,5 +13,27 @@ if (!publishableKey) {
   );
 }
 
+function requiredServerEnv(name: string): string {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(`Missing ${name} — set it in your .env file`);
+  }
+
+  return value;
+}
+
 export const supabaseUrl = url;
 export const supabasePublishableKey = publishableKey;
+
+export const supabaseServiceRoleKey = requiredServerEnv(
+  "SUPABASE_SERVICE_ROLE_KEY",
+);
+
+export const mpAppId = requiredServerEnv("MP_APP_ID");
+export const mpClientSecret = requiredServerEnv("MP_CLIENT_SECRET");
+export const mpRedirectUri = requiredServerEnv("MP_REDIRECT_URI");
+export const mpOauthStateSecret = requiredServerEnv("MP_OAUTH_STATE_SECRET");
+
+export const googleMapsApiKey = requiredServerEnv("GOOGLE_MAPS_API_KEY");
+export const googleMapsBaseUrl = requiredServerEnv("GOOGLE_MAPS_BASE_URL");
