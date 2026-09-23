@@ -45,3 +45,13 @@ export class OrderExternalReferenceFormatError extends DomainError {
     this.name = "OrderExternalReferenceFormatError";
   }
 }
+
+export class ShopFlowMismatchError extends DomainError {
+  constructor(shopName: string) {
+    super(
+      `Shop "${shopName}" does not use the dashboard flow`,
+      "SHOP_FLOW_MISMATCH",
+    );
+    this.name = "ShopFlowMismatchError";
+  }
+}

@@ -1,22 +1,39 @@
 import { z } from "zod";
 import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
+import type { OrderFlow } from "@/domain/entities/order-flow.enum";
 import { orderItemSchema } from "@/domain/entities/order-item.schema";
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
-import { PaymentStatus } from "@/domain/entities/payment-status.enum";
 
-export const createOrderRequestDto = z.object({
-  shopId: z.number().int().positive(),
-  externalReference: z.string().min(1),
-  customerName: z.string().min(1),
-  customerPhone: z.string().nullable(),
-  notes: z.string().nullable(),
-  deliveryMethod: z.nativeEnum(DeliveryMethod),
-  address: z.string().nullable(),
-  paymentMethod: z.nativeEnum(PaymentMethod),
-  paymentStatus: z.nativeEnum(PaymentStatus),
-  items: z.array(orderItemSchema),
-  total: z.number().nonnegative(),
-  deliveryCost: z.number().nonnegative(),
-});
+export const createOrderRequestDto = z
+  .object({
+    shopName: z.string().min(1),
+    customerName: z.string().min(1),
+    customerPhone: z.string().min(1).nullable(),
+    notes: z.string().nullable(),
+    deliveryMethod: z.nativeEnum(DeliveryMethod),
+    address: z.string().min(1).nullable(),
+    paymentMethod: z.nativeEnum(PaymentMethod),
+    items: z.array(orderItemSchema),
+    deliveryCost: z.number().nonnegative(),
+  })
+  .superRefine((value, ctx) => {
+    if (
+      value.deliveryMethod === DeliveryMethod.Delivery &&
+      (value.address === null || value.customerPhone === null)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["address"],
+        message: "Address is required for delivery orders",
+      });
+    }
+  });
 
 export type CreateOrderRequestDto = z.infer<typeof createOrderRequestDto>;
+
+export type CreateOrderInput = {
+  readonly shopName: string;
+  readonly orderFlow: OrderFlow;
+  readonly shopId: number;
+  readonly payload: CreateOrderRequestDto;
+};
