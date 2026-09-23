@@ -1,10 +1,7 @@
 "use client";
 
-import { Minus, Plus } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-
 import { useCart } from "../hooks/useCart";
+import { MinusButton, PlusButton } from "./quantity-button";
 
 type AddToCartButtonProps = {
   readonly id: number;
@@ -21,41 +18,38 @@ export function AddToCartButton({
 }: AddToCartButtonProps) {
   const cart = useCart();
   const quantity = cart.getQuantity(id);
+  const addItem = () => cart.addItem({ id, name, price });
+  const removeItem = () => cart.removeItem(id);
 
   if (quantity === 0) {
     return (
-      <Button
+      <button
         type="button"
-        variant="outline"
+        className="border-border rounded-lg border px-4 py-1.5 text-sm font-medium"
         data-testid={`add-to-cart-${id}`}
-        onClick={() => cart.addItem({ id, name, price })}
+        onClick={addItem}
       >
         {label}
-      </Button>
+      </button>
     );
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        type="button"
-        size="icon-sm"
-        data-testid={`remove-from-cart-${id}`}
-        onClick={() => cart.removeItem(id)}
-        aria-label="Remove one"
-      >
-        <Minus className="size-4" />
-      </Button>
+    <div
+      className="flex items-center gap-2"
+      data-testid={`cart-controls-${id}`}
+    >
+      <MinusButton
+        testId={`remove-from-cart-${id}`}
+        label="Remove one"
+        onClick={removeItem}
+      />
       <span data-testid={`cart-quantity-${id}`}>{quantity}</span>
-      <Button
-        type="button"
-        size="icon-sm"
-        data-testid={`add-to-cart-${id}`}
-        onClick={() => cart.addItem({ id, name, price })}
-        aria-label="Add one"
-      >
-        <Plus className="size-4" />
-      </Button>
+      <PlusButton
+        testId={`add-to-cart-${id}`}
+        label="Add one"
+        onClick={addItem}
+      />
     </div>
   );
 }

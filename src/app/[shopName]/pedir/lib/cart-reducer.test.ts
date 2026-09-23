@@ -1,13 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { AccessoryGroup } from "@/domain/entities/accessory-group.entity";
-import type { AccessoryGroupWithOptions } from "@/domain/entities/accessory-group-with-options";
-import { AccessoryOption } from "@/domain/entities/accessory-option.entity";
-import { AccessorySelectionMode } from "@/domain/entities/accessory-selection-mode.enum";
-import { ShopItem } from "@/domain/entities/shop-item.entity";
-import { ShopItemCategory } from "@/domain/entities/shop-item-category.enum";
 
+import type { PlainAccessoryGroup } from "../lib/serialize-catalog";
 import {
   type CartItem,
+  type CartProduct,
   cartReducer,
   getCartTotals,
   getItemQuantity,
@@ -16,44 +12,40 @@ import {
   hasRequiredGroupsMissing,
 } from "./cart-reducer";
 
-const baseProduct = ShopItem.create({
+const baseProduct: CartProduct = {
   id: 1,
-  shopId: 1,
   name: "Pizza",
   price: 1000,
-  category: ShopItemCategory.Pizzas,
-  description: null,
-});
+};
 
-const accessoryProduct = ShopItem.create({
+const singleGroup: PlainAccessoryGroup = {
+  id: 10,
+  name: "Cheese",
+  selectionMode: "single",
+  isRequired: true,
+  options: [
+    { id: 100, name: "Mozzarella", priceDelta: 300, sortOrder: 0 },
+    { id: 101, name: "A", priceDelta: 100, sortOrder: 1 },
+    { id: 102, name: "B", priceDelta: 200, sortOrder: 2 },
+  ],
+};
+
+const multiGroup: PlainAccessoryGroup = {
+  id: 11,
+  name: "Extras",
+  selectionMode: "multi",
+  isRequired: false,
+  options: [
+    { id: 101, name: "A", priceDelta: 100, sortOrder: 0 },
+    { id: 102, name: "B", priceDelta: 200, sortOrder: 1 },
+  ],
+};
+
+const accessoryProduct: CartProduct = {
   id: 2,
-  shopId: 1,
   name: "Burger",
   price: 1000,
-  category: ShopItemCategory.Hamburguesas,
-  description: null,
-  accessoryGroups: [
-    {
-      group: AccessoryGroup.create({
-        id: 10,
-        shopItemId: 2,
-        name: "Cheese",
-        selectionMode: AccessorySelectionMode.Single,
-        isRequired: true,
-        sortOrder: 0,
-      }),
-      options: [
-        AccessoryOption.create({
-          id: 100,
-          groupId: 10,
-          name: "Mozzarella",
-          priceDelta: 300,
-          sortOrder: 0,
-        }),
-      ],
-    },
-  ],
-});
+};
 
 describe("cartReducer", () => {
   it("is empty on first visit", () => {
@@ -63,8 +55,10 @@ describe("cartReducer", () => {
   });
 
   it("does not persist to localStorage or server", () => {
-    const addAction = { type: "ADD_ITEM" as const, product: baseProduct };
-    const state = cartReducer({ items: [] }, addAction);
+    const state = cartReducer(
+      { items: [] },
+      { type: "ADD_ITEM", product: baseProduct },
+    );
 
     expect(state.items).toHaveLength(1);
 
@@ -159,29 +153,6 @@ describe("cartReducer", () => {
   });
 
   it("single-select replaces the previous selection", () => {
-    const optionA = AccessoryOption.create({
-      id: 101,
-      groupId: 10,
-      name: "A",
-      priceDelta: 100,
-      sortOrder: 0,
-    });
-    const optionB = AccessoryOption.create({
-      id: 102,
-      groupId: 10,
-      name: "B",
-      priceDelta: 200,
-      sortOrder: 0,
-    });
-    const group = AccessoryGroup.create({
-      id: 10,
-      shopItemId: 2,
-      name: "Topping",
-      selectionMode: AccessorySelectionMode.Single,
-      isRequired: false,
-      sortOrder: 0,
-    });
-
     const afterA = cartReducer(
       {
         items: [
@@ -191,8 +162,8 @@ describe("cartReducer", () => {
       {
         type: "SET_ACCESSORIES",
         itemId: accessoryProduct.id,
-        group,
-        selectedOptions: [optionA],
+        group: singleGroup,
+        selectedOptions: [singleGroup.options[1]],
       },
     );
 
@@ -202,8 +173,8 @@ describe("cartReducer", () => {
     const afterB = cartReducer(afterA, {
       type: "SET_ACCESSORIES",
       itemId: accessoryProduct.id,
-      group,
-      selectedOptions: [optionB],
+      group: singleGroup,
+      selectedOptions: [singleGroup.options[2]],
     });
 
     expect(afterB.items[0]?.selectedAccessories).toHaveLength(1);
@@ -211,29 +182,6 @@ describe("cartReducer", () => {
   });
 
   it("multi-select toggles options", () => {
-    const optionA = AccessoryOption.create({
-      id: 101,
-      groupId: 11,
-      name: "A",
-      priceDelta: 100,
-      sortOrder: 0,
-    });
-    const optionB = AccessoryOption.create({
-      id: 102,
-      groupId: 11,
-      name: "B",
-      priceDelta: 200,
-      sortOrder: 0,
-    });
-    const group = AccessoryGroup.create({
-      id: 11,
-      shopItemId: 2,
-      name: "Extras",
-      selectionMode: AccessorySelectionMode.Multi,
-      isRequired: false,
-      sortOrder: 0,
-    });
-
     const afterA = cartReducer(
       {
         items: [
@@ -243,21 +191,21 @@ describe("cartReducer", () => {
       {
         type: "SET_ACCESSORIES",
         itemId: accessoryProduct.id,
-        group,
-        selectedOptions: [optionA],
+        group: multiGroup,
+        selectedOptions: [multiGroup.options[0]],
       },
     );
     const afterB = cartReducer(afterA, {
       type: "SET_ACCESSORIES",
       itemId: accessoryProduct.id,
-      group,
-      selectedOptions: [optionA, optionB],
+      group: multiGroup,
+      selectedOptions: multiGroup.options,
     });
     const afterToggleA = cartReducer(afterB, {
       type: "SET_ACCESSORIES",
       itemId: accessoryProduct.id,
-      group,
-      selectedOptions: [optionB],
+      group: multiGroup,
+      selectedOptions: [multiGroup.options[1]],
     });
 
     expect(afterToggleA.items[0]?.selectedAccessories).toHaveLength(1);
@@ -271,31 +219,10 @@ describe("cartReducer", () => {
       selectedAccessories: [],
     };
 
-    expect(
-      hasRequiredGroupsMissing(
-        cartItem,
-        accessoryProduct.toObject().accessoryGroups ?? [],
-      ),
-    ).toBe(true);
+    expect(hasRequiredGroupsMissing(cartItem, [singleGroup])).toBe(true);
   });
 
   it("required group allows continuation when selected", () => {
-    const option = AccessoryOption.create({
-      id: 100,
-      groupId: 10,
-      name: "Mozzarella",
-      priceDelta: 300,
-      sortOrder: 0,
-    });
-    const group = AccessoryGroup.create({
-      id: 10,
-      shopItemId: 2,
-      name: "Cheese",
-      selectionMode: AccessorySelectionMode.Single,
-      isRequired: true,
-      sortOrder: 0,
-    });
-
     const state = cartReducer(
       {
         items: [
@@ -305,39 +232,37 @@ describe("cartReducer", () => {
       {
         type: "SET_ACCESSORIES",
         itemId: accessoryProduct.id,
-        group,
-        selectedOptions: [option],
+        group: singleGroup,
+        selectedOptions: [singleGroup.options[0]],
       },
     );
 
     const updatedItem = state.items[0];
 
     expect(updatedItem).toBeDefined();
-    expect(
-      hasRequiredGroupsMissing(
-        updatedItem,
-        accessoryProduct.toObject().accessoryGroups ?? [],
-      ),
-    ).toBe(false);
+    expect(hasRequiredGroupsMissing(updatedItem, [singleGroup])).toBe(false);
   });
 
   it("detects items with accessories", () => {
-    const map = new Map<number, readonly AccessoryGroupWithOptions[]>();
-
-    map.set(
-      accessoryProduct.id,
-      accessoryProduct.toObject().accessoryGroups ?? [],
-    );
+    const map = new Map<number, readonly PlainAccessoryGroup[]>([
+      [accessoryProduct.id, [singleGroup]],
+    ]);
 
     expect(
       hasItemsWithAccessories(
-        [{ product: accessoryProduct, quantity: 1, selectedAccessories: [] }],
+        [
+          {
+            product: accessoryProduct,
+            quantity: 1,
+            selectedAccessories: [],
+          },
+        ],
         map,
       ),
     ).toBe(true);
   });
 
   it("returns zero quantity for an absent item", () => {
-    expect(getItemQuantity([], 999)).toBe(0);
+    expect(getItemQuantity([], baseProduct.id)).toBe(0);
   });
 });

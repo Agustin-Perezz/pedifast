@@ -1,0 +1,52 @@
+"use client";
+
+type CheckoutSummaryProps = {
+  readonly itemsTotal: number;
+  readonly deliveryCost: number | null;
+};
+
+export function CheckoutSummary({
+  itemsTotal,
+  deliveryCost,
+}: CheckoutSummaryProps) {
+  const total = itemsTotal + (deliveryCost ?? 0);
+
+  return (
+    <div className="space-y-1 border-t pt-3" data-testid="checkout-summary">
+      <SummaryRow
+        label="Productos"
+        value={`$${itemsTotal.toLocaleString("es-AR")}`}
+      />
+      {deliveryCost !== null && (
+        <SummaryRow
+          label="Envío"
+          value={`$${deliveryCost.toLocaleString("es-AR")}`}
+        />
+      )}
+      <SummaryRow
+        label="Total"
+        value={`$${total.toLocaleString("es-AR")}`}
+        emphasized
+      />
+    </div>
+  );
+}
+
+function SummaryRow({
+  label,
+  value,
+  emphasized = false,
+}: {
+  readonly label: string;
+  readonly value: string;
+  readonly emphasized?: boolean;
+}) {
+  return (
+    <div className="flex justify-between">
+      <span className={emphasized ? "font-semibold" : "text-zinc-500"}>
+        {label}
+      </span>
+      <span className={emphasized ? "font-semibold" : ""}>{value}</span>
+    </div>
+  );
+}

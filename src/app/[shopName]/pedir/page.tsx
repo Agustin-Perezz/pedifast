@@ -49,7 +49,10 @@ export default async function ShopCatalogPage({
         <ProductGrid groups={groups} shopName={shopName} />
       </main>
       <CartBottomBar />
-      <CheckoutOverlay shop={serializeShop(catalog.shop, shopName)} />
+      <CheckoutOverlay
+        shop={serializeShop(catalog.shop, shopName)}
+        items={groups.flatMap((group) => group.products)}
+      />
     </CheckoutOpenProvider>
   );
 }

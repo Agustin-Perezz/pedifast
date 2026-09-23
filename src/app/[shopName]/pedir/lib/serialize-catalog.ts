@@ -1,5 +1,20 @@
 import type { CatalogItem } from "@/application/use-cases/get-shop-catalog/get-shop-catalog.response.dto";
 
+export type PlainAccessoryOption = {
+  readonly id: number;
+  readonly name: string;
+  readonly priceDelta: number;
+  readonly sortOrder: number;
+};
+
+export type PlainAccessoryGroup = {
+  readonly id: number;
+  readonly name: string;
+  readonly selectionMode: "single" | "multi";
+  readonly isRequired: boolean;
+  readonly options: readonly PlainAccessoryOption[];
+};
+
 export type PlainShopItem = {
   readonly id: number;
   readonly name: string;
@@ -7,7 +22,7 @@ export type PlainShopItem = {
   readonly category: string;
   readonly images: readonly string[];
   readonly description: string | null;
-  readonly hasAccessoryGroups: boolean;
+  readonly accessoryGroups: readonly PlainAccessoryGroup[];
 };
 
 export type PlainCategoryGroup = {
@@ -41,7 +56,7 @@ export function serializeCategoryGroups({
       category: item.category,
       images: item.images,
       description: item.description,
-      hasAccessoryGroups: catalogItem.accessoryGroups.length > 0,
+      accessoryGroups: catalogItem.accessoryGroups.map(serializeGroup),
     };
     const list = byCategory.get(item.category) ?? [];
     list.push(plain);
@@ -56,4 +71,29 @@ export function serializeCategoryGroups({
       emoji: categoryEmojis[key],
       products: byCategory.get(key) ?? [],
     }));
+}
+
+function serializeGroup(groupWithOptions: {
+  readonly group: {
+    readonly id: number;
+    readonly name: string;
+    readonly selectionMode: "single" | "multi";
+    readonly isRequired: boolean;
+  };
+  readonly options: readonly {
+    readonly id: number;
+    readonly name: string;
+    readonly priceDelta: number;
+    readonly sortOrder: number;
+  }[];
+}): PlainAccessoryGroup {
+  return {
+    id: groupWithOptions.group.id,
+    name: groupWithOptions.group.name,
+    selectionMode: groupWithOptions.group.selectionMode,
+    isRequired: groupWithOptions.group.isRequired,
+    options: [...groupWithOptions.options].sort(
+      (a, b) => a.sortOrder - b.sortOrder,
+    ),
+  };
 }

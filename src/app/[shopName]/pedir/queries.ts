@@ -1,8 +1,14 @@
 import { ShopNotFoundError } from "@/domain/entities/errors";
+import type { OrderFlow } from "@/domain/entities/order-flow.enum";
 import { createCatalogContainer } from "@/lib/containers/catalog.container";
 import { createSupabaseServerClient } from "@/lib/shared/infrastructure/supabase.server";
 
 type GetShopCatalogResult = Awaited<ReturnType<typeof fetchCatalog>>;
+
+type ShopOrderFlow = {
+  readonly shopId: number;
+  readonly orderFlow: OrderFlow;
+};
 
 async function fetchCatalog(shopName: string) {
   const supabase = await createSupabaseServerClient();
@@ -22,4 +28,16 @@ export async function getShopCatalog(
     }
     throw error;
   }
+}
+
+export async function getShopOrderFlow(
+  shopName: string,
+): Promise<ShopOrderFlow | null> {
+  const { catalog } = await getShopCatalog(shopName);
+
+  if (!catalog) {
+    return null;
+  }
+
+  return { shopId: catalog.shop.id, orderFlow: catalog.shop.orderFlow };
 }

@@ -1,82 +1,61 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import type { AccessoryGroupWithOptions } from "@/domain/entities/accessory-group-with-options";
 import { useCart } from "../hooks/useCart";
 import { useCheckoutOpen } from "../hooks/useCheckoutOpen";
 import { useMediaQuery } from "../hooks/useMediaQuery";
+import type { PlainShopItem } from "../lib/serialize-catalog";
 import type { PlainShop } from "../lib/serialize-shop";
-
 import { AccessoryStep } from "./AccessoryStep";
 import { CheckoutFormStep } from "./CheckoutFormStep";
+import { CheckoutDesktopShell } from "./checkout/checkout-desktop-shell";
+import { CheckoutMobileShell } from "./checkout/checkout-mobile-shell";
+
+const DESKTOP_QUERY = "(min-width: 768px)";
 
 type CheckoutOverlayProps = {
   readonly shop: PlainShop;
+  readonly items: readonly PlainShopItem[];
 };
 
-export function CheckoutOverlay({ shop }: CheckoutOverlayProps) {
+export function CheckoutOverlay({ shop, items }: CheckoutOverlayProps) {
   const { isOpen, closeCheckout } = useCheckoutOpen();
   const cart = useCart();
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-  const accessoryGroupsByItemId = useAccessoryGroupsByItemId(cart.items);
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  const groupsByItemId = useGroupsByItemId(items);
   const [step, setStep] = useState<"accessories" | "checkout">(() =>
-    cart.hasItemsWithAccessories(accessoryGroupsByItemId)
-      ? "accessories"
-      : "checkout",
+    cart.hasItemsWithAccessories(groupsByItemId) ? "accessories" : "checkout",
   );
 
-  const content = (
-    <>
-      {step === "accessories" ? (
-        <AccessoryStep shop={shop} onContinue={() => setStep("checkout")} />
-      ) : (
-        <CheckoutFormStep shop={shop} />
-      )}
-    </>
-  );
+  const content =
+    step === "accessories" ? (
+      <AccessoryStep items={items} onContinue={() => setStep("checkout")} />
+    ) : (
+      <CheckoutFormStep shop={shop} />
+    );
 
   return isDesktop ? (
-    <Dialog open={isOpen} onOpenChange={closeCheckout}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Confirm order</DialogTitle>
-        </DialogHeader>
-        {content}
-      </DialogContent>
-    </Dialog>
+    <CheckoutDesktopShell open={isOpen} onOpenChange={closeCheckout}>
+      {content}
+    </CheckoutDesktopShell>
   ) : (
-    <Sheet open={isOpen} onOpenChange={closeCheckout}>
-      <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>Confirm order</SheetTitle>
-        </SheetHeader>
-        {content}
-      </SheetContent>
-    </Sheet>
+    <CheckoutMobileShell open={isOpen} onOpenChange={closeCheckout}>
+      {content}
+    </CheckoutMobileShell>
   );
 }
 
-function useAccessoryGroupsByItemId(
-  items: ReturnType<typeof useCart>["items"],
-): ReadonlyMap<number, readonly AccessoryGroupWithOptions[]> {
+function useGroupsByItemId(items: readonly PlainShopItem[]) {
   return useMemo(() => {
-    const map = new Map<number, readonly AccessoryGroupWithOptions[]>();
+    const map = new Map<
+      number,
+      readonly (typeof items)[number]["accessoryGroups"][number][]
+    >();
 
     for (const item of items) {
-      // Accessory group configuration arrives via catalog data in Phase 3 checkout wiring.
-      map.set(item.product.id, []);
+      if (item.accessoryGroups.length > 0) {
+        map.set(item.id, item.accessoryGroups);
+      }
     }
 
     return map;

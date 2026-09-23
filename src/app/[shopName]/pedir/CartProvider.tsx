@@ -7,10 +7,6 @@ import {
   useMemo,
   useReducer,
 } from "react";
-
-import type { AccessoryGroupWithOptions } from "@/domain/entities/accessory-group-with-options";
-import type { AccessoryOption } from "@/domain/entities/accessory-option.entity";
-
 import {
   type CartItem,
   type CartProduct,
@@ -20,10 +16,14 @@ import {
   hasItemsWithAccessories,
   hasRequiredGroupsMissing,
 } from "./lib/cart-reducer";
+import type {
+  PlainAccessoryGroup,
+  PlainAccessoryOption,
+} from "./lib/serialize-catalog";
 
 const EMPTY_CART = { items: [] };
 
-type CartContextValue = {
+export type CartContextValue = {
   readonly items: readonly CartItem[];
   readonly totalItems: number;
   readonly totalPrice: number;
@@ -31,21 +31,21 @@ type CartContextValue = {
   readonly hasItemsWithAccessories: (
     accessoryGroupsByItemId: ReadonlyMap<
       number,
-      readonly AccessoryGroupWithOptions[]
+      readonly PlainAccessoryGroup[]
     >,
   ) => boolean;
   readonly addItem: (product: CartProduct) => void;
   readonly removeItem: (itemId: number) => void;
   readonly setAccessories: (
     itemId: number,
-    group: AccessoryGroupWithOptions["group"],
-    selectedOptions: readonly AccessoryOption[],
+    group: PlainAccessoryGroup,
+    selectedOptions: readonly PlainAccessoryOption[],
   ) => void;
   readonly clearCart: () => void;
   readonly getQuantity: (itemId: number) => number;
   readonly hasMissingRequiredGroups: (
     itemId: number,
-    accessoryGroups: readonly AccessoryGroupWithOptions[],
+    accessoryGroups: readonly PlainAccessoryGroup[],
   ) => boolean;
 };
 
@@ -62,8 +62,8 @@ const removeItemAction = (itemId: number) => ({
 const clearCartAction = () => ({ type: "CLEAR_CART" as const });
 const setAccessoriesAction = (
   itemId: number,
-  group: AccessoryGroupWithOptions["group"],
-  selectedOptions: readonly AccessoryOption[],
+  group: PlainAccessoryGroup,
+  selectedOptions: readonly PlainAccessoryOption[],
 ) => ({
   type: "SET_ACCESSORIES" as const,
   itemId,
@@ -101,8 +101,8 @@ export function CartProvider({
   const setAccessories = useCallback(
     (
       itemId: number,
-      group: AccessoryGroupWithOptions["group"],
-      selectedOptions: readonly AccessoryOption[],
+      group: PlainAccessoryGroup,
+      selectedOptions: readonly PlainAccessoryOption[],
     ) => dispatch(setAccessoriesAction(itemId, group, selectedOptions)),
     [],
   );
@@ -113,7 +113,7 @@ export function CartProvider({
   );
 
   const hasMissingRequiredGroups = useCallback(
-    (itemId: number, accessoryGroups: readonly AccessoryGroupWithOptions[]) => {
+    (itemId: number, accessoryGroups: readonly PlainAccessoryGroup[]) => {
       const item = findItem(itemId);
       return item ? hasRequiredGroupsMissing(item, accessoryGroups) : false;
     },
@@ -129,7 +129,7 @@ export function CartProvider({
       hasItemsWithAccessories: (
         accessoryGroupsByItemId: ReadonlyMap<
           number,
-          readonly AccessoryGroupWithOptions[]
+          readonly PlainAccessoryGroup[]
         >,
       ) => hasItemsWithAccessories(state.items, accessoryGroupsByItemId),
       addItem,

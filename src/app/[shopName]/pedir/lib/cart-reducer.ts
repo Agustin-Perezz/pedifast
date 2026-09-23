@@ -1,6 +1,7 @@
-import type { AccessoryGroupWithOptions } from "@/domain/entities/accessory-group-with-options";
-import type { AccessoryOption } from "@/domain/entities/accessory-option.entity";
-import { AccessorySelectionMode } from "@/domain/entities/accessory-selection-mode.enum";
+import type {
+  PlainAccessoryGroup,
+  PlainAccessoryOption,
+} from "../lib/serialize-catalog";
 
 export type CartProduct = {
   readonly id: number;
@@ -31,10 +32,12 @@ export type CartAction =
   | {
       type: "SET_ACCESSORIES";
       itemId: number;
-      group: AccessoryGroupWithOptions["group"];
-      selectedOptions: readonly AccessoryOption[];
+      group: PlainAccessoryGroup;
+      selectedOptions: readonly PlainAccessoryOption[];
     }
   | { type: "CLEAR_CART" };
+
+const SINGLE_SELECTION_MODE = "single";
 
 export function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
@@ -112,7 +115,7 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
       const nextAccessories =
         action.selectedOptions.length === 0
           ? keep
-          : action.group.selectionMode === AccessorySelectionMode.Single
+          : action.group.selectionMode === SINGLE_SELECTION_MODE
             ? [
                 ...keep,
                 ...action.selectedOptions.map((option) =>
@@ -144,7 +147,7 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
 
 function toCartItemAccessory(
   groupId: number,
-  option: AccessoryOption,
+  option: PlainAccessoryOption,
 ): CartItemAccessory {
   return {
     optionId: option.id,
@@ -157,7 +160,7 @@ function toCartItemAccessory(
 function toggleAccessory(
   accessories: readonly CartItemAccessory[],
   groupId: number,
-  option: AccessoryOption,
+  option: PlainAccessoryOption,
 ): readonly CartItemAccessory[] {
   const index = accessories.findIndex(
     (accessory) =>
@@ -210,23 +213,20 @@ export function getItemQuantity(
 
 export function hasRequiredGroupsMissing(
   item: CartItem,
-  accessoryGroups: readonly AccessoryGroupWithOptions[],
+  accessoryGroups: readonly PlainAccessoryGroup[],
 ): boolean {
   return accessoryGroups.some(
-    (groupWithOptions) =>
-      groupWithOptions.group.isRequired &&
+    (group) =>
+      group.isRequired &&
       !item.selectedAccessories.some(
-        (accessory) => accessory.groupId === groupWithOptions.group.id,
+        (accessory) => accessory.groupId === group.id,
       ),
   );
 }
 
 export function hasItemsWithAccessories(
   items: readonly CartItem[],
-  accessoryGroupsByItemId: ReadonlyMap<
-    number,
-    readonly AccessoryGroupWithOptions[]
-  >,
+  accessoryGroupsByItemId: ReadonlyMap<number, readonly PlainAccessoryGroup[]>,
 ): boolean {
   return items.some(
     (item) => (accessoryGroupsByItemId.get(item.product.id)?.length ?? 0) > 0,
