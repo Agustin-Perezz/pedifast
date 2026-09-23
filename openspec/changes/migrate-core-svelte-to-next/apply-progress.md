@@ -91,12 +91,56 @@ Standard (strict_tdd: false per openspec/config.yaml).
 - Entity schema IDs were initially `positive()`, which rejected the `0` default used by domain factories. Switched to `nonnegative()` to keep parity with the existing `Book` pattern.
 - The `Order` domain entity's `items` accessor returns a readonly array, but the `OrderInput` type expects a mutable array. Test helpers now copy arrays before passing them to `Order.create`.
 
+## Phase 3a — Geocode + delivery-cost use cases and Google adapters
+
+- [x] 3.1 Added `src/application/use-cases/geocode-address/` and `src/application/use-cases/calculate-delivery-cost/` 4-file folders. Application-layer ports: `GeocodeProvider` and `DistanceMatrixProvider` live in the use-case repository.interface files.
+- [x] 3.2 Added `GoogleGeocodeService` in `src/infrastructure/geo/`; validation for missing address via request DTO → `InvalidOrderError`; query builds `{address}, {city|Esperanza}, {province|Santa Fe}, Argentina` with `components=country:AR` and `language=es`; not-found → `AddressNotFoundError`; upstream failure → `UpstreamGeoError`. Unit tests with mocked fetch cover default city/province, explicit city/province, address not found, and HTTP failure.
+- [x] 3.3 Added `GoogleDistanceMatrixService` in `src/infrastructure/geo/`; driving mode; missing origin/destination and non-positive `pricePerKm` are rejected by `CalculateDeliveryCostUseCase` request DTO; no route → `NoRouteFoundError`; `shippingCost = round(distanceKm * pricePerKm)`; unit tests cover the 3.2 km × 500 = 1600 scenario and no route.
+- [x] 3.4 Added `src/lib/containers/checkout.container.ts` wiring `GeocodeAddressUseCase` and `CalculateDeliveryCostUseCase` to the Google adapters, constructed at call time. No route handlers, no Leaflet map picker. Server actions using these use cases will be implemented in the next checkout slice (3.10/3.11).
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused test command and exact result | `pnpm test:unit` → exit 0; Test Files 21 passed, Tests 73 passed (includes geocode/delivery-cost use-case tests and Google adapter tests) |
+| Runtime harness command/scenario | `pnpm build` exits 0. No live Google calls in tests — all adapters are tested with a stubbed `Fetcher`. |
+| Rollback boundary | Revert commit `26f54de` (or delete `src/application/use-cases/{geocode-address,calculate-delivery-cost}/`, `src/domain/entities/{address-not-found,no-route-found,upstream-geo}.error.ts`, `src/infrastructure/geo/`, `src/lib/containers/checkout.container.ts`). Checkout UI and server actions are not yet wired to this container, so removing these files leaves the app runnable. |
+
+## Verification Results
+
+| Command | Result |
+|---|---|
+| `pnpm typecheck` | exit 0; TypeScript: No errors found |
+| `pnpm lint` | exit 0; Checked 240 files. No fixes applied |
+| `pnpm test:unit` | exit 0; Test Files 21 passed, Tests 73 passed |
+| `pnpm build` | exit 0; build completed successfully |
+
+## Git State
+
+- Branch: `feat/migrate-core-svelte-to-next` (tracker branch)
+- Phase 3a commit: `26f54de` — `Add geocode and delivery-cost use cases with Google adapters, provider interfaces, checkout container and unit tests`
+- Authored diff: 20 files, 670 insertions(+), 4 deletions(-)
+
+## Deviations from Design
+
+- The design originally placed interfaces in `src/application/use-cases/geocode/interfaces.ts` and `src/application/use-cases/delivery/interfaces.ts`. We followed the repository's 4-file folder contract and placed `GeocodeProvider` / `DistanceMatrixProvider` in the respective use-case `repository.interface.ts` files, which keeps the port with the consumer as per `src/application/use-cases/AGENTS.md`.
+- `3.2 km × 500 = 1600` is verified at the use-case layer (where `pricePerKm` is applied). The distance adapter returns raw `distanceMeters`/`distanceKm`; the use case owns the cost calculation.
+
+## Issues Found
+
+- `vi.mock` with top-level variables caused `ReferenceError: Cannot access 'fakeApiKey' before initialization` because Vitest hoists the mock factory. Fixed by inlining the mock values inside the factory.
+- Initial `Fetcher` type alias lacked a mock shape for inspecting calls; added a cast to `{ mock: { calls: unknown[][] } }` in tests rather than widening the production type.
+
 ## Remaining Tasks
 
-- [ ] 2.1 Add `GetShopCatalog` use case returning shop metadata + products + nested accessory groups/options
-- [ ] 2.2 Create catalog pages and components
-- [ ] 2.3–2.10 Catalog + cart UI and E2E tests
-- [ ] 3.1–3.12 Checkout, geocode, delivery-cost, order submission
+- [ ] 3.5 Add `use-cases/create-order/` 4-file folder; validate per `checkout-order-submission` requirement "Checkout form validation"
+- [ ] 3.6 RED unit — form-validation scenarios "Delivery requires an address", "Dashboard flow requires a phone number", "WhatsApp flow allows omitted phone"
+- [ ] 3.7 RED unit — payment-status derivation
+- [ ] 3.8 Add `use-cases/create-order/` dashboard ordering logic
+- [ ] 3.9 RED unit + production — external reference format
+- [ ] 3.10 Build 2-step checkout overlay
+- [ ] 3.11 Wire checkout server action
+- [ ] 3.12 RED E2E — `tests/checkout.test.ts` (deferred to end of migration per user instruction)
 - [ ] 4.1–4.11 Panel auth, SSE, confirm/reject, ticket
 - [ ] 5.1–5.9 MP integration + receipt
 - [ ] 6.1–6.8 Security headers, cleanup, books deletion, full regression
@@ -105,10 +149,10 @@ Standard (strict_tdd: false per openspec/config.yaml).
 
 - Strategy: feature-branch-chain
 - Tracker branch: `feat/migrate-core-svelte-to-next`
-- PR slice: PR 1c — Phase 1c only (tasks 1.9–1.13)
-- PR base: `feat/migrate-core-svelte-to-next` (tracker branch)
-- Review budget impact: This Phase 1c slice is large and will exceed the 400-line PR budget. Per the binding decision, `size:exception` is accepted for large pure-infrastructure slices like this one; implement the full phase honestly and report the authored line count.
+- PR slice: PR 3a — Phase 3a only (tasks 3.1–3.4)
+- PR base: previous PR branch (Phase 2) per feature-branch-chain; currently stacked on `feat/migrate-core-svelte-to-next` since prior PRs are not yet retargeted.
+- Review budget impact: 666 authored insertions over 19 new files (4 deletions are tasks.md checkbox updates). This exceeds the 400-line budget. The slice is a cohesive infrastructure unit (ports + adapters + tests + container) that cannot be split further without breaking compile/test autonomy; recommend `size:exception`.
 
 ## Next Recommended
 
-`sdd-apply` Phase 2 (tasks 2.1–2.10) or `sdd-archive` after the maintainer accepts the PR chain state.
+`sdd-apply` Phase 3b (tasks 3.5–3.11) — checkout form validation, `CreateOrderUseCase`, checkout overlay and server-action wiring.
