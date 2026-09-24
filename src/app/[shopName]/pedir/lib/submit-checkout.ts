@@ -9,7 +9,7 @@ import { persistPendingWhatsappOrder } from "./order-storage";
 import type { PlainShop } from "./serialize-shop";
 import { buildWhatsappMessage, type PendingWhatsappOrder } from "./whatsapp";
 
-const MP_INIT_POINT_TODO = "/pedido/{externalReference}";
+const MP_PREFERENCE_API = "/api/mp/preference";
 
 type CheckoutFormSubmission = {
   readonly nombre: string;
@@ -84,7 +84,7 @@ async function submitWhatsappOrder(
   });
 
   cart.clearCart();
-  window.location.href = buildReceiptUrl(externalReference, form.paymentMethod);
+  await redirectToPaymentOrReceipt(externalReference, form, cart);
 
   return { error: null };
 }
@@ -114,10 +114,7 @@ async function submitDashboardOrder(
   }
 
   cart.clearCart();
-  window.location.href = buildReceiptUrl(
-    result.externalReference,
-    form.paymentMethod,
-  );
+  await redirectToPaymentOrReceipt(result.externalReference, form, cart);
 
   return { error: null };
 }
@@ -142,15 +139,42 @@ function serializeCartItems(cart: CartContextValue): readonly {
   }));
 }
 
-function buildReceiptUrl(
+async function redirectToPaymentOrReceipt(
   externalReference: string,
-  paymentMethod: PaymentMethod,
-): string {
-  if (paymentMethod === PaymentMethod.Efectivo) {
-    return `/pedido/${externalReference}?status=efectivo`;
+  form: CheckoutFormSubmission,
+  cart: CartContextValue,
+): Promise<void> {
+  if (form.paymentMethod === PaymentMethod.Efectivo) {
+    window.location.href = `/pedido/${externalReference}?status=efectivo`;
+    return;
   }
 
-  return MP_INIT_POINT_TODO.replace("{externalReference}", externalReference);
+  const response = await fetch(MP_PREFERENCE_API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      shopName: externalReference.slice(0, externalReference.lastIndexOf("-")),
+      nombre: form.nombre,
+      notas: form.notas,
+      deliveryMethod: form.deliveryMethod,
+      address: form.address,
+      items: serializeCartItems(cart).map((item) => ({
+        title: item.name,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        currencyId: "ARS",
+      })),
+      baseUrl: window.location.origin,
+    }),
+  });
+
+  if (!response.ok) {
+    window.location.href = `/pedido/${externalReference}?status=pending`;
+    return;
+  }
+
+  const preference: { initPoint: string } = await response.json();
+  window.location.href = preference.initPoint;
 }
 
 export function buildPendingWhatsappMessage(
