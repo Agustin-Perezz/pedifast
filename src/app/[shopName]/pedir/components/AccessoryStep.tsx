@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 
 import { useCart } from "../hooks/useCart";
 import type { PlainShopItem } from "../lib/serialize-catalog";
-import { AccessoryGroupSection } from "./AccessoryGroupSection";
 import { AccessoryStepItem } from "./accessory-groups/accessory-step-item";
 
 type AccessoryStepProps = {
