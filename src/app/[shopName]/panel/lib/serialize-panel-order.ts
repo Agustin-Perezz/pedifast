@@ -9,6 +9,7 @@ export type PlainPanelItem = {
 
 export type PlainPanelOrder = {
   readonly id: number;
+  readonly externalReference: string;
   readonly customerName: string;
   readonly customerPhone: string | null;
   readonly notes: string | null;
@@ -24,6 +25,7 @@ export type PlainPanelOrder = {
 export function serializePanelOrder(order: Order): PlainPanelOrder {
   return {
     id: order.id,
+    externalReference: order.externalReference,
     customerName: order.customerName,
     customerPhone: order.customerPhone,
     notes: order.notes,

@@ -1,7 +1,7 @@
 import { OrderStatus } from "@/domain/entities/order-status.enum";
 import { requirePanelSession } from "@/lib/shared/infrastructure/panel-auth.server";
 
-import { PanelOrderLists } from "./components/PanelOrderLists";
+import { PanelOrdersLive } from "./components/PanelOrdersLive";
 import { PanelShell } from "./components/PanelShell";
 import { serializePanelOrder } from "./lib/serialize-panel-order";
 import { listShopOrders } from "./queries";
@@ -24,10 +24,11 @@ export default async function PanelPage({
 
   return (
     <PanelShell shopName={shopName}>
-      <PanelOrderLists
+      <PanelOrdersLive
         shopName={shopName}
-        pending={pending}
-        confirmed={confirmed}
+        shopId={session.shopId}
+        initialPending={pending}
+        initialConfirmed={confirmed}
       />
     </PanelShell>
   );

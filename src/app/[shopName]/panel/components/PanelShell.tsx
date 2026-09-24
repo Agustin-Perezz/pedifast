@@ -5,7 +5,7 @@ type PanelShellProps = {
 
 export function PanelShell({ children }: PanelShellProps) {
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="min-h-screen bg-zinc-50 print:hidden">
       <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white px-4 py-4">
         <div className="mx-auto flex max-w-2xl items-center justify-between">
           <h1 className="text-lg font-semibold text-zinc-950">

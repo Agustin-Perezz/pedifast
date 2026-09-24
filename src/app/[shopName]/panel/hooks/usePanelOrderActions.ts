@@ -1,42 +1,35 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useState } from "react";
 import { confirmOrderAction, rejectOrderAction } from "../actions";
 import type { PlainPanelOrder } from "../lib/serialize-panel-order";
 
+type PanelActionResult =
+  | { ok: true; whatsappUrl: string | null }
+  | { ok: false; error: string };
+
+type PanelAction = (input: {
+  readonly shopName: string;
+  readonly orderId: number;
+}) => Promise<PanelActionResult>;
+
 export function usePanelOrderActions(shopName: string) {
-  const router = useRouter();
   const [isBusy, setIsBusy] = useState(false);
-  const [, startTransition] = useTransition();
 
   const runAction = useCallback(
-    async (
-      action: (input: {
-        readonly shopName: string;
-        readonly orderId: number;
-      }) => Promise<
-        { ok: true; whatsappUrl: string | null } | { ok: false; error: string }
-      >,
-      order: PlainPanelOrder,
-    ) => {
+    async (action: PanelAction, order: PlainPanelOrder) => {
       setIsBusy(true);
       try {
         const result = await action({ shopName, orderId: order.id });
 
-        if (result.ok) {
-          if (result.whatsappUrl) {
-            window.open(result.whatsappUrl, "_blank");
-          }
-          startTransition(() => {
-            router.refresh();
-          });
+        if (result.ok && result.whatsappUrl) {
+          window.open(result.whatsappUrl, "_blank");
         }
       } finally {
         setIsBusy(false);
       }
     },
-    [shopName, router],
+    [shopName],
   );
 
   const confirm = useCallback(

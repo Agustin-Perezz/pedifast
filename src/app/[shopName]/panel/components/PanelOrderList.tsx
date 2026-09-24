@@ -9,6 +9,7 @@ type PanelOrderListProps = {
   readonly title: string;
   readonly orders: readonly PlainPanelOrder[];
   readonly variant: PanelOrderListVariant;
+  readonly onPrint?: (order: PlainPanelOrder) => void;
 };
 
 export function PanelOrderList({
@@ -16,6 +17,7 @@ export function PanelOrderList({
   title,
   orders,
   variant,
+  onPrint,
 }: PanelOrderListProps) {
   if (orders.length === 0) {
     return null;
@@ -33,6 +35,7 @@ export function PanelOrderList({
             shopName={shopName}
             order={order}
             variant={variant}
+            onPrint={onPrint}
           />
         ))}
       </div>

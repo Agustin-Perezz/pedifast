@@ -11,12 +11,14 @@ type PanelOrderCardProps = {
   readonly shopName: string;
   readonly order: PlainPanelOrder;
   readonly variant: PanelOrderCardVariant;
+  readonly onPrint?: (order: PlainPanelOrder) => void;
 };
 
 export function PanelOrderCard({
   shopName,
   order,
   variant,
+  onPrint,
 }: PanelOrderCardProps) {
   const { confirm, reject, isBusy } = usePanelOrderActions(shopName);
 
@@ -35,7 +37,7 @@ export function PanelOrderCard({
           <RejectButton onClick={() => reject(order)} disabled={isBusy} />
         </div>
       ) : (
-        <PrintButton />
+        <PrintButton onClick={() => onPrint?.(order)} />
       )}
     </div>
   );

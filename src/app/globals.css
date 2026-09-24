@@ -128,3 +128,21 @@
     @apply font-sans;
   }
 }
+
+/* Print: only the panel ticket is visible on paper (same technique as the old app). */
+@media print {
+  body * {
+    /* biome-ignore lint/complexity/noImportantStyles: print isolation must beat utility-class visibility. */
+    visibility: hidden !important;
+  }
+
+  [data-print-ticket],
+  [data-print-ticket] * {
+    /* biome-ignore lint/complexity/noImportantStyles: see body rule above. */
+    visibility: visible !important;
+  }
+
+  @page {
+    margin: 0;
+  }
+}

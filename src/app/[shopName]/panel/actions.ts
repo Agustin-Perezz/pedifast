@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { panelLoginRequestDto } from "@/application/use-cases/panel-auth/panel-auth.request.dto";
@@ -83,8 +82,6 @@ export async function confirmOrderAction({
     shopId: session.shopId,
   });
 
-  revalidatePath(`/${shopName}/panel`);
-
   return {
     ok: true,
     whatsappUrl: buildOrderConfirmationWhatsappUrl(result.order),
@@ -102,8 +99,6 @@ export async function rejectOrderAction({
     orderId,
     shopId: session.shopId,
   });
-
-  revalidatePath(`/${shopName}/panel`);
 
   return { ok: true, whatsappUrl: null };
 }
