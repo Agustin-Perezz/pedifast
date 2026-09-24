@@ -28,6 +28,8 @@ const DELIVERY_LABEL = "Envío a domicilio";
 const CASH_LABEL = "Efectivo";
 const MP_LABEL = "MercadoPago ✅";
 
+export { buildWhatsappUrl } from "@/lib/utils/whatsapp";
+
 export function buildWhatsappMessage(order: PendingWhatsappOrder): string {
   const deliveryLabel =
     order.deliveryMethod === "pickup" ? PICKUP_LABEL : DELIVERY_LABEL;
@@ -67,10 +69,4 @@ export function buildWhatsappMessage(order: PendingWhatsappOrder): string {
   }
 
   return lines.join("\n");
-}
-
-export function buildWhatsappUrl(phone: string, message: string): string {
-  const sanitizedPhone = phone.replace(/[+\s-]/g, "");
-
-  return `https://wa.me/${sanitizedPhone}?text=${encodeURIComponent(message)}`;
 }

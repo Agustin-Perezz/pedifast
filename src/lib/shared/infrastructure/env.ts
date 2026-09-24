@@ -37,3 +37,5 @@ export const mpOauthStateSecret = requiredServerEnv("MP_OAUTH_STATE_SECRET");
 
 export const googleMapsApiKey = requiredServerEnv("GOOGLE_MAPS_API_KEY");
 export const googleMapsBaseUrl = requiredServerEnv("GOOGLE_MAPS_BASE_URL");
+
+export const panelSessionSecret = requiredServerEnv("PANEL_SESSION_SECRET");
