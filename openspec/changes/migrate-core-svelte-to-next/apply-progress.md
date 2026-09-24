@@ -153,6 +153,54 @@ Standard (strict_tdd: false per openspec/config.yaml).
 - PR base: previous PR branch (Phase 2) per feature-branch-chain; currently stacked on `feat/migrate-core-svelte-to-next` since prior PRs are not yet retargeted.
 - Review budget impact: 666 authored insertions over 19 new files (4 deletions are tasks.md checkbox updates). This exceeds the 400-line budget. The slice is a cohesive infrastructure unit (ports + adapters + tests + container) that cannot be split further without breaking compile/test autonomy; recommend `size:exception`.
 
+## Phase 4a — Panel PIN auth + lists + confirm/reject
+
+- [x] 4.1 `src/lib/shared/infrastructure/panel-session.ts`: salted SHA-256 PIN hashing (`salt:hash`, 16-byte hex salt), constant-time `verifyPin`, HMAC-SHA256 `panel_session` tokens (shopId + shopName + 7-day exp, base64url payload). Added fail-loudly `PANEL_SESSION_SECRET` env var. Unit tests cover PIN scenarios + token forgery/expiry/tampering. Fixed production bug found by tests: `verifySessionToken` threw `RangeError` on length-mismatched signatures; now length-checks before `timingSafeEqual`.
+- [x] 4.2 `use-cases/panel-auth/` 4-file folder (`PanelAuthUseCase` + `PanelAuthRepository` + `PanelPinVerifier` port) + `panel.container.ts` exposing `auth`, `listOrders`, `confirmOrder`, `rejectOrder`. `SupabasePanelAuthRepository` in shops/ repositories.
+- [x] 4.3 `requirePanelSession()` in `src/lib/shared/infrastructure/panel-auth.server.ts` — separate from `requireUser()`; HMAC + expiry verified in `verifySessionToken`; shopName mismatch deletes cookie and redirects to login; login page redirects away when a valid session for the same shop exists.
+- [x] 4.4 Panel pages: `login/page.tsx` (PIN form, parity with old SvelteKit login incl. Spanish copy) + `panel/page.tsx` (guarded, lists via `listShopOrders` query, split pending/confirmed, confirmed offers print affordance only — print itself is 4b). All components ≤50 lines: PanelShell, PanelOrderLists, PanelOrderList, PanelOrderCard, PanelOrderSummary, PanelOrderButtons, PanelEmptyState, PanelLoginForm + `usePanelOrderActions` hook.
+- [x] 4.5 `confirm-order/` + `reject-order/` 4-file folders. Ownership check: `findByShopId(shopId)` then membership test; cross-shop attempt throws `OrderNotOwnedByShopError` without touching any order. Shared `testing/order.factory.ts` for test order construction.
+- [x] 4.6 `panel/actions.ts`: `loginWithPinAction` (form action, sets cookie, redirects), `confirmOrderAction`/`rejectOrderAction` — first line `requirePanelSession(shopName)` per server-action auth convention. On confirm with `customerPhone`, action returns `whatsappUrl` built by `buildOrderConfirmationWhatsappUrl` (promoted `buildWhatsappUrl` to `src/lib/utils/whatsapp.ts`, re-exported from pedir lib; added `buildCustomerConfirmationMessage` parity with old app). Client hook `window.open`s the WhatsApp deep link on confirm; absent phone → `whatsappUrl: null`, no window opened.
+- [ ] 4.7 E2E `tests/panel.test.ts` — DEFERRED per user instruction (E2E suite deferred until end of migration, same as phases 2/3 E2E tasks).
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused test command and exact result | `pnpm test:unit` → exit 0; Test Files 27 passed, Tests 110 passed (37 new tests: panel-session 8, panel-auth 4, confirm-order 3, reject-order 2, plus whatsapp re-export suite still green) |
+| Runtime harness command/scenario | `pnpm build` → exit 0; `/[shopName]/panel` and `/[shopName]/panel/login` routes render server-side. Live PIN round-trip requires a seeded `dashboard_pin_hash` — deferred to E2E with the panel suite. |
+| Rollback boundary | Revert commits `fedaf79`, `c225f67`, `8b1cdcb`. No other route imports panel files; removing them leaves the app runnable (only `pedir/lib/whatsapp.ts` re-export would need restoring to its inlined `buildWhatsappUrl`). |
+
+## Verification Results
+
+| Command | Result |
+|---|---|
+| `pnpm typecheck` | exit 0; TypeScript: No errors found |
+| `pnpm lint` | exit 0; Checked 299 files, no errors (also fixed pre-existing unused import in `AccessoryStep.tsx` from phase 3c) |
+| `pnpm test:unit` | exit 0; Test Files 27 passed, Tests 110 passed |
+| `pnpm build` | exit 0; panel routes compiled and listed |
+
+## Git State
+
+- Branch: `feat/migrate-core-svelte-to-next` (tracker branch)
+- Phase 4a commits:
+  - `fedaf79` — `Add panel session infra: PIN hashing, HMAC cookie, auth guard and panel container` (16 files, 615 insertions)
+  - `c225f67` — `Add confirm-order and reject-order use cases with cross-shop ownership checks` (10 files, 211 insertions)
+  - `8b1cdcb` — `Build panel pages: PIN login, guarded order lists with confirm and reject actions` (15 files, 592 insertions)
+
+## Deviations from Design
+
+- Task 4.2 asked the container to expose `authGuard`; the guard is a server-side function over `cookies()` (`panel-auth.server.ts`), not a use case — the container exposes `auth` (login) instead. The guard composes `getPanelSession()` + redirect, which cannot live in a DI container cleanly (redirect is a Next.js server primitive).
+- `confirm-order`/`reject-order` reuse `ListOrdersByShopRepository` + `UpdateOrderStatusRepository` via a composite type instead of new repository classes — one-repository-per-interface preserved at the use-case boundary.
+- WhatsApp deep link is opened client-side by `usePanelOrderActions` (window.open) from a server-built URL — same behavior as the old app, which also opened it from the client after the action returned.
+- E2E (4.7) deferred with phases 2/3 E2E per user instruction.
+
+## Issues Found
+
+- `verifySessionToken` initially threw `RangeError: Input buffers must have the same byte length` on signatures of differing length (a forged-token test caught it). Fixed with a length check before `timingSafeEqual` — the old SvelteKit app has the same latent bug.
+- `PANEL_SESSION_SECRET` missing from `.env` failed the build at page-data collection (`/dashboard` imports `auth.server.ts` → `env.ts` chain) — fail-loudly worked as designed; added a generated secret to local `.env` and documented the var in `.env.example`.
+- Pre-existing phase-3c lint warning (unused `AccessoryGroupSection` import in `AccessoryStep.tsx`) fixed in this slice to keep `pnpm lint` at exit 0.
+
 ## Next Recommended
 
-`sdd-apply` Phase 3b (tasks 3.5–3.11) — checkout form validation, `CreateOrderUseCase`, checkout overlay and server-action wiring.
+`sdd-apply` Phase 4b (tasks 4.8–4.11) — SSE stream, ticket, notification sound.
