@@ -243,6 +243,53 @@ Standard (strict_tdd: false per openspec/config.yaml).
 - Biome CSS suppression comments must sit inside the rule block (formatter moves inline comments), and `noImportantStyles` requires per-rule suppression — three attempts before lint went quiet.
 - `verifySessionToken` guard in the route handler reads the cookie from the raw `Request` header (`parseCookieValue`) because `cookies()` from `next/headers` is not bound to route handler request scope in the same way as server actions.
 
+## Phase 5 — MP integration + order receipt
+
+- [x] 5.1 `src/infrastructure/payments/mp/`: `interfaces.ts` (`MpOAuthClient`, `MpPreferenceClient`, `MpPaymentClient` + result types), `MpOAuthService`, `MpPreferenceService`, `MpPaymentService` (mercadopago SDK v3.6.1 — new dependency), `oauth-state.ts` signed-state helpers (HMAC-SHA256 over `shop:timestamp`, 10-min max age, constant-time compare with length check).
+- [x] 5.2 `GET /api/mp/oauth/authorize`: 400 without `shop`; 302 to MP authorization URL with signed `state` (state helpers unit-tested: round-trip, tamper, expiry, garbage).
+- [x] 5.3 `GET /api/mp/oauth/callback`: 400 without `code`/`state`; 403 invalid/expired state; token exchange via SDK; persists via existing `UpdateShopMpTokens` use case (service-role client); 404 when shop not found; 302 to `/{shop}/pedir?mp_connected=true`.
+- [x] 5.4 `get-seller-access-token/` 4-file folder: `GetSellerAccessTokenUseCase` with injectable 1-hour buffer, `ShopNotConnectedToMpError`; refreshes + persists via `SupabaseShopMpTokensRepository` when within buffer; reuses stored token otherwise. 4 unit tests (reuse, refresh+persist, expired, not connected).
+- [x] 5.5 `create-mp-preference/` 4-file folder + `MpPreferenceService`: `external_reference` via `OrderExternalReference.generate`, ARS items, metadata (`shop_name`, `nombre`, `notas`, `delivery_method`, `address`), back_urls + auto_return on non-localhost only (3 SDK-mocked unit tests). `POST /api/mp/preference` route handler wiring both use cases. Phase-3c `MP_INIT_POINT_TODO` replaced: checkout now POSTs the preference API and redirects to `init_point` (falls back to `/pedido/{id}?status=pending` on failure).
+- [x] 5.6 `verify-mp-payment/` 4-file folder; receipt page `src/app/pedido/[id]/page.tsx` + `queries.ts` (`verifyReceiptPayment`) + client stack: `useReceiptState` (localStorage whatsapp order, date from trailing timestamp, WhatsApp deep link on confirm, Safari redirect vs window.open, entry removal), `ReceiptView`/`ReceiptShell`/`ReceiptStatusBadge`/`ReceiptCard`/`ReceiptOrderDetails`/`ReceiptDashboardStatus`/`ReceiptNotFound` (all ≤50 lines). `get-order/` already existed from phase 1c.
+- [x] 5.7 `VerifyMpPaymentUseCase`: efectivo → approved without MP; no payment_id → pending; shopName derived from substring before last `-`; external_reference mismatch → pending with no persistence; match+approved → update payment_status for dashboard orders. 6 unit tests.
+- [ ] 5.8 E2E `tests/receipt.test.ts` — DEFERRED per user instruction (with 4.7/4.9 and phases 2–3 E2E). NO-webhook assertion verified structurally: `find src -path "*webhook*"` → 0 files.
+- [x] 5.9 No webhook endpoint anywhere; `docs/deferred-features.md` created documenting MP webhooks + Leaflet map picker as follow-ups with implementation sketches.
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused test command and exact result | `pnpm test:unit` → exit 0; Test Files 32 passed, Tests 128 passed (18 new: oauth-state 4, get-seller-access-token 4, create-mp-preference 1, mp-preference.service 3, verify-mp-payment 6) |
+| Runtime harness command/scenario | `pnpm build` → exit 0; routes `/api/mp/oauth/authorize`, `/api/mp/oauth/callback`, `/api/mp/preference`, `/pedido/[id]` compile. Live MP sandbox round-trip is manual and deferred to E2E. |
+| Rollback boundary | Revert the phase 5 commits. Removing `src/infrastructure/payments/mp/`, the MP route handlers, `verify-mp-payment`/`get-seller-access-token`/`create-mp-preference` folders, and the receipt page leaves phases 1–4 untouched; checkout falls back to the previous TODO-redirect only if `submit-checkout.ts` is also reverted. |
+
+## Verification Results
+
+| Command | Result |
+|---|---|
+| `pnpm typecheck` | exit 0; TypeScript: No errors found |
+| `pnpm lint` | exit 0; Checked 345 files, 0 warnings |
+| `pnpm test:unit` | exit 0; Test Files 32 passed, Tests 128 passed |
+| `pnpm build` | exit 0; all four new routes compiled |
+
+## Git State
+
+- Branch: `feat/migrate-core-svelte-to-next` (tracker branch)
+- Phase 5 commits: see `git log` — work-unit commits for MP infra + routes, preference/verification use cases, receipt page, docs.
+
+## Deviations from Design
+
+- Added `MpPaymentClient`/`MpPaymentService` beyond the two design-named interfaces — receipt verification needs payment lookup and it lives in the same adapter family.
+- The SDK is v3.6.1 (design-era notes referenced v2); OAuth/preference/payment client shapes are equivalent. `Preference.create` body typed as `Record<string, unknown>` via `as never` cast because the SDK's `PreferenceRequest` type diverges from the v3 body shape.
+- Checkout MP flow: client POSTs `/api/mp/preference` then redirects to `init_point` (old app called the same endpoint from the form component); on preference failure the receipt opens as `pending` instead of throwing.
+- State validation lives in `oauth-state.ts` under infrastructure (pure crypto helpers, unit-testable), not inside the route handler.
+
+## Issues Found
+
+- Biome `useAnchorContent` rejects icon-only anchors even with `aria-label`; fixed with `sr-only` span (receipt back link).
+- `mercadopago` SDK class mocks must be `class` implementations — arrow-function `vi.fn()` mocks cannot be `new`-ed.
+- `OrderExternalReference` exposes `toReference()`/`generate()` (not `.value`) — initial use-case draft assumed the wrong API.
+
 ## Next Recommended
 
-`sdd-apply` Phase 5 (tasks 5.1–5.9) — MP OAuth + preference + receipt verification.
+`sdd-apply` Phase 6 (tasks 6.1–6.8) — security headers, books deletion, final verification.
