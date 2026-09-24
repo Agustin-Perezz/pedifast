@@ -201,6 +201,48 @@ Standard (strict_tdd: false per openspec/config.yaml).
 - `PANEL_SESSION_SECRET` missing from `.env` failed the build at page-data collection (`/dashboard` imports `auth.server.ts` → `env.ts` chain) — fail-loudly worked as designed; added a generated secret to local `.env` and documented the var in `.env.example`.
 - Pre-existing phase-3c lint warning (unused `AccessoryGroupSection` import in `AccessoryStep.tsx`) fixed in this slice to keep `pnpm lint` at exit 0.
 
+## Phase 4b — SSE stream + ticket + sound
+
+- [x] 4.8 `src/app/api/orders/[shopId]/stream/route.ts` (App Router adaptation of `+server.ts`): 400 on invalid shopId; 401 unless a valid `panel_session` cookie whose `shopId` matches the requested `shopId`; emits `connected` on open, `new_order`/`order_updated` with serialized `PlainPanelOrder` payloads, `: keepalive` comments every 30s; cleanup via ReadableStream `cancel()`. Fan-out hub in `src/lib/shared/infrastructure/order-stream-hub.ts`: module-level map shopId → {channel, listeners}; one service-role Realtime subscription per shop shared by all SSE clients; last client out removes the channel. `supabase.service-role.ts` lazy singleton client.
+- [ ] 4.9 E2E — DEFERRED per user instruction (same as 4.7 and phases 2/3 E2E).
+- [x] 4.10 `useOrderStream` hook (EventSource): prepends `new_order`, replaces on `order_updated`, plays `playNotificationSound()` on new orders (autoplay/audio failures swallowed silently). `PanelOrdersLive` client component owns pending/confirmed state seeded from the server render and merged with stream events; `usePanelOrderActions` no longer needs router.refresh (stream propagates status changes).
+- [x] 4.11 `PrintableTicket` (≤50 lines per sub-component: shell + TicketItemLine + TicketTotals): 80mm print-media-only layout with date, external reference, customer name+phone, delivery method or "RETIRO EN LOCAL", item lines with quantity + accessories, delivery cost (>0), TOTAL, notes. `externalReference` added to `PlainPanelOrder` serializer (spec requires it on the ticket). Print isolation CSS in `globals.css` (`data-print-ticket` visibility technique, parity with old app) with `usePrintTicket` hook (set order → window.print()). `notification.wav` copied from pedifast-old to `public/sounds/`.
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused test command and exact result | `pnpm test:unit` → exit 0; Test Files 27 passed, Tests 110 passed (no new unit tests: SSE hub and EventSource are integration surfaces; covered by the deferred 4.9 E2E) |
+| Runtime harness command/scenario | `pnpm build` → exit 0; `/api/orders/[shopId]/stream` listed as dynamic route. Live SSE round-trip needs local Supabase Realtime (port 55321) — deferred to the E2E suite. |
+| Rollback boundary | Revert commits `1973246`, `2bd2349` (or delete `src/app/api/`, `order-stream-hub.ts`, `supabase.service-role.ts`, `notification-sound.ts`, `public/sounds/`, and the panel live components — restoring 4a's static lists). Auth/lists/actions from 4a remain independent of the stream. |
+
+## Verification Results
+
+| Command | Result |
+|---|---|
+| `pnpm typecheck` | exit 0; TypeScript: No errors found |
+| `pnpm lint` | exit 0; Checked 306 files, 0 warnings (print `!important` suppressions scoped in globals.css) |
+| `pnpm test:unit` | exit 0; Test Files 27 passed, Tests 110 passed |
+| `pnpm build` | exit 0; SSE route compiled |
+
+## Git State
+
+- Branch: `feat/migrate-core-svelte-to-next` (tracker branch)
+- Phase 4b commits:
+  - `1973246` — `Add SSE order stream: realtime hub, guarded route handler and notification sound` (5 files, 212 insertions)
+  - `2bd2349` — `Wire live order updates into the panel with printable 80mm ticket` (13 files, 281 insertions, 69 deletions)
+
+## Deviations from Design
+
+- Task 4.8 named a SvelteKit-style `+server.ts` file; the App Router equivalent is `route.ts` with cleanup in `cancel()` instead of `res.on('close')` — same contract, same guard semantics.
+- The hub maps Realtime rows → domain `Order` (via `orderMapper`) once server-side and serializes to `PlainPanelOrder` before emitting, instead of shipping raw snake_case rows to the client — keeps client parsing identical to the initial server render.
+- `revalidatePath` removed from confirm/reject actions: the SSE stream now propagates the status change to the open panel; a stale-tab refresh still hits the guarded query.
+
+## Issues Found
+
+- Biome CSS suppression comments must sit inside the rule block (formatter moves inline comments), and `noImportantStyles` requires per-rule suppression — three attempts before lint went quiet.
+- `verifySessionToken` guard in the route handler reads the cookie from the raw `Request` header (`parseCookieValue`) because `cookies()` from `next/headers` is not bound to route handler request scope in the same way as server actions.
+
 ## Next Recommended
 
-`sdd-apply` Phase 4b (tasks 4.8–4.11) — SSE stream, ticket, notification sound.
+`sdd-apply` Phase 5 (tasks 5.1–5.9) — MP OAuth + preference + receipt verification.
