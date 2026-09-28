@@ -92,8 +92,13 @@ function serializeGroup(groupWithOptions: {
     name: groupWithOptions.group.name,
     selectionMode: groupWithOptions.group.selectionMode,
     isRequired: groupWithOptions.group.isRequired,
-    options: [...groupWithOptions.options].sort(
-      (a, b) => a.sortOrder - b.sortOrder,
-    ),
+    options: groupWithOptions.options
+      .map((option) => ({
+        id: option.id,
+        name: option.name,
+        priceDelta: option.priceDelta,
+        sortOrder: option.sortOrder,
+      }))
+      .sort((a, b) => a.sortOrder - b.sortOrder),
   };
 }
