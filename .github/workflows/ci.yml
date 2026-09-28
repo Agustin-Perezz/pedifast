@@ -180,6 +180,14 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_placeholder
+          SUPABASE_SERVICE_ROLE_KEY: test-service-role-key
+          MP_APP_ID: test-mp-app-id
+          MP_CLIENT_SECRET: test-mp-client-secret
+          MP_REDIRECT_URI: http://localhost:3000/auth/mp/callback
+          MP_OAUTH_STATE_SECRET: test-oauth-state-secret
+          GOOGLE_MAPS_API_KEY: test-google-maps-key
+          GOOGLE_MAPS_BASE_URL: https://maps.googleapis.com/maps/api
+          PANEL_SESSION_SECRET: test-panel-session-secret
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
