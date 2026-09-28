@@ -1,0 +1,59 @@
+schema: spec-driven
+
+context: |
+  Repo: pedifast (workspace root /home/agust/pedifast).
+  Main app: Next.js 16.3.5 App Router, React 19, TypeScript strict, Biome (lint/format),
+  Tailwind 4, base-ui + shadcn "base-nova", Vitest (unit) + Playwright (E2E), Supabase
+  via @supabase/ssr, Sentry.
+  Clean Architecture with strict layering: src/domain (pure entities+schemas), 
+  src/application/use-cases (4-file folders), src/infrastructure/database/postgres
+  (entities/mappers/repositories, one repo class per interface), src/lib/containers (DI),
+  src/app (delivery; server actions + requireUser(); 50-line component limit).
+  Migration source: pedifast-old/ is a nested git repo (SvelteKit 2 app) containing the
+  shop ordering flow (cart, accessories, checkout), product detail, shop admin panel
+  (PIN login, real-time orders via SSE, confirm/reject, printable ticket), order receipt
+  with Mercado Pago hosted-checkout verification, MP per-shop OAuth, Google geocode +
+  delivery-cost server APIs. Leaflet map picker and MP webhooks DECLARED deferred.
+  Required env vars (Supabase, Sentry) fail loudly; no defaults.
+
+strict_tdd: false
+
+projects:
+  - path: "."
+    stack: Next.js 16 (App Router) + React 19 + TS strict + Biome + Tailwind 4 + base-ui/shadcn
+    test_command: "pnpm test (Playwright E2E) / pnpm test:unit (Vitest)"
+    test_layers: unit(vitest), e2e(playwright), integration(playwright)
+    coverage: "@vitest/coverage-v8 (coverage/unit) + monocart-reporter E2E (coverage/tests)"
+    quality: lint/biome check . , typecheck/tsc --noEmit , format/biome format --write .
+  - path: "pedifast-old"
+    note: "NESTED GIT REPO — migration source, not in-scope test runner. Commands preserved only."
+    stack: SvelteKit 2 + Svelte 5 + Vite 6 + Tailwind 4 + bits-ui + mercadopago
+    test_command: "playwright test (e2e)"
+    test_layers: e2e(playwright)
+    coverage: "monocart-reporter E2E"
+    quality: lint/prettier --check . && eslint . , check/svelte-kit sync && svelte-check , format/prettier --write .
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Migration must split into reviewable slices (review policy: 400 changed lines per PR)
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Respect Clean Architecture layers: domain pure, infra swappable
+    - Keep components under 50 lines; one repo class per interface; no magic strings
+  tasks:
+    - Group by phase (menu flow, checkout, admin panel, receipt+MP, APIs), hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow existing code patterns (docs/development-guidelines.md, per-folder AGENTS.md)
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: "pnpm typecheck && pnpm lint && pnpm test:unit && pnpm build"
+    build_command: "pnpm build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas

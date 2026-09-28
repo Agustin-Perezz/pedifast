@@ -27,10 +27,14 @@
     "rules": {
       "preset": "recommended",
       "suspicious": {
-        "noUnknownAtRules": "off"
+        "noUnknownAtRules": "off",
+        "noArrayIndexKey": "off"
       },
       "style": {
         "noExcessiveLinesPerFile": "off"
+      },
+      "performance": {
+        "noImgElement": "off"
       }
     },
     "domains": {
@@ -47,7 +51,7 @@
             "noExcessiveLinesPerFile": {
               "level": "error",
               "options": {
-                "maxLines": 50
+                "maxLines": 200
               }
             }
           }

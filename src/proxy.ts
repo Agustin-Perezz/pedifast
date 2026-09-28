@@ -4,6 +4,11 @@ import {
   supabasePublishableKey,
   supabaseUrl,
 } from "@/lib/shared/infrastructure/env";
+import {
+  CONTENT_SECURITY_POLICY_HEADER_KEY,
+  contentSecurityPolicy,
+  LOCALHOST_HOSTNAME,
+} from "@/lib/shared/infrastructure/security-headers";
 
 const PROTECTED_PREFIXES = ["/dashboard"] as const;
 const SIGNIN_PATH = "/signin";
@@ -11,6 +16,15 @@ const DASHBOARD_PATH = "/dashboard";
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
+
+  // Apply the host-conditional Content-Security-Policy, mirroring the legacy
+  // `if (event.url.hostname !== 'localhost')` guard in hooks.server.ts.
+  if (request.nextUrl.hostname !== LOCALHOST_HOSTNAME) {
+    response.headers.set(
+      CONTENT_SECURITY_POLICY_HEADER_KEY,
+      contentSecurityPolicy,
+    );
+  }
 
   const supabase = createServerClient(supabaseUrl, supabasePublishableKey, {
     cookies: {

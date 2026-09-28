@@ -41,6 +41,7 @@ yarn-error.log*
 /blob-report/
 /playwright/.cache/
 /.v8-coverage/
+/monocart-report/
 
 # vercel
 .vercel
@@ -48,6 +49,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# legacy svelte app (read-only migration source, nested git repo)
+/pedifast-old/
 
 # sonarqube
 .scannerwork
