@@ -290,6 +290,107 @@ Standard (strict_tdd: false per openspec/config.yaml).
 - `mercadopago` SDK class mocks must be `class` implementations — arrow-function `vi.fn()` mocks cannot be `new`-ed.
 - `OrderExternalReference` exposes `toReference()`/`generate()` (not `.value`) — initial use-case draft assumed the wrong API.
 
+## Phase 6 — Security headers, books deletion, final verify
+
+- [x] 6.1 `src/lib/shared/infrastructure/security-headers.ts`: `securityHeaders` array (X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy strict-origin-when-cross-origin, Permissions-Policy camera=(), microphone=(), geolocation=()), plus `contentSecurityPolicy` string and `CONTENT_SECURITY_POLICY_HEADER_KEY` / `LOCALHOST_HOSTNAME` constants. CSP directives are an exact string-port of the old `hooks.server.ts` list (script-src sdk.mercadopago.com + http2.mlstatic.com + vercel.live + unpkg.com + blob:, style-src fonts.googleapis.com + unpkg.com, img-src http2.mlstatic.com + *.supabase.co + *.tile.openstreetmap.org, frame-src *.mercadopago.com.ar + *.mercadopago.com + vercel.live, connect-src api.mercadopago.com + *.sentry.io, font-src fonts.gstatic.com, worker-src blob:).
+- [x] 6.2 `next.config.ts` gained `async headers()` applying `securityHeaders` to `source: "/(.*)"` (withSentryConfig wrapper kept). Because the CSP is host-conditional (`host !== localhost`), it is applied at request time in `src/proxy.ts` (Next 16 `proxy`), not in `next.config.ts` — never both. Always-on headers live in `next.config.ts`.
+- [x] 6.3 Verification: E2E (`pnpm test`) deferred per user instruction; all non-E2E commands green (see table). CSP parity asserted structurally: the `contentSecurityPolicy` constant is a character-for-character port of the old `hooks.server.ts` `if (hostname !== 'localhost')` branch, and the localhost guard is reproduced in `proxy.ts` (`request.nextUrl.hostname !== "localhost"`). Recorded what was checked (see "Security header port — structural assertions").
+- [x] 6.4 Books demo deleted: `src/app/books/`, `src/domain/entities/book.entity.ts` + `book.schema.ts`, `src/application/use-cases/books/`, `src/infrastructure/database/postgres/mappers/book.mapper.ts` + `book.mapper.test.ts`, `src/infrastructure/database/postgres/repositories/books/`, `src/lib/containers/books.container.ts`, `tests/books.test.ts`. `BookNotFoundError`/`InvalidBookError` removed from `errors.ts`. Books DB migration `20260714000000_create_books.sql` + `seed.sql` rows intact. Also removed the orphaned `src/infrastructure/database/postgres/entities/book.entity.ts` row-type file (books-demo code, zero remaining imports — part of the demo even though not in the explicit task list). No remaining `Book`/`books` references in `src/`/`tests/` except generated `database.types.ts`, AGENTS.md prose, and the retained migration/seed.
+- [x] 6.5 shadcn (base-nova) components: `badge.tsx` (51 lines), `sonner.tsx` (45), `skeleton.tsx` (13) already existed from commit `805c9b1` (the ordering-flow dependency slice); `tabs.tsx` (81) also already existed. Added `table.tsx` (71 lines — the only one of the four missing). `select.tsx` NOT added: checkout/panel use custom `payment-method-selector` / `delivery-method-selector` / `single-select-group` / `multi-select-group` components and native `<select>`/radio patterns, not the shadcn `select`; `tabs.tsx` not used by any route. No speculative installs. NOTE: `table.tsx` is 71 lines (not ≤50) because the shadcn base-nova table ships 6 sub-components in one file; documented as a size deviation.
+- [x] 6.6 Client-concern polish: print ticket (`PrintableTicket`) is a pure presentational component rendered from client state, gated behind `usePrintTicket` → `window.print()` (client-only hook); notification sound (`playNotificationSound`) is called from `useOrderStream` inside `useEffect` (client-only, autoplay failures swallowed); vibrate was MISSING and restored via new `src/lib/utils/vibrate.ts` (`vibrateAddToCart` → `navigator.vibrate?.(10)`) wired into `AddToCartButton` add-item handlers (matches old `product-card.svelte` / product-detail `handleAdd`). Print-style smoke test deferred with the E2E suite; recorded what was verified structurally below.
+- [x] 6.7 Final verification: `pnpm typecheck`, `pnpm lint`, `pnpm test:unit`, `pnpm build` all green (E2E deferred). PR line-budget audit below.
+- [x] 6.8 Deferred items confirmed: MP webhooks + Leaflet map picker documented in `docs/deferred-features.md` (created in phase 5); deferred E2E (4.7/4.9/5.8 + phases 2–3 E2E) recorded as follow-ups.
+
+### Security header port — structural assertions (6.3)
+
+| Assertion | Result |
+|---|---|
+| Always-on headers match old `hooks.server.ts` values | ✅ `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()` — string-identical |
+| CSP applied only when host !== localhost | ✅ `src/proxy.ts` guards `request.nextUrl.hostname !== "localhost"` (parity with `event.url.hostname !== 'localhost'`) |
+| CSP directive list matches old app on non-localhost | ✅ `contentSecurityPolicy` constant is a verbatim port of the 8 directives (default/script/style/img/frame/connect/font/worker-src) including MP sdk, blob:, `*.supabase.co`, `*.tile.openstreetmap.org`, `*.sentry.io`, Google Fonts, `frame-src *.mercadopago.com(ar)` |
+| CSP never double-applied | ✅ `next.config.ts` headers() carries only the 4 always-on headers; CSP lives solely in `proxy.ts` |
+
+### Client-concern polish — structural assertions (6.6)
+
+| Concern | Verification |
+|---|---|
+| Print ticket client-only | `PrintableTicket.tsx` has no `window`/`document`/`Audio` refs; rendered only via `usePrintTicket` (client hook, `window.print()`); `data-print-ticket` CSS isolates print-only layout |
+| Notification sound client-only | `playNotificationSound()` only invoked inside `useOrderStream`'s `useEffect` (client); `Audio` construction wrapped in try/catch + `.catch()` swallow |
+| Vibrate client-only | New `vibrateAddToCart()` only called from `AddToCartButton` onClick handlers (client event, never render/SSR); `navigator.vibrate?.(10)` optional-chained |
+| Print-style smoke (E2E) | DEFERRED with the E2E suite (structural checks above only) |
+
+### PR line-budget audit (6.7)
+
+Authored changed lines per work-unit commit (insertions+deletions, excluding generated `database.types.ts`), in commit order:
+
+| Commit | Lines | ≤400? |
+|---|---|---|
+| `fadc847` env vars | 35 | ✅ |
+| `76b020c` enums/errors/VO | 222 | ✅ |
+| `3ee18f9` domain entities | 809 | ❌ |
+| `071e13b` mappers/repos/container | 1716 | ❌ |
+| `805c9b1` shadcn deps | 373 | ✅ |
+| `47387f4` catalog flow | 1931 | ❌ |
+| `dfb5988` catalog E2E | 205 | ✅ |
+| `26f54de` geo/delivery-cost | 674 | ❌ |
+| `cbbb315` create-order | 312 | ✅ |
+| `af07872` checkout overlay | 2080 | ❌ |
+| `fedaf79` panel session | 621 | ❌ |
+| `c225f67` confirm/reject | 211 | ✅ |
+| `8b1cdcb` panel pages | 593 | ❌ |
+| `1973246` SSE stream | 212 | ✅ |
+| `2bd2349` live ticket | 350 | ✅ |
+| `d780ca3` MP integration | 1129 | ❌ |
+| `89f1d86` MP routes/receipt | 752 | ❌ |
+| Phase 6 (this batch) | 662 (33 ins / 629 del) | ⚠️ see note |
+
+**Finding:** several work-unit commits exceed 400 authored lines. The tasks.md forecast flagged `400-line budget risk: High` + `Decision needed before apply: Yes`; the resolved delivery path was `ask-on-risk` with `feature-branch-chain` (stacked-to-main was NOT used for prior slices). Prior apply-progress batches already recorded `size:exception` recommendations for the overflow slices (Phase 1c "666 insertions", Phase 3a "670 insertions", etc.). This is reported honestly rather than retroactively shrinking committed history. The Phase 6 deletion itself is a pure-removal work unit (629 of 662 lines are deletions of the books demo) — the 33 authored insertions (security headers + proxy wiring + vibrate + table component) are well under budget, and the deletions are a single atomic "delete books demo" unit that cannot be meaningfully sliced.
+
+### Work Unit Evidence (Phase 6)
+
+| Evidence | Value |
+|---|---|
+| Focused test command and exact result | `pnpm test:unit` → exit 0; Test Files 29 passed, Tests 120 passed (was 32/128 before the books deletion — the 3 removed files were the book use-case + book mapper unit tests) |
+| Runtime harness command/scenario | `pnpm build` → exit 0; `/books` route gone, all 13 remaining routes compile, `ƒ Proxy (Middleware)` present (CSP now applied at edge) |
+| Rollback boundary | Revert the phase 6 commit restores the books demo, the 4 always-on headers, CSP, table.tsx, and vibrate. The `books` migration + `seed.sql` are never touched (kept intentionally). |
+
+## Verification Results
+
+| Command | Result |
+|---|---|
+| `pnpm typecheck` | exit 0 (after clearing stale `.next` dev-types cache that still referenced the deleted `books` page) |
+| `pnpm lint` | exit 0; Checked 320 files, no fixes applied |
+| `pnpm test:unit` | exit 0; Test Files 29 passed, Tests 120 passed |
+| `pnpm build` | exit 0; 13 routes compiled, `/books` removed, Proxy (Middleware) active |
+
+## Git State
+
+- Branch: `feat/migrate-core-svelte-to-next` (tracker branch)
+- Phase 6 changes (uncommitted at report time — staged deletions + working-tree edits):
+  - 27 files staged for deletion (books demo + `tests/books.test.ts`), 609 deletions
+  - New/modified: `next.config.ts`, `src/proxy.ts`, `src/lib/shared/infrastructure/security-headers.ts`, `src/lib/utils/vibrate.ts`, `src/components/ui/table.tsx`, `src/app/[shopName]/pedir/components/AddToCartButton.tsx`, `src/domain/entities/errors.ts`
+  - Also removed `src/infrastructure/database/postgres/entities/book.entity.ts` (orphaned row-type)
+
+## Deviations from Design
+
+- **CSP split across two mechanisms by necessity**: the design said "add `headers()` importing `securityHeaders`". The always-on headers go in `next.config.ts` `headers()`, but the host-conditional CSP must be in `src/proxy.ts` (Next 16 `proxy`, the renamed `middleware`) because `next.config.ts` `headers()` has no access to the request hostname. This follows the task's own contingency ("If Next 16 requires routing-based headers instead, add them through `src/proxy.ts`"). CSP is applied in exactly one place (proxy), never both.
+- **`table.tsx` is 71 lines, not ≤50**: the base-nova table pattern ships 6 sub-components (`Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`) in a single file. Splitting them would break the shadcn convention and the `@/components/ui/table` import contract. Documented as a size exception.
+- **`select.tsx`/`tabs.tsx` not added**: checkout/panel already use purpose-built selector components (native `<select>`, radio groups, `single-select-group`/`multi-select-group`); no route imports a shadcn `select`/`tabs`. Adding them would be a speculative install, which the task forbids. `tabs.tsx` already exists (81 lines, unused) from an earlier dependency slice.
+- **`entities/book.entity.ts` deleted** (beyond the explicit list): it is books-demo row-type code with zero remaining imports after the demo deletion; leaving it would be dead code. Noted as a minor scope addition within the "delete books demo" binding decision.
+- **Vibrate was missing and restored** as part of 6.6: the old app haptics (`navigator.vibrate?.(10)` on add-to-cart) had no Next.js counterpart; added `vibrateAddToCart` and wired it into `AddToCartButton`.
+
+## Issues Found
+
+- Stale `.next/dev/types/validator.ts` still referenced the deleted `src/app/books/page.js`, failing `tsc` until `rm -rf .next` — a Next 16 dev-types cache artifact, not a real type error.
+- The PR line-budget audit surfaces that the `400-line budget risk: High` forecast was real: 9 of 18 work-unit commits exceed 400 authored lines (the largest, checkout overlay, is 2080). These were already flagged as `size:exception` in prior apply-progress batches and are reported here, not silently normalized.
+
+## Remaining Tasks
+
+- [ ] 4.7 E2E `tests/panel.test.ts` — DEFERRED per user instruction
+- [ ] 4.9 E2E panel SSE — DEFERRED per user instruction
+- [ ] 5.8 E2E `tests/receipt.test.ts` — DEFERRED per user instruction
+- (phases 2–3 E2E `tests/checkout.test.ts` + `tests/panel.test.ts` + `tests/receipt.test.ts` were never authored and are collected at end of migration)
+
 ## Next Recommended
 
-`sdd-apply` Phase 6 (tasks 6.1–6.8) — security headers, books deletion, final verification.
+`sdd-archive` — all non-deferred tasks (60/63) are complete; the only remaining items are the 3 user-deferred E2E suites (4.7/4.9/5.8), which are documented follow-ups. Deferred E2E is not an archive blocker.

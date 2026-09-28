@@ -1,5 +1,7 @@
 "use client";
 
+import { vibrateAddToCart } from "@/lib/utils/vibrate";
+
 import { useCart } from "../hooks/useCart";
 import { MinusButton, PlusButton } from "./quantity-button";
 
@@ -18,7 +20,10 @@ export function AddToCartButton({
 }: AddToCartButtonProps) {
   const cart = useCart();
   const quantity = cart.getQuantity(id);
-  const addItem = () => cart.addItem({ id, name, price });
+  const addItem = () => {
+    cart.addItem({ id, name, price });
+    vibrateAddToCart();
+  };
   const removeItem = () => cart.removeItem(id);
 
   if (quantity === 0) {
