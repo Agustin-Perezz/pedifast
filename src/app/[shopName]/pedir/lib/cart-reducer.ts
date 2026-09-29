@@ -38,6 +38,29 @@ export type CartAction =
     }
   | { type: "CLEAR_CART" };
 
+export const addItemAction = (product: CartProduct): CartAction => ({
+  type: "ADD_ITEM",
+  product,
+});
+
+export const removeItemAction = (itemId: number): CartAction => ({
+  type: "REMOVE_ITEM",
+  itemId,
+});
+
+export const clearCartAction = (): CartAction => ({ type: "CLEAR_CART" });
+
+export const setAccessoriesAction = (
+  itemId: number,
+  group: PlainAccessoryGroup,
+  selectedOptions: readonly PlainAccessoryOption[],
+): CartAction => ({
+  type: "SET_ACCESSORIES",
+  itemId,
+  group,
+  selectedOptions,
+});
+
 export function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case "ADD_ITEM": {

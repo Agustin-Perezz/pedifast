@@ -5,7 +5,7 @@ import { ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils/format";
 
-import { useCart } from "../hooks/useCart";
+import { useCart } from "../context/use-cart";
 import { useCheckoutOpen } from "../hooks/useCheckoutOpen";
 
 export function CartBottomBar() {

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { CartProvider } from "./pedir/CartProvider";
+import { CartProvider } from "./pedir/context/cart-provider";
 
 type ShopLayoutProps = {
   readonly children: ReactNode;

@@ -5,8 +5,8 @@ import { OrderFlow } from "@/domain/entities/order-flow.enum";
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 
 import { createOrderAction } from "../actions";
-import type { CartContextValue } from "../CartProvider";
 import type { CheckoutFormState } from "../components/checkout/use-checkout-form";
+import type { CartContextValue } from "../context/cart-context";
 import { persistPendingWhatsappOrder } from "./order-storage";
 import type { PlainShop } from "./serialize-shop";
 import { buildWhatsappMessage, type PendingWhatsappOrder } from "./whatsapp";
