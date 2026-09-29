@@ -29,6 +29,9 @@ export default defineConfig({
       include: [
         "src/application/use-cases/**/*.use-case.ts",
         "src/domain/entities/**/*.entity.ts",
+        // Domain value object with its own test suite — not a *.entity.ts
+        // file, so it needs its own entry to reach the coverage feed.
+        "src/domain/entities/order-external-reference.ts",
         "src/infrastructure/database/postgres/mappers/**/*.mapper.ts",
       ],
     },
