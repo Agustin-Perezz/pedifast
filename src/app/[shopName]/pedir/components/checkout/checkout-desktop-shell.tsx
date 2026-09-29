@@ -7,11 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-type CheckoutShellProps = {
-  readonly open: boolean;
-  readonly onOpenChange: (open: boolean) => void;
-  readonly children: React.ReactNode;
-};
+import type { CheckoutShellProps } from "./checkout-shell-types";
 
 export function CheckoutDesktopShell({
   open,

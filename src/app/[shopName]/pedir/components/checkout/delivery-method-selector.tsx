@@ -38,15 +38,13 @@ export function DeliveryMethodSelector({
   );
 }
 
-function RadioOption({
-  value,
-  label,
-  checked,
-}: {
+type RadioOptionProps = {
   readonly value: DeliveryMethod;
   readonly label: string;
   readonly checked: boolean;
-}) {
+};
+
+function RadioOption({ value, label, checked }: RadioOptionProps) {
   return (
     <div className="flex items-center gap-2">
       <RadioGroupItem value={value} id={`delivery-${value}`} />

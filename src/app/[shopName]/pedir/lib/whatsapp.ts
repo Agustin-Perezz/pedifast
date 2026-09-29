@@ -1,10 +1,8 @@
 import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
+import type { OrderItemInput } from "@/domain/entities/order.entity";
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 
-export type WhatsappOrderAccessory = {
-  readonly name: string;
-  readonly priceDelta: number;
-};
+export type PendingWhatsappOrderItem = OrderItemInput;
 
 export type PendingWhatsappOrder = {
   readonly shopName: string;
@@ -14,12 +12,7 @@ export type PendingWhatsappOrder = {
   readonly address: string | null;
   readonly notas: string | null;
   readonly paymentMethod: PaymentMethod;
-  readonly items: readonly {
-    readonly name: string;
-    readonly quantity: number;
-    readonly unitPrice: number;
-    readonly accessories?: readonly WhatsappOrderAccessory[];
-  }[];
+  readonly items: readonly PendingWhatsappOrderItem[];
   readonly total: number;
 };
 

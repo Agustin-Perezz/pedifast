@@ -1,14 +1,12 @@
 import type { PlainPanelOrder } from "../lib/serialize-panel-order";
 
-import { PanelOrderCard } from "./PanelOrderCard";
-
-type PanelOrderListVariant = "pending" | "confirmed";
+import { PanelOrderCard, type PanelOrderVariant } from "./PanelOrderCard";
 
 type PanelOrderListProps = {
   readonly shopName: string;
   readonly title: string;
   readonly orders: readonly PlainPanelOrder[];
-  readonly variant: PanelOrderListVariant;
+  readonly variant: PanelOrderVariant;
   readonly onPrint?: (order: PlainPanelOrder) => void;
 };
 

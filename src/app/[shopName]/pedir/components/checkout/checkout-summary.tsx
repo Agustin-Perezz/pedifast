@@ -32,15 +32,13 @@ export function CheckoutSummary({
   );
 }
 
-function SummaryRow({
-  label,
-  value,
-  emphasized = false,
-}: {
+type SummaryRowProps = {
   readonly label: string;
   readonly value: string;
   readonly emphasized?: boolean;
-}) {
+};
+
+function SummaryRow({ label, value, emphasized = false }: SummaryRowProps) {
   return (
     <div className="flex justify-between">
       <span className={emphasized ? "font-semibold" : "text-zinc-500"}>

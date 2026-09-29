@@ -5,12 +5,12 @@ import type { PlainPanelOrder } from "../lib/serialize-panel-order";
 import { ConfirmButton, PrintButton, RejectButton } from "./PanelOrderButtons";
 import { PanelOrderSummary } from "./PanelOrderSummary";
 
-type PanelOrderCardVariant = "pending" | "confirmed";
+export type PanelOrderVariant = "pending" | "confirmed";
 
 type PanelOrderCardProps = {
   readonly shopName: string;
   readonly order: PlainPanelOrder;
-  readonly variant: PanelOrderCardVariant;
+  readonly variant: PanelOrderVariant;
   readonly onPrint?: (order: PlainPanelOrder) => void;
 };
 

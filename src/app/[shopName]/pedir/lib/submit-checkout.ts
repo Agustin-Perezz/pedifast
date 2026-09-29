@@ -1,25 +1,17 @@
 import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
+import type { OrderItemInput } from "@/domain/entities/order.entity";
 import { OrderExternalReference } from "@/domain/entities/order-external-reference";
 import { OrderFlow } from "@/domain/entities/order-flow.enum";
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 
 import { createOrderAction } from "../actions";
 import type { CartContextValue } from "../CartProvider";
+import type { CheckoutFormState } from "../components/checkout/use-checkout-form";
 import { persistPendingWhatsappOrder } from "./order-storage";
 import type { PlainShop } from "./serialize-shop";
 import { buildWhatsappMessage, type PendingWhatsappOrder } from "./whatsapp";
 
 const MP_PREFERENCE_API = "/api/mp/preference";
-
-type CheckoutFormSubmission = {
-  readonly nombre: string;
-  readonly telefono: string;
-  readonly notas: string;
-  readonly deliveryMethod: DeliveryMethod;
-  readonly address: string;
-  readonly paymentMethod: PaymentMethod;
-  readonly deliveryCost: number | null;
-};
 
 type SubmitCheckoutResult = {
   readonly error: string | null;
@@ -27,7 +19,7 @@ type SubmitCheckoutResult = {
 
 export async function submitCheckout(
   shop: PlainShop,
-  form: CheckoutFormSubmission,
+  form: CheckoutFormState,
   cart: CartContextValue,
 ): Promise<SubmitCheckoutResult> {
   if (form.nombre.length === 0) {
@@ -63,7 +55,7 @@ export async function submitCheckout(
 
 async function submitWhatsappOrder(
   shop: PlainShop,
-  form: CheckoutFormSubmission,
+  form: CheckoutFormState,
   cart: CartContextValue,
   deliveryCost: number,
 ): Promise<SubmitCheckoutResult> {
@@ -91,7 +83,7 @@ async function submitWhatsappOrder(
 
 async function submitDashboardOrder(
   shop: PlainShop,
-  form: CheckoutFormSubmission,
+  form: CheckoutFormState,
   cart: CartContextValue,
   deliveryCost: number,
 ): Promise<SubmitCheckoutResult> {
@@ -119,15 +111,7 @@ async function submitDashboardOrder(
   return { error: null };
 }
 
-function serializeCartItems(cart: CartContextValue): readonly {
-  readonly name: string;
-  readonly quantity: number;
-  readonly unitPrice: number;
-  readonly accessories: readonly {
-    readonly name: string;
-    readonly priceDelta: number;
-  }[];
-}[] {
+function serializeCartItems(cart: CartContextValue): readonly OrderItemInput[] {
   return cart.items.map((item) => ({
     name: item.product.name,
     quantity: item.quantity,
@@ -141,7 +125,7 @@ function serializeCartItems(cart: CartContextValue): readonly {
 
 async function redirectToPaymentOrReceipt(
   externalReference: string,
-  form: CheckoutFormSubmission,
+  form: CheckoutFormState,
   cart: CartContextValue,
 ): Promise<void> {
   if (form.paymentMethod === PaymentMethod.Efectivo) {

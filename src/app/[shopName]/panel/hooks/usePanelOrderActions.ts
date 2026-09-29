@@ -2,11 +2,8 @@
 
 import { useCallback, useState } from "react";
 import { confirmOrderAction, rejectOrderAction } from "../actions";
+import type { PanelActionResult } from "../lib/panel-action-result";
 import type { PlainPanelOrder } from "../lib/serialize-panel-order";
-
-type PanelActionResult =
-  | { ok: true; whatsappUrl: string | null }
-  | { ok: false; error: string };
 
 type PanelAction = (input: {
   readonly shopName: string;
