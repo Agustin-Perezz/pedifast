@@ -1,9 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { OrderStatus } from "@/domain/entities/order-status.enum";
-import { useOrderStream } from "../hooks/useOrderStream";
-import { usePrintTicket } from "../hooks/usePrintTicket";
+import { usePanelLiveOrders } from "../hooks/usePanelLiveOrders";
 import type { PlainPanelOrder } from "../lib/serialize-panel-order";
 import { PanelEmptyState } from "./PanelEmptyState";
 import { PanelOrderList } from "./PanelOrderList";
@@ -22,38 +19,10 @@ export function PanelOrdersLive({
   initialPending,
   initialConfirmed,
 }: PanelOrdersLiveProps) {
-  const [pending, setPending] = useState(initialPending);
-  const [confirmed, setConfirmed] = useState(initialConfirmed);
-  const { printingOrder, print } = usePrintTicket();
-
-  const handleNewOrder = useCallback((order: PlainPanelOrder) => {
-    setPending((current) =>
-      current.some((existing) => existing.id === order.id)
-        ? current
-        : [order, ...current],
-    );
-  }, []);
-
-  const handleOrderUpdated = useCallback((order: PlainPanelOrder) => {
-    const remove = (list: readonly PlainPanelOrder[]) =>
-      list.filter((existing) => existing.id !== order.id);
-
-    if (order.status === OrderStatus.Confirmed) {
-      setPending((list) => remove(list));
-      setConfirmed((list) => [order, ...remove(list)]);
-    } else if (order.status === OrderStatus.Rejected) {
-      setPending((list) => remove(list));
-      setConfirmed((list) => remove(list));
-    } else {
-      setPending((list) => [order, ...remove(list)]);
-      setConfirmed((list) => remove(list));
-    }
-  }, []);
-
-  useOrderStream({
+  const { pending, confirmed, printingOrder, print } = usePanelLiveOrders({
     shopId,
-    onNewOrder: handleNewOrder,
-    onOrderUpdated: handleOrderUpdated,
+    initialPending,
+    initialConfirmed,
   });
 
   return (
