@@ -45,9 +45,6 @@ export async function GET(
       };
 
       const unsubscribe = subscribeToShopOrders(shopId, send);
-      controller.enqueue(
-        encoder.encode(`event: connected\ndata: ${shopId}\n\n`),
-      );
 
       const keepalive = setInterval(() => {
         try {

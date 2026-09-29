@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { buildOrderStorageKey } from "@/app/[shopName]/pedir/lib/order-storage";
 import type { PendingWhatsappOrder } from "@/app/[shopName]/pedir/lib/whatsapp";
 import { buildWhatsappMessage } from "@/app/[shopName]/pedir/lib/whatsapp";
 import { isSafariBrowser } from "@/lib/utils/browser";
@@ -20,8 +21,6 @@ type ReceiptState = {
   readonly whatsappUrl: string | null;
 };
 
-const ORDER_KEY_PREFIX = "order-";
-
 export function useReceiptState({
   orderId,
   verifiedStatus,
@@ -34,7 +33,7 @@ export function useReceiptState({
       return;
     }
 
-    const stored = localStorage.getItem(`${ORDER_KEY_PREFIX}${orderId}`);
+    const stored = localStorage.getItem(buildOrderStorageKey(orderId));
     setOrder(stored ? safeParse(stored) : null);
   }, [isDashboardFlow, orderId]);
 
@@ -65,7 +64,7 @@ export function useReceiptState({
       return;
     }
 
-    localStorage.removeItem(`${ORDER_KEY_PREFIX}${orderId}`);
+    localStorage.removeItem(buildOrderStorageKey(orderId));
 
     if (isSafariBrowser()) {
       window.location.href = whatsappUrl;
