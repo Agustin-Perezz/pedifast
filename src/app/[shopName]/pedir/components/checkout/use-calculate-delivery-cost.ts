@@ -4,14 +4,8 @@ import { useState } from "react";
 
 import { AR_LOCALE } from "@/lib/utils/format";
 
-import {
-  calculateDeliveryCostAction,
-  geocodeAddressAction,
-} from "../../actions";
 import type { PlainShop } from "../../lib/serialize-shop";
-
-const SHOP_DEFAULT_LAT = 0;
-const SHOP_DEFAULT_LNG = 0;
+import { fetchDeliveryCost } from "./fetch-delivery-cost";
 
 type CalculateStatus = "idle" | "calculating" | "error" | "done";
 
@@ -37,35 +31,22 @@ export function useCalculateDeliveryCost(
     setStatus("calculating");
     setMessage("Calculando...");
 
-    const geocode = await geocodeAddressAction({ address: rawAddress });
-
-    if (!geocode.ok) {
-      setStatus("error");
-      setMessage(geocode.error);
-      onCostChange(null, null);
-
-      return;
-    }
-
-    const cost = await calculateDeliveryCostAction({
-      originLat: SHOP_DEFAULT_LAT,
-      originLng: SHOP_DEFAULT_LNG,
-      destLat: geocode.lat,
-      destLng: geocode.lng,
+    const result = await fetchDeliveryCost({
+      address: rawAddress,
       pricePerKm: shop.pricePerKm,
     });
 
-    if (!cost.ok) {
+    if (!result.ok) {
       setStatus("error");
-      setMessage(cost.error);
+      setMessage(result.error);
       onCostChange(null, null);
 
       return;
     }
 
     setStatus("done");
-    setMessage(`Envío: $${cost.shippingCost.toLocaleString(AR_LOCALE)}`);
-    onCostChange(cost.shippingCost, cost.distanceKm);
+    setMessage(`Envío: $${result.shippingCost.toLocaleString(AR_LOCALE)}`);
+    onCostChange(result.shippingCost, result.distanceKm);
   }
 
   return { status, message, calculateCost };

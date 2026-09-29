@@ -5,7 +5,7 @@ Next.js App Router delivery layer.
 - `page.tsx` = composition only — imports + arranges components, fetches server data. No logic, no inline styles.
 - `actions.ts` = server actions ONLY — mutations with `"use server"` (forms, writes, redirects). Every action MUST call `requireUser()` first. Never put read-only queries here.
 - `queries.ts` = read-only data fetchers for Server Components (no `"use server"`). Plain async functions that call the container and return data. Used by `page.tsx`.
-- `components/` = route-private components. Named with feature prefix (`BookCard`, not `Card`). 50-line hard limit per component, split at 40.
+- `components/` = route-private components. Named with feature prefix (`BookCard`, not `Card`). 70-line hard limit per component, split at 55.
 - `"use client"` only on leaf components that need hooks/events/browser APIs. Keep server/client boundary as low as possible.
 - `hooks/` = route-private hooks. Promote to `src/hooks/` if used by 2+ routes.
 - Import shared UI via `@/components/ui/*`, hooks via `@/hooks/*`, utils via `@/lib/*`.
