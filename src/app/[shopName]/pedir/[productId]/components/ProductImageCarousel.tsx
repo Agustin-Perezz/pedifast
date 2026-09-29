@@ -29,10 +29,7 @@ export function ProductImageCarousel({
     <div className="relative flex flex-col overflow-hidden bg-white md:w-1/2 md:rounded-2xl">
       <div className="scrollbar-hide flex snap-x snap-mandatory overflow-x-auto scroll-smooth">
         {images.map((image, index) => (
-          <div
-            key={`${image}-${index}`}
-            className="w-full shrink-0 snap-center"
-          >
+          <div key={image} className="w-full shrink-0 snap-center">
             <div className="flex items-center justify-center px-10 py-6">
               <img
                 src={image}
@@ -50,6 +47,9 @@ export function ProductImageCarousel({
         <div className="absolute right-0 bottom-10 left-0 flex items-center justify-center gap-2.5">
           {images.map((_, index) => (
             <button
+              // The dot's identity IS its position: it navigates to image N
+              // and E2E selectors depend on carousel-dot-N.
+              // biome-ignore lint/suspicious/noArrayIndexKey: positional UI identity
               key={index}
               type="button"
               aria-label={`Image ${index + 1}`}
