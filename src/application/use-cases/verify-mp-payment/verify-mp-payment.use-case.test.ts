@@ -123,4 +123,91 @@ describe("VerifyMpPaymentUseCase", () => {
 
     expect(result.verifiedStatus).toBe("pending");
   });
+
+  it("resolves pending while keeping the provided payment id when the order id has no shop prefix", async () => {
+    const { repository, getPaymentStatus } = makeRepository();
+    const useCase = new VerifyMpPaymentUseCase(repository);
+
+    const result = await useCase.execute({
+      orderId: "-1700000000000",
+      statusParam: null,
+      paymentIdParam: "pay-123",
+    });
+
+    expect(getPaymentStatus).not.toHaveBeenCalled();
+    expect(result.verifiedStatus).toBe("pending");
+    expect(result.paymentId).toBe("pay-123");
+    expect(result.isDashboardFlow).toBe(false);
+  });
+
+  it("normalizes an unknown MP status to pending", async () => {
+    const dashboardOrder = makeOrder({ shopId: 7 });
+    const { repository, updatePaymentStatus } = makeRepository({
+      findByExternalReference: vi.fn().mockResolvedValue(dashboardOrder),
+      getPaymentStatus: vi.fn().mockResolvedValue({
+        status: "in_process",
+        externalReference: "pizzeria-luca-1700000000000",
+      }),
+    });
+    const useCase = new VerifyMpPaymentUseCase(repository);
+
+    const result = await useCase.execute({
+      orderId: "pizzeria-luca-1700000000000",
+      statusParam: null,
+      paymentIdParam: "pay-123",
+    });
+
+    expect(result.verifiedStatus).toBe("pending");
+    expect(updatePaymentStatus).toHaveBeenCalledWith(
+      "pizzeria-luca-1700000000000",
+      "pending",
+    );
+  });
+
+  it("normalizes an efectivo MP status to pending and writes pending in a dashboard flow", async () => {
+    const dashboardOrder = makeOrder({ shopId: 7 });
+    const { repository, updatePaymentStatus } = makeRepository({
+      findByExternalReference: vi.fn().mockResolvedValue(dashboardOrder),
+      getPaymentStatus: vi.fn().mockResolvedValue({
+        status: "efectivo",
+        externalReference: "pizzeria-luca-1700000000000",
+      }),
+    });
+    const useCase = new VerifyMpPaymentUseCase(repository);
+
+    const result = await useCase.execute({
+      orderId: "pizzeria-luca-1700000000000",
+      statusParam: null,
+      paymentIdParam: "pay-123",
+    });
+
+    // normalizeStatus only trusts approved/rejected; MP's "efectivo" degrades
+    // to pending, which also exercises the cash-downgrade write branch.
+    expect(result.verifiedStatus).toBe("pending");
+    expect(result.paymentId).toBe("pay-123");
+    expect(updatePaymentStatus).toHaveBeenCalledWith(
+      "pizzeria-luca-1700000000000",
+      "pending",
+    );
+  });
+
+  it("does not write payment status in a non-dashboard flow on success", async () => {
+    const { repository, updatePaymentStatus } = makeRepository({
+      getPaymentStatus: vi.fn().mockResolvedValue({
+        status: "rejected",
+        externalReference: "pizzeria-luca-1700000000000",
+      }),
+    });
+    const useCase = new VerifyMpPaymentUseCase(repository);
+
+    const result = await useCase.execute({
+      orderId: "pizzeria-luca-1700000000000",
+      statusParam: null,
+      paymentIdParam: "pay-123",
+    });
+
+    expect(result.verifiedStatus).toBe("rejected");
+    expect(result.isDashboardFlow).toBe(false);
+    expect(updatePaymentStatus).not.toHaveBeenCalled();
+  });
 });

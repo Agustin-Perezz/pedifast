@@ -85,6 +85,46 @@ describe("Order", () => {
     expect(reference.shopName).toBe("pizzeria-luca");
     expect(reference.timestamp).toBe(1700000000000);
   });
+
+  it("returns a new order with only the status changed", () => {
+    const order = Order.create({
+      shopId: 1,
+      externalReference: "pizzeria-luca-1700000000000",
+      customerName: "Agustin",
+      deliveryMethod: DeliveryMethod.Pickup,
+      paymentMethod: PaymentMethod.Efectivo,
+      paymentStatus: PaymentStatus.Approved,
+      items: [],
+      total: 0,
+    });
+
+    const confirmed = order.withStatus(OrderStatus.Confirmed);
+
+    expect(confirmed.status).toBe(OrderStatus.Confirmed);
+    expect(confirmed.id).toBe(order.id);
+    expect(confirmed.paymentStatus).toBe(order.paymentStatus);
+    expect(order.status).toBe(OrderStatus.Pending);
+  });
+
+  it("returns a new order with only the payment status changed", () => {
+    const order = Order.create({
+      shopId: 1,
+      externalReference: "pizzeria-luca-1700000000000",
+      customerName: "Agustin",
+      deliveryMethod: DeliveryMethod.Delivery,
+      paymentMethod: PaymentMethod.MercadoPago,
+      paymentStatus: PaymentStatus.Pending,
+      items: [],
+      total: 0,
+    });
+
+    const approved = order.withPaymentStatus(PaymentStatus.Approved);
+
+    expect(approved.paymentStatus).toBe(PaymentStatus.Approved);
+    expect(approved.id).toBe(order.id);
+    expect(approved.status).toBe(order.status);
+    expect(order.paymentStatus).toBe(PaymentStatus.Pending);
+  });
 });
 
 describe("ShopItem", () => {
