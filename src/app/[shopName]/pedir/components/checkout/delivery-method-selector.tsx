@@ -5,8 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
 
-const PICKUP_LABEL = "Retiro en local";
-const DELIVERY_LABEL = "Envío a domicilio";
+import { DELIVERY_LABEL, PICKUP_LABEL } from "../../lib/checkout-labels";
 
 type DeliveryMethodSelectorProps = {
   readonly value: DeliveryMethod;

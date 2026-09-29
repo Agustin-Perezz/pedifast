@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { vibrateAddToCart } from "@/lib/utils/vibrate";
 
 import { useCart } from "../hooks/useCart";
@@ -28,14 +29,15 @@ export function AddToCartButton({
 
   if (quantity === 0) {
     return (
-      <button
+      <Button
         type="button"
-        className="border-border rounded-lg border px-4 py-1.5 text-sm font-medium"
+        variant="outline"
+        className="px-4 py-1.5"
         data-testid={`add-to-cart-${id}`}
         onClick={addItem}
       >
         {label}
-      </button>
+      </Button>
     );
   }
 

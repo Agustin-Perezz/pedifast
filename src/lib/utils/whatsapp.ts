@@ -1,5 +1,7 @@
 import type { Order } from "@/domain/entities/order.entity";
 
+import { AR_LOCALE } from "@/lib/utils/format";
+
 const CONFIRMATION_GREETING = "Tu pedido fue *confirmado*.";
 const CONFIRMATION_DETAIL_HEADER = "*Detalle:*";
 const CONFIRMATION_TOTAL_LABEL = "*Total:*";
@@ -33,7 +35,7 @@ export function buildCustomerConfirmationMessage(
     CONFIRMATION_DETAIL_HEADER,
     itemLines,
     "",
-    `${CONFIRMATION_TOTAL_LABEL} $${order.total.toLocaleString("es-AR")}`,
+    `${CONFIRMATION_TOTAL_LABEL} $${order.total.toLocaleString(AR_LOCALE)}`,
     "",
     CONFIRMATION_THANKS,
   ].join("\n");

@@ -1,5 +1,7 @@
 "use client";
 
+import { formatPrice } from "@/lib/utils/format";
+
 type CheckoutSummaryProps = {
   readonly itemsTotal: number;
   readonly deliveryCost: number | null;
@@ -13,21 +15,11 @@ export function CheckoutSummary({
 
   return (
     <div className="space-y-1 border-t pt-3" data-testid="checkout-summary">
-      <SummaryRow
-        label="Productos"
-        value={`$${itemsTotal.toLocaleString("es-AR")}`}
-      />
+      <SummaryRow label="Productos" value={formatPrice(itemsTotal)} />
       {deliveryCost !== null && (
-        <SummaryRow
-          label="Envío"
-          value={`$${deliveryCost.toLocaleString("es-AR")}`}
-        />
+        <SummaryRow label="Envío" value={formatPrice(deliveryCost)} />
       )}
-      <SummaryRow
-        label="Total"
-        value={`$${total.toLocaleString("es-AR")}`}
-        emphasized
-      />
+      <SummaryRow label="Total" value={formatPrice(total)} emphasized />
     </div>
   );
 }

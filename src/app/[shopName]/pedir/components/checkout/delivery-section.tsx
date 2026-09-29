@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
+import { AR_LOCALE } from "@/lib/utils/format";
 
 import type { PlainShop } from "../../lib/serialize-shop";
 import { AddressSection } from "./address-section";
@@ -47,8 +48,8 @@ export function DeliverySection({
       )}
       {deliveryCost !== null && distanceKm !== null && (
         <p className="text-sm text-zinc-500" data-testid="delivery-cost-label">
-          Costo de envío: ${deliveryCost.toLocaleString("es-AR")} ({distanceKm}{" "}
-          km)
+          Costo de envío: ${deliveryCost.toLocaleString(AR_LOCALE)} (
+          {distanceKm} km)
         </p>
       )}
     </div>

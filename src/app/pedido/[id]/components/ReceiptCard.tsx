@@ -1,9 +1,11 @@
-const DATE_TIME_FORMAT = new Intl.DateTimeFormat("es-AR", {
+import { AR_LOCALE } from "@/lib/utils/format";
+
+const DATE_TIME_FORMAT = new Intl.DateTimeFormat(AR_LOCALE, {
   dateStyle: "medium",
   timeStyle: "short",
 });
 
-const PRICE_FORMAT = new Intl.NumberFormat("es-AR", {
+const PRICE_FORMAT = new Intl.NumberFormat(AR_LOCALE, {
   style: "currency",
   currency: "ARS",
   minimumFractionDigits: 0,

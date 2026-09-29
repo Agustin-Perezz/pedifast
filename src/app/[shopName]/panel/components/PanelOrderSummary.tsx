@@ -1,13 +1,16 @@
 import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
+import { AR_LOCALE } from "@/lib/utils/format";
+
+import { PICKUP_LABEL } from "../../pedir/lib/checkout-labels";
 import type { PlainPanelOrder } from "../lib/serialize-panel-order";
 
-const CURRENCY_FORMAT = new Intl.NumberFormat("es-AR", {
+const CURRENCY_FORMAT = new Intl.NumberFormat(AR_LOCALE, {
   style: "currency",
   currency: "ARS",
   minimumFractionDigits: 0,
 });
 
-const TIME_FORMAT = new Intl.DateTimeFormat("es-AR", {
+const TIME_FORMAT = new Intl.DateTimeFormat(AR_LOCALE, {
   hour: "2-digit",
   minute: "2-digit",
 });
@@ -31,7 +34,7 @@ export function PanelOrderSummary({ order }: PanelOrderSummaryProps) {
         <span className="text-xs font-medium text-zinc-600">
           {order.deliveryMethod === DeliveryMethod.Delivery
             ? `Envío: ${order.address ?? ""}`
-            : "Retiro en local"}
+            : PICKUP_LABEL}
         </span>
       </div>
       <div className="space-y-1">

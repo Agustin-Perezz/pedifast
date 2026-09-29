@@ -2,6 +2,10 @@ import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
 import type { OrderItemInput } from "@/domain/entities/order.entity";
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 
+import { AR_LOCALE } from "@/lib/utils/format";
+
+import { CASH_LABEL, DELIVERY_LABEL, PICKUP_LABEL } from "./checkout-labels";
+
 export type PendingWhatsappOrderItem = OrderItemInput;
 
 export type PendingWhatsappOrder = {
@@ -16,10 +20,7 @@ export type PendingWhatsappOrder = {
   readonly total: number;
 };
 
-const PICKUP_LABEL = "Retiro en local";
-const DELIVERY_LABEL = "Envío a domicilio";
-const CASH_LABEL = "Efectivo";
-const MP_LABEL = "MercadoPago ✅";
+const MP_CONFIRMED_LABEL = "MercadoPago ✅";
 
 export { buildWhatsappUrl } from "@/lib/utils/whatsapp";
 
@@ -29,15 +30,17 @@ export function buildWhatsappMessage(order: PendingWhatsappOrder): string {
       ? PICKUP_LABEL
       : DELIVERY_LABEL;
   const paymentLabel =
-    order.paymentMethod === PaymentMethod.Efectivo ? CASH_LABEL : MP_LABEL;
+    order.paymentMethod === PaymentMethod.Efectivo
+      ? CASH_LABEL
+      : MP_CONFIRMED_LABEL;
 
   const productLines = order.items
     .map((item) => {
-      const mainLine = `• ${item.quantity}x ${item.name} - $${item.unitPrice.toLocaleString("es-AR")}`;
+      const mainLine = `• ${item.quantity}x ${item.name} - $${item.unitPrice.toLocaleString(AR_LOCALE)}`;
       const accLines = (item.accessories ?? [])
         .filter((a) => a.priceDelta > 0)
         .map(
-          (a) => `  └ ${a.name} (+$${a.priceDelta.toLocaleString("es-AR")})`,
+          (a) => `  └ ${a.name} (+$${a.priceDelta.toLocaleString(AR_LOCALE)})`,
         );
 
       return [mainLine, ...accLines].join("\n");
@@ -56,7 +59,7 @@ export function buildWhatsappMessage(order: PendingWhatsappOrder): string {
   }
 
   lines.push("", "*Productos:*", productLines, "");
-  lines.push(`*Total:* $${order.total.toLocaleString("es-AR")}`);
+  lines.push(`*Total:* $${order.total.toLocaleString(AR_LOCALE)}`);
   lines.push(`*Pago:* ${paymentLabel}`);
 
   if (order.notas) {

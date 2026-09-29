@@ -1,5 +1,7 @@
 "use client";
 
+import { formatPrice } from "@/lib/utils/format";
+
 import { AddToCartButton } from "../../components/AddToCartButton";
 import { CATEGORY_LABELS } from "../../lib/category-labels";
 
@@ -45,8 +47,4 @@ export function ProductInfoCard({
       </div>
     </div>
   );
-}
-
-function formatPrice(price: number): string {
-  return `$${price.toLocaleString("es-AR")}`;
 }
