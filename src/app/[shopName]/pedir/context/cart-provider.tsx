@@ -2,38 +2,22 @@
 
 import { useCallback, useMemo, useReducer } from "react";
 import {
+  addItemAction,
   type CartProduct,
   cartReducer,
+  clearCartAction,
   getCartTotals,
   getItemQuantity,
   hasItemsWithAccessories,
   hasRequiredGroupsMissing,
+  removeItemAction,
+  setAccessoriesAction,
 } from "../lib/cart-reducer";
 import type {
   PlainAccessoryGroup,
   PlainAccessoryOption,
 } from "../lib/serialize-catalog";
 import { CartContext, EMPTY_CART } from "./cart-context";
-
-const addItemAction = (product: CartProduct) => ({
-  type: "ADD_ITEM" as const,
-  product,
-});
-const removeItemAction = (itemId: number) => ({
-  type: "REMOVE_ITEM" as const,
-  itemId,
-});
-const clearCartAction = () => ({ type: "CLEAR_CART" as const });
-const setAccessoriesAction = (
-  itemId: number,
-  group: PlainAccessoryGroup,
-  selectedOptions: readonly PlainAccessoryOption[],
-) => ({
-  type: "SET_ACCESSORIES" as const,
-  itemId,
-  group,
-  selectedOptions,
-});
 
 export function CartProvider({
   children,
@@ -57,11 +41,14 @@ export function CartProvider({
     (product: CartProduct) => dispatch(addItemAction(product)),
     [],
   );
+
   const removeItem = useCallback(
     (itemId: number) => dispatch(removeItemAction(itemId)),
     [],
   );
+
   const clearCart = useCallback(() => dispatch(clearCartAction()), []);
+
   const setAccessories = useCallback(
     (
       itemId: number,
