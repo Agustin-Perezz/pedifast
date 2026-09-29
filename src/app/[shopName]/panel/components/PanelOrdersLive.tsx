@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { OrderStatus } from "@/domain/entities/order-status.enum";
 import { useOrderStream } from "../hooks/useOrderStream";
 import { usePrintTicket } from "../hooks/usePrintTicket";
 import type { PlainPanelOrder } from "../lib/serialize-panel-order";
@@ -37,10 +38,10 @@ export function PanelOrdersLive({
     const remove = (list: readonly PlainPanelOrder[]) =>
       list.filter((existing) => existing.id !== order.id);
 
-    if (order.status === "confirmed") {
+    if (order.status === OrderStatus.Confirmed) {
       setPending((list) => remove(list));
       setConfirmed((list) => [order, ...remove(list)]);
-    } else if (order.status === "rejected") {
+    } else if (order.status === OrderStatus.Rejected) {
       setPending((list) => remove(list));
       setConfirmed((list) => remove(list));
     } else {

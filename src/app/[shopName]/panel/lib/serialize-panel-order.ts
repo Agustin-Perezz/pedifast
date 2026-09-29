@@ -15,12 +15,12 @@ export type PlainPanelOrder = {
   readonly customerName: string;
   readonly customerPhone: string | null;
   readonly notes: string | null;
-  readonly deliveryMethod: `${DeliveryMethod}`;
+  readonly deliveryMethod: DeliveryMethod;
   readonly address: string | null;
   readonly items: readonly PlainPanelItem[];
   readonly total: number;
   readonly deliveryCost: number;
-  readonly status: `${OrderStatus}`;
+  readonly status: OrderStatus;
   readonly createdAt: string;
 };
 
