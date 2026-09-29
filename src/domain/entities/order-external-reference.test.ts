@@ -49,6 +49,18 @@ describe("OrderExternalReference", () => {
     ).toThrow(OrderExternalReferenceFormatError);
   });
 
+  it("rejects direct creation with an empty shop name", () => {
+    expect(() => OrderExternalReference.create("", 1700000000000)).toThrow(
+      OrderExternalReferenceFormatError,
+    );
+  });
+
+  it("rejects direct creation with a non-positive timestamp", () => {
+    expect(() => OrderExternalReference.create("pizzeria-luca", 0)).toThrow(
+      OrderExternalReferenceFormatError,
+    );
+  });
+
   it("round-trips through toReference and fromReference", () => {
     const original = OrderExternalReference.create(
       "pizzeria-luca",
