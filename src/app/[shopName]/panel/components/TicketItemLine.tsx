@@ -9,6 +9,9 @@ export function TicketItemLine({ item }: TicketItemLineProps) {
       </div>
       {item.accessories.map((accessory, occurrenceIndex) => (
         <p
+          // Names may repeat (the same accessory twice), so name alone would
+          // collide; name + prior occurrence is stable across reorders.
+          // biome-ignore lint/suspicious/noArrayIndexKey: duplicate-name disambiguation
           key={`${accessory.name}-${occurrenceIndex}`}
           className="m-0 ml-7 text-[11px] text-gray-700"
         >

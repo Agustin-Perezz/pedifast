@@ -28,7 +28,7 @@
       "preset": "recommended",
       "suspicious": {
         "noUnknownAtRules": "off",
-        "noArrayIndexKey": "off"
+        "noArrayIndexKey": "error"
       },
       "style": {
         "noExcessiveLinesPerFile": "off"
