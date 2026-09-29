@@ -3,15 +3,13 @@ import { AR_LOCALE } from "@/lib/utils/format";
 
 import { PICKUP_LABEL } from "../../pedir/lib/checkout-labels";
 import type { PlainPanelOrder } from "../lib/serialize-panel-order";
+import { TicketItemLine } from "./TicketItemLine";
+import { TicketTotals } from "./TicketTotals";
 
 const DATE_TIME_FORMAT = new Intl.DateTimeFormat(AR_LOCALE, {
   dateStyle: "short",
   timeStyle: "short",
 });
-
-type PrintableTicketProps = {
-  readonly order: PlainPanelOrder;
-};
 
 export function PrintableTicket({ order }: PrintableTicketProps) {
   return (
@@ -45,47 +43,6 @@ export function PrintableTicket({ order }: PrintableTicketProps) {
   );
 }
 
-type TicketItemLineProps = {
-  readonly item: PlainPanelOrder["items"][number];
-};
-
-function TicketItemLine({ item }: TicketItemLineProps) {
-  return (
-    <div className="my-0.5">
-      <div className="flex gap-1.5 text-[13px]">
-        <span className="min-w-6 font-bold">{item.quantity}x</span>
-        <span>{item.name}</span>
-      </div>
-      {item.accessories.map((accessory, index) => (
-        <p key={index} className="m-0 ml-7 text-[11px] text-gray-700">
-          + {accessory.name}
-        </p>
-      ))}
-    </div>
-  );
-}
-
-type TicketTotalsProps = {
+type PrintableTicketProps = {
   readonly order: PlainPanelOrder;
 };
-
-function TicketTotals({ order }: TicketTotalsProps) {
-  return (
-    <div>
-      <hr className="my-1.5 border-t border-dashed border-black" />
-      {order.deliveryCost > 0 ? (
-        <div className="my-0.5 flex justify-between text-xs">
-          <span>Envio</span>
-          <span>${order.deliveryCost.toLocaleString(AR_LOCALE)}</span>
-        </div>
-      ) : null}
-      <div className="my-1 flex justify-between text-[15px] font-bold">
-        <span>TOTAL</span>
-        <span>${order.total.toLocaleString(AR_LOCALE)}</span>
-      </div>
-      {order.notes ? (
-        <p className="m-0 text-[11px] italic">NOTAS: {order.notes}</p>
-      ) : null}
-    </div>
-  );
-}
