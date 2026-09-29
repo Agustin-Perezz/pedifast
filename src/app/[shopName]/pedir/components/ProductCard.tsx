@@ -1,3 +1,5 @@
+import { formatPrice } from "@/lib/utils/format";
+
 import type { PlainShopItem } from "../lib/serialize-catalog";
 
 import { AddToCartButton } from "./AddToCartButton";
@@ -50,8 +52,4 @@ export function ProductCard({
       </div>
     </div>
   );
-}
-
-function formatPrice(price: number): string {
-  return `$${price.toLocaleString("es-AR")}`;
 }

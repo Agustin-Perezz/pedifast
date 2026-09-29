@@ -5,8 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
 
-const PICKUP_LABEL = "Retiro en local";
-const DELIVERY_LABEL = "Envío a domicilio";
+import { DELIVERY_LABEL, PICKUP_LABEL } from "../../lib/checkout-labels";
 
 type DeliveryMethodSelectorProps = {
   readonly value: DeliveryMethod;
@@ -38,15 +37,13 @@ export function DeliveryMethodSelector({
   );
 }
 
-function RadioOption({
-  value,
-  label,
-  checked,
-}: {
+type RadioOptionProps = {
   readonly value: DeliveryMethod;
   readonly label: string;
   readonly checked: boolean;
-}) {
+};
+
+function RadioOption({ value, label, checked }: RadioOptionProps) {
   return (
     <div className="flex items-center gap-2">
       <RadioGroupItem value={value} id={`delivery-${value}`} />

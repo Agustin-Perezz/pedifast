@@ -1,6 +1,6 @@
 import type { PendingWhatsappOrder } from "./whatsapp";
 
-const ORDER_KEY_PREFIX = "order-";
+export const ORDER_KEY_PREFIX = "order-";
 
 type StorageLike = {
   setItem(key: string, value: string): void;

@@ -1,4 +1,5 @@
 import type { PendingWhatsappOrder } from "@/app/[shopName]/pedir/lib/whatsapp";
+import { PaymentStatus } from "@/domain/entities/payment-status.enum";
 import { ReceiptCard } from "./ReceiptCard";
 import { ReceiptStatusBadge } from "./ReceiptStatusBadge";
 
@@ -23,7 +24,9 @@ export function ReceiptOrderDetails({
 }: ReceiptOrderDetailsProps) {
   return (
     <main className="flex flex-1 flex-col gap-6 px-4 py-6">
-      <ReceiptStatusBadge status={isConfirmed ? "approved" : "pending"} />
+      <ReceiptStatusBadge
+        status={isConfirmed ? PaymentStatus.Approved : PaymentStatus.Pending}
+      />
       <p className="text-center text-sm text-zinc-500">
         Gracias, {order.nombre}.
       </p>

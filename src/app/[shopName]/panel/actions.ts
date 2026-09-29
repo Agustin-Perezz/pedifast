@@ -15,10 +15,7 @@ import {
 } from "@/lib/shared/infrastructure/panel-session";
 import { createSupabaseServerClient } from "@/lib/shared/infrastructure/supabase.server";
 import { buildOrderConfirmationWhatsappUrl } from "@/lib/utils/whatsapp";
-
-export type PanelActionResult =
-  | { ok: true; whatsappUrl: string | null }
-  | { ok: false; error: string };
+import type { PanelActionResult } from "./lib/panel-action-result";
 
 const LOGIN_ERRORS = {
   SHOP_NOT_FOUND: "No encontramos la tienda",

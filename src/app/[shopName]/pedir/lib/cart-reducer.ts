@@ -1,3 +1,4 @@
+import { AccessorySelectionMode } from "@/domain/entities/accessory-selection-mode.enum";
 import type {
   PlainAccessoryGroup,
   PlainAccessoryOption,
@@ -36,8 +37,6 @@ export type CartAction =
       selectedOptions: readonly PlainAccessoryOption[];
     }
   | { type: "CLEAR_CART" };
-
-const SINGLE_SELECTION_MODE = "single";
 
 export function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
@@ -115,7 +114,7 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
       const nextAccessories =
         action.selectedOptions.length === 0
           ? keep
-          : action.group.selectionMode === SINGLE_SELECTION_MODE
+          : action.group.selectionMode === AccessorySelectionMode.Single
             ? [
                 ...keep,
                 ...action.selectedOptions.map((option) =>

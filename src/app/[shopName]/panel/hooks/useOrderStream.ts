@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { ORDER_STREAM_EVENT_NAMES } from "@/lib/shared/infrastructure/order-stream-events";
 import { playNotificationSound } from "@/lib/utils/notification-sound";
 import type { PlainPanelOrder } from "../lib/serialize-panel-order";
 
@@ -28,14 +29,17 @@ export function useOrderStream({
       };
     };
 
-    eventSource.addEventListener("new_order", (event) => {
+    eventSource.addEventListener(ORDER_STREAM_EVENT_NAMES.NewOrder, (event) => {
       handle(onNewOrder)(event as MessageEvent<string>);
       playNotificationSound();
     });
 
-    eventSource.addEventListener("order_updated", (event) => {
-      handle(onOrderUpdated)(event as MessageEvent<string>);
-    });
+    eventSource.addEventListener(
+      ORDER_STREAM_EVENT_NAMES.OrderUpdated,
+      (event) => {
+        handle(onOrderUpdated)(event as MessageEvent<string>);
+      },
+    );
 
     // EventSource auto-reconnects on error by default.
 

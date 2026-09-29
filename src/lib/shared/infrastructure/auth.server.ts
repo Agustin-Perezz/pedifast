@@ -1,14 +1,16 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/shared/infrastructure/supabase.server";
 
+import { DASHBOARD_PATH, SIGNIN_PATH } from "./auth-paths";
+
+export { DASHBOARD_PATH, SIGNIN_PATH };
+
 export type User = {
   id: string;
   email: string;
   name?: string;
 };
 
-export const SIGNIN_PATH = "/signin";
-export const DASHBOARD_PATH = "/dashboard";
 export const AUTH_CALLBACK_PATH = "/auth/callback";
 
 export async function getUser(): Promise<User | null> {

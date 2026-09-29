@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { AR_LOCALE } from "@/lib/utils/format";
+
 import {
   calculateDeliveryCostAction,
   geocodeAddressAction,
@@ -62,7 +64,7 @@ export function useCalculateDeliveryCost(
     }
 
     setStatus("done");
-    setMessage(`Envío: $${cost.shippingCost.toLocaleString("es-AR")}`);
+    setMessage(`Envío: $${cost.shippingCost.toLocaleString(AR_LOCALE)}`);
     onCostChange(cost.shippingCost, cost.distanceKm);
   }
 

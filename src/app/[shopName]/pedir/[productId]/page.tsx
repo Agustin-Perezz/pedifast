@@ -7,11 +7,18 @@ import { getShopItemDetail } from "./queries";
 
 export const revalidate = 30;
 
+type ProductDetailPageParams = {
+  readonly shopName: string;
+  readonly productId: string;
+};
+
+type ProductDetailPageProps = {
+  readonly params: Promise<ProductDetailPageParams>;
+};
+
 export default async function ProductDetailPage({
   params,
-}: {
-  params: Promise<{ shopName: string; productId: string }>;
-}) {
+}: ProductDetailPageProps) {
   const { shopName, productId } = await params;
   const productIdNumber = Number(productId);
 

@@ -3,11 +3,20 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import type { Order } from "@/domain/entities/order.entity";
 import type { OrderRow } from "@/infrastructure/database/postgres/entities/order.entity";
 import { orderMapper } from "@/infrastructure/database/postgres/mappers/order.mapper";
+import { ORDER_STREAM_EVENT_NAMES } from "@/lib/shared/infrastructure/order-stream-events";
 import { getSupabaseServiceRoleClient } from "@/lib/shared/infrastructure/supabase.service-role";
 
+export { ORDER_STREAM_EVENT_NAMES } from "@/lib/shared/infrastructure/order-stream-events";
+
 export type OrderStreamEvent =
-  | { readonly type: "new_order"; readonly order: Order }
-  | { readonly type: "order_updated"; readonly order: Order };
+  | {
+      readonly type: typeof ORDER_STREAM_EVENT_NAMES.NewOrder;
+      readonly order: Order;
+    }
+  | {
+      readonly type: typeof ORDER_STREAM_EVENT_NAMES.OrderUpdated;
+      readonly order: Order;
+    };
 
 type OrderListener = (event: OrderStreamEvent) => void;
 
@@ -51,7 +60,7 @@ function ensureHub(shopId: number): ShopStreamHub {
       },
       (payload) => {
         sendToShop(shopId, {
-          type: "new_order",
+          type: ORDER_STREAM_EVENT_NAMES.NewOrder,
           order: orderMapper.toDomain(payload.new as OrderRow),
         });
       },
@@ -66,7 +75,7 @@ function ensureHub(shopId: number): ShopStreamHub {
       },
       (payload) => {
         sendToShop(shopId, {
-          type: "order_updated",
+          type: ORDER_STREAM_EVENT_NAMES.OrderUpdated,
           order: orderMapper.toDomain(payload.new as OrderRow),
         });
       },

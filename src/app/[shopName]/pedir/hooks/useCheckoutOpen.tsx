@@ -2,17 +2,21 @@
 
 import { createContext, useCallback, useContext, useState } from "react";
 
-const CheckoutOpenContext = createContext<{
+type CheckoutOpenContextValue = {
   readonly isOpen: boolean;
   readonly openCheckout: () => void;
   readonly closeCheckout: () => void;
-} | null>(null);
+};
 
-export function CheckoutOpenProvider({
-  children,
-}: {
+const CheckoutOpenContext = createContext<CheckoutOpenContextValue | null>(
+  null,
+);
+
+type CheckoutOpenProviderProps = {
   readonly children: React.ReactNode;
-}) {
+};
+
+export function CheckoutOpenProvider({ children }: CheckoutOpenProviderProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

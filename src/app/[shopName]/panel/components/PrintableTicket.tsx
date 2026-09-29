@@ -1,6 +1,10 @@
+import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
+import { AR_LOCALE } from "@/lib/utils/format";
+
+import { PICKUP_LABEL } from "../../pedir/lib/checkout-labels";
 import type { PlainPanelOrder } from "../lib/serialize-panel-order";
 
-const DATE_TIME_FORMAT = new Intl.DateTimeFormat("es-AR", {
+const DATE_TIME_FORMAT = new Intl.DateTimeFormat(AR_LOCALE, {
   dateStyle: "short",
   timeStyle: "short",
 });
@@ -28,9 +32,9 @@ export function PrintableTicket({ order }: PrintableTicketProps) {
         <p className="my-0.5 text-[11px]">Tel: {order.customerPhone}</p>
       ) : null}
       <p className="my-0.5 text-[11px]">
-        {order.deliveryMethod === "delivery"
+        {order.deliveryMethod === DeliveryMethod.Delivery
           ? `ENVIO: ${order.address ?? ""}`
-          : "RETIRO EN LOCAL"}
+          : PICKUP_LABEL.toUpperCase()}
       </p>
       <hr className="my-1.5 border-t border-dashed border-black" />
       {order.items.map((item, index) => (
@@ -72,12 +76,12 @@ function TicketTotals({ order }: TicketTotalsProps) {
       {order.deliveryCost > 0 ? (
         <div className="my-0.5 flex justify-between text-xs">
           <span>Envio</span>
-          <span>${order.deliveryCost.toLocaleString("es-AR")}</span>
+          <span>${order.deliveryCost.toLocaleString(AR_LOCALE)}</span>
         </div>
       ) : null}
       <div className="my-1 flex justify-between text-[15px] font-bold">
         <span>TOTAL</span>
-        <span>${order.total.toLocaleString("es-AR")}</span>
+        <span>${order.total.toLocaleString(AR_LOCALE)}</span>
       </div>
       {order.notes ? (
         <p className="m-0 text-[11px] italic">NOTAS: {order.notes}</p>

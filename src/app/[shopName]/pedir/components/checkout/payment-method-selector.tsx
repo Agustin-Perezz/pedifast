@@ -5,8 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 
-const CASH_LABEL = "Efectivo";
-const MP_LABEL = "MercadoPago";
+import { CASH_LABEL, MP_LABEL } from "../../lib/checkout-labels";
 
 type PaymentMethodSelectorProps = {
   readonly value: PaymentMethod;

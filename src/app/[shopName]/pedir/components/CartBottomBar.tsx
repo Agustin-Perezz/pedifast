@@ -3,6 +3,7 @@
 import { ClipboardList } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { formatPrice } from "@/lib/utils/format";
 
 import { useCart } from "../hooks/useCart";
 import { useCheckoutOpen } from "../hooks/useCheckoutOpen";
@@ -42,8 +43,4 @@ export function CartBottomBar() {
       </div>
     </div>
   );
-}
-
-function formatPrice(price: number): string {
-  return `$${price.toLocaleString("es-AR")}`;
 }

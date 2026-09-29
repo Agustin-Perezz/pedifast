@@ -1,13 +1,21 @@
 import { ReceiptView } from "./components/ReceiptView";
 import { verifyReceiptPayment } from "./queries";
 
+type ReceiptPageParams = {
+  readonly id: string;
+};
+
+type ReceiptPageSearchParams = Record<string, string | string[] | undefined>;
+
+type ReceiptPageProps = {
+  readonly params: Promise<ReceiptPageParams>;
+  readonly searchParams: Promise<ReceiptPageSearchParams>;
+};
+
 export default async function ReceiptPage({
   params,
   searchParams,
-}: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
+}: ReceiptPageProps) {
   const { id } = await params;
   const resolvedSearchParams = await searchParams;
   const urlSearchParams = new URLSearchParams();

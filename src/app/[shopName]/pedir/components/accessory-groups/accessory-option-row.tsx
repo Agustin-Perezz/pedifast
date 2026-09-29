@@ -1,6 +1,7 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
+import { formatPrice } from "@/lib/utils/format";
 
 import type { PlainAccessoryOption } from "../../lib/serialize-catalog";
 
@@ -26,8 +27,4 @@ export function AccessoryOptionRow({
       </Label>
     </div>
   );
-}
-
-function formatPrice(price: number): string {
-  return `$${price.toLocaleString("es-AR")}`;
 }

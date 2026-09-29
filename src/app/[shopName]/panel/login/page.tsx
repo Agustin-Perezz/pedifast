@@ -6,13 +6,23 @@ import {
 
 import { PanelLoginForm } from "./components/PanelLoginForm";
 
+type PanelLoginPageParams = {
+  readonly shopName: string;
+};
+
+type PanelLoginPageSearchParams = {
+  readonly error?: string;
+};
+
+type PanelLoginPageProps = {
+  readonly params: Promise<PanelLoginPageParams>;
+  readonly searchParams: Promise<PanelLoginPageSearchParams>;
+};
+
 export default async function PanelLoginPage({
   params,
   searchParams,
-}: {
-  params: Promise<{ shopName: string }>;
-  searchParams: Promise<{ error?: string }>;
-}) {
+}: PanelLoginPageProps) {
   const { shopName } = await params;
   const { error } = await searchParams;
   const session = await getPanelSession();

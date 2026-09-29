@@ -1,5 +1,6 @@
 import { MercadoPagoConfig, Payment } from "mercadopago";
 
+import { PaymentStatus } from "@/domain/entities/payment-status.enum";
 import type { MpPaymentClient, MpPaymentStatusResult } from "./interfaces";
 
 export class MpPaymentService implements MpPaymentClient {
@@ -11,7 +12,7 @@ export class MpPaymentService implements MpPaymentClient {
     const payment = await new Payment(config).get({ id: paymentId });
 
     return {
-      status: payment.status ?? "pending",
+      status: payment.status ?? PaymentStatus.Pending,
       externalReference: payment.external_reference ?? null,
     };
   }

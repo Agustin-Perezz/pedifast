@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+
 import { useCart } from "../hooks/useCart";
 import type { PlainShop } from "../lib/serialize-shop";
 import { submitCheckout } from "../lib/submit-checkout";
@@ -53,13 +55,13 @@ export function CheckoutFormStep({ shop }: CheckoutFormStepProps) {
 
 function SubmitButton({ submitting }: { readonly submitting: boolean }) {
   return (
-    <button
+    <Button
       type="submit"
-      className="bg-zinc-900 w-full rounded-lg py-3 font-semibold text-white disabled:opacity-50"
+      className="w-full rounded-lg py-3 font-semibold"
       data-testid="checkout-submit"
       disabled={submitting}
     >
       {submitting ? "Enviando..." : "Confirmar pedido"}
-    </button>
+    </Button>
   );
 }

@@ -1,4 +1,5 @@
 import type { CatalogItem } from "@/application/use-cases/get-shop-catalog/get-shop-catalog.response.dto";
+import type { AccessoryGroupWithOptions } from "@/domain/entities/accessory-group-with-options";
 
 export type PlainAccessoryOption = {
   readonly id: number;
@@ -73,20 +74,9 @@ export function serializeCategoryGroups({
     }));
 }
 
-function serializeGroup(groupWithOptions: {
-  readonly group: {
-    readonly id: number;
-    readonly name: string;
-    readonly selectionMode: "single" | "multi";
-    readonly isRequired: boolean;
-  };
-  readonly options: readonly {
-    readonly id: number;
-    readonly name: string;
-    readonly priceDelta: number;
-    readonly sortOrder: number;
-  }[];
-}): PlainAccessoryGroup {
+function serializeGroup(
+  groupWithOptions: AccessoryGroupWithOptions,
+): PlainAccessoryGroup {
   return {
     id: groupWithOptions.group.id,
     name: groupWithOptions.group.name,

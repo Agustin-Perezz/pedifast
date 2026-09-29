@@ -1,6 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import {
+  DASHBOARD_PATH,
+  SIGNIN_PATH,
+} from "@/lib/shared/infrastructure/auth-paths";
+import {
   supabasePublishableKey,
   supabaseUrl,
 } from "@/lib/shared/infrastructure/env";
@@ -11,8 +15,6 @@ import {
 } from "@/lib/shared/infrastructure/security-headers";
 
 const PROTECTED_PREFIXES = ["/dashboard"] as const;
-const SIGNIN_PATH = "/signin";
-const DASHBOARD_PATH = "/dashboard";
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
