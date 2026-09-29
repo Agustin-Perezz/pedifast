@@ -1,4 +1,6 @@
+import type { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
 import type { Order } from "@/domain/entities/order.entity";
+import type { OrderStatus } from "@/domain/entities/order-status.enum";
 
 export type PlainPanelItem = {
   readonly name: string;
@@ -13,12 +15,12 @@ export type PlainPanelOrder = {
   readonly customerName: string;
   readonly customerPhone: string | null;
   readonly notes: string | null;
-  readonly deliveryMethod: "delivery" | "pickup";
+  readonly deliveryMethod: `${DeliveryMethod}`;
   readonly address: string | null;
   readonly items: readonly PlainPanelItem[];
   readonly total: number;
   readonly deliveryCost: number;
-  readonly status: "pending" | "confirmed" | "rejected";
+  readonly status: `${OrderStatus}`;
   readonly createdAt: string;
 };
 

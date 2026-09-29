@@ -1,9 +1,8 @@
+import { PaymentMethod } from "@/domain/entities/payment-method.enum";
+import { PaymentStatus } from "@/domain/entities/payment-status.enum";
 import type { VerifyMpPaymentRepository } from "./verify-mp-payment.repository.interface";
 import type { VerifyMpPaymentRequestDto } from "./verify-mp-payment.request.dto";
 import type { VerifyMpPaymentResponseDto } from "./verify-mp-payment.response.dto";
-
-const CASH_STATUS = "efectivo";
-const PENDING_STATUS = "pending";
 
 export class VerifyMpPaymentUseCase {
   constructor(private readonly repository: VerifyMpPaymentRepository) {}
@@ -14,9 +13,9 @@ export class VerifyMpPaymentUseCase {
     const dbOrder = await this.repository.findByExternalReference(dto.orderId);
     const isDashboardFlow = dbOrder !== null;
 
-    if (dto.statusParam === CASH_STATUS) {
+    if (dto.statusParam === PaymentMethod.Efectivo) {
       return {
-        verifiedStatus: CASH_STATUS,
+        verifiedStatus: PaymentMethod.Efectivo,
         paymentId: null,
         isDashboardFlow,
       };
@@ -24,7 +23,7 @@ export class VerifyMpPaymentUseCase {
 
     if (!dto.paymentIdParam) {
       return {
-        verifiedStatus: PENDING_STATUS,
+        verifiedStatus: PaymentStatus.Pending,
         paymentId: null,
         isDashboardFlow,
       };
@@ -34,7 +33,7 @@ export class VerifyMpPaymentUseCase {
 
     if (!shopName) {
       return {
-        verifiedStatus: PENDING_STATUS,
+        verifiedStatus: PaymentStatus.Pending,
         paymentId: dto.paymentIdParam,
         isDashboardFlow,
       };
@@ -48,7 +47,7 @@ export class VerifyMpPaymentUseCase {
 
       if (payment.externalReference !== dto.orderId) {
         return {
-          verifiedStatus: PENDING_STATUS,
+          verifiedStatus: PaymentStatus.Pending,
           paymentId: dto.paymentIdParam,
           isDashboardFlow,
         };
@@ -59,7 +58,9 @@ export class VerifyMpPaymentUseCase {
       if (isDashboardFlow) {
         await this.repository.updatePaymentStatus(
           dto.orderId,
-          verifiedStatus === "efectivo" ? PENDING_STATUS : verifiedStatus,
+          verifiedStatus === PaymentMethod.Efectivo
+            ? PaymentStatus.Pending
+            : verifiedStatus,
         );
       }
 
@@ -70,7 +71,7 @@ export class VerifyMpPaymentUseCase {
       };
     } catch {
       return {
-        verifiedStatus: PENDING_STATUS,
+        verifiedStatus: PaymentStatus.Pending,
         paymentId: dto.paymentIdParam,
         isDashboardFlow,
       };
@@ -85,10 +86,13 @@ export class VerifyMpPaymentUseCase {
   private normalizeStatus(
     status: string,
   ): VerifyMpPaymentResponseDto["verifiedStatus"] {
-    if (status === "approved" || status === "rejected") {
+    if (
+      status === PaymentStatus.Approved ||
+      status === PaymentStatus.Rejected
+    ) {
       return status;
     }
 
-    return PENDING_STATUS;
+    return PaymentStatus.Pending;
   }
 }

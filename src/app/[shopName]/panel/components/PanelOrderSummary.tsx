@@ -1,3 +1,4 @@
+import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
 import type { PlainPanelOrder } from "../lib/serialize-panel-order";
 
 const CURRENCY_FORMAT = new Intl.NumberFormat("es-AR", {
@@ -28,7 +29,7 @@ export function PanelOrderSummary({ order }: PanelOrderSummaryProps) {
           </p>
         </div>
         <span className="text-xs font-medium text-zinc-600">
-          {order.deliveryMethod === "delivery"
+          {order.deliveryMethod === DeliveryMethod.Delivery
             ? `Envío: ${order.address ?? ""}`
             : "Retiro en local"}
         </span>

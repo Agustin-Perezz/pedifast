@@ -1,13 +1,12 @@
 "use client";
 
+import { AccessorySelectionMode } from "@/domain/entities/accessory-selection-mode.enum";
 import type {
   PlainAccessoryGroup,
   PlainAccessoryOption,
 } from "../lib/serialize-catalog";
 import { MultiSelectGroup } from "./accessory-groups/multi-select-group";
 import { SingleSelectGroup } from "./accessory-groups/single-select-group";
-
-const SINGLE_SELECTION_MODE = "single";
 
 type AccessoryGroupSectionProps = {
   readonly group: PlainAccessoryGroup;
@@ -20,7 +19,7 @@ export function AccessoryGroupSection({
   selectedOptions,
   onChange,
 }: AccessoryGroupSectionProps) {
-  return group.selectionMode === SINGLE_SELECTION_MODE ? (
+  return group.selectionMode === AccessorySelectionMode.Single ? (
     <SingleSelectGroup
       group={group}
       selectedOptions={selectedOptions}

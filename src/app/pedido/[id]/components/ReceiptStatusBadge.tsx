@@ -1,5 +1,8 @@
 import { CircleCheck, CircleX, LoaderCircle } from "lucide-react";
+import type { VerifiedPaymentStatus } from "@/application/use-cases/verify-mp-payment/verify-mp-payment.response.dto";
 import { Badge } from "@/components/ui/badge";
+import { PaymentMethod } from "@/domain/entities/payment-method.enum";
+import { PaymentStatus } from "@/domain/entities/payment-status.enum";
 
 type ReceiptStatusConfig = {
   readonly title: string;
@@ -10,8 +13,8 @@ type ReceiptStatusConfig = {
   readonly badgeClass: string;
 };
 
-const STATUS_CONFIG: Record<string, ReceiptStatusConfig> = {
-  approved: {
+const STATUS_CONFIG: Record<VerifiedPaymentStatus, ReceiptStatusConfig> = {
+  [PaymentStatus.Approved]: {
     title: "Pago Verificado",
     badge: "Mercado Pago",
     icon: "approved",
@@ -19,7 +22,7 @@ const STATUS_CONFIG: Record<string, ReceiptStatusConfig> = {
     iconColor: "text-emerald-500",
     badgeClass: "bg-emerald-50 text-emerald-700",
   },
-  efectivo: {
+  [PaymentMethod.Efectivo]: {
     title: "Pedido Confirmado",
     badge: "Pago en efectivo",
     icon: "approved",
@@ -27,7 +30,7 @@ const STATUS_CONFIG: Record<string, ReceiptStatusConfig> = {
     iconColor: "text-emerald-500",
     badgeClass: "bg-emerald-50 text-emerald-700",
   },
-  rejected: {
+  [PaymentStatus.Rejected]: {
     title: "Pago Rechazado",
     badge: "Rechazado",
     icon: "rejected",
@@ -35,19 +38,22 @@ const STATUS_CONFIG: Record<string, ReceiptStatusConfig> = {
     iconColor: "text-red-500",
     badgeClass: "bg-red-50 text-red-700",
   },
+  [PaymentStatus.Pending]: {
+    title: "Procesando...",
+    badge: "Verificando pago",
+    icon: "processing",
+    iconBg: "bg-zinc-100",
+    iconColor: "text-zinc-500",
+    badgeClass: "bg-zinc-100 text-zinc-700",
+  },
 };
 
-const DEFAULT_CONFIG: ReceiptStatusConfig = {
-  title: "Procesando...",
-  badge: "Verificando pago",
-  icon: "processing",
-  iconBg: "bg-zinc-100",
-  iconColor: "text-zinc-500",
-  badgeClass: "bg-zinc-100 text-zinc-700",
+type ReceiptStatusBadgeProps = {
+  readonly status: VerifiedPaymentStatus;
 };
 
-export function ReceiptStatusBadge({ status }: { status: string }) {
-  const config = STATUS_CONFIG[status] ?? DEFAULT_CONFIG;
+export function ReceiptStatusBadge({ status }: ReceiptStatusBadgeProps) {
+  const config = STATUS_CONFIG[status];
 
   return (
     <div className="flex flex-col items-center gap-3 py-4">

@@ -1,5 +1,6 @@
 "use client";
 
+import type { VerifiedPaymentStatus } from "@/application/use-cases/verify-mp-payment/verify-mp-payment.response.dto";
 import { useReceiptState } from "../hooks/useReceiptState";
 import { ReceiptDashboardStatus } from "./ReceiptDashboardStatus";
 import { ReceiptNotFound } from "./ReceiptNotFound";
@@ -8,7 +9,7 @@ import { ReceiptShell } from "./ReceiptShell";
 
 type ReceiptViewProps = {
   readonly orderId: string;
-  readonly verifiedStatus: string;
+  readonly verifiedStatus: VerifiedPaymentStatus;
   readonly paymentId: string | null;
   readonly isDashboardFlow: boolean;
 };

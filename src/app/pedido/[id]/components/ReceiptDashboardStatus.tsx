@@ -1,7 +1,8 @@
+import type { VerifiedPaymentStatus } from "@/application/use-cases/verify-mp-payment/verify-mp-payment.response.dto";
 import { ReceiptStatusBadge } from "./ReceiptStatusBadge";
 
 type ReceiptDashboardStatusProps = {
-  readonly status: string;
+  readonly status: VerifiedPaymentStatus;
   readonly orderId: string;
   readonly paymentId: string | null;
   readonly backUrl: string;

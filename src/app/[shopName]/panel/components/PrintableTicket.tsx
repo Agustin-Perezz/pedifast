@@ -1,3 +1,4 @@
+import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
 import type { PlainPanelOrder } from "../lib/serialize-panel-order";
 
 const DATE_TIME_FORMAT = new Intl.DateTimeFormat("es-AR", {
@@ -28,7 +29,7 @@ export function PrintableTicket({ order }: PrintableTicketProps) {
         <p className="my-0.5 text-[11px]">Tel: {order.customerPhone}</p>
       ) : null}
       <p className="my-0.5 text-[11px]">
-        {order.deliveryMethod === "delivery"
+        {order.deliveryMethod === DeliveryMethod.Delivery
           ? `ENVIO: ${order.address ?? ""}`
           : "RETIRO EN LOCAL"}
       </p>

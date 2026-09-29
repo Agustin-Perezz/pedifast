@@ -4,12 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import { buildOrderStorageKey } from "@/app/[shopName]/pedir/lib/order-storage";
 import type { PendingWhatsappOrder } from "@/app/[shopName]/pedir/lib/whatsapp";
 import { buildWhatsappMessage } from "@/app/[shopName]/pedir/lib/whatsapp";
+import type { VerifiedPaymentStatus } from "@/application/use-cases/verify-mp-payment/verify-mp-payment.response.dto";
+import { PaymentMethod } from "@/domain/entities/payment-method.enum";
+import { PaymentStatus } from "@/domain/entities/payment-status.enum";
 import { isSafariBrowser } from "@/lib/utils/browser";
 import { buildWhatsappUrl } from "@/lib/utils/whatsapp";
 
 type UseReceiptStateInput = {
   readonly orderId: string;
-  readonly verifiedStatus: string;
+  readonly verifiedStatus: VerifiedPaymentStatus;
   readonly isDashboardFlow: boolean;
 };
 
@@ -49,7 +52,8 @@ export function useReceiptState({
       : "/";
 
   const isConfirmed =
-    verifiedStatus === "efectivo" || verifiedStatus === "approved";
+    verifiedStatus === PaymentMethod.Efectivo ||
+    verifiedStatus === PaymentStatus.Approved;
 
   const whatsappUrl = useMemo(() => {
     if (isDashboardFlow || !isConfirmed || !order) {

@@ -1,5 +1,5 @@
-import type { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
-import type { PaymentMethod } from "@/domain/entities/payment-method.enum";
+import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
+import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 
 export type WhatsappOrderAccessory = {
   readonly name: string;
@@ -32,9 +32,11 @@ export { buildWhatsappUrl } from "@/lib/utils/whatsapp";
 
 export function buildWhatsappMessage(order: PendingWhatsappOrder): string {
   const deliveryLabel =
-    order.deliveryMethod === "pickup" ? PICKUP_LABEL : DELIVERY_LABEL;
+    order.deliveryMethod === DeliveryMethod.Pickup
+      ? PICKUP_LABEL
+      : DELIVERY_LABEL;
   const paymentLabel =
-    order.paymentMethod === "efectivo" ? CASH_LABEL : MP_LABEL;
+    order.paymentMethod === PaymentMethod.Efectivo ? CASH_LABEL : MP_LABEL;
 
   const productLines = order.items
     .map((item) => {
@@ -56,7 +58,7 @@ export function buildWhatsappMessage(order: PendingWhatsappOrder): string {
     `*Entrega:* ${deliveryLabel}`,
   ];
 
-  if (order.deliveryMethod === "delivery" && order.address) {
+  if (order.deliveryMethod === DeliveryMethod.Delivery && order.address) {
     lines.push(`*Dirección:* ${order.address}`);
   }
 
