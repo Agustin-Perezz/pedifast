@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 
-import { useCart } from "../hooks/useCart";
+import { useCart } from "../context/use-cart";
 import type { PlainShop } from "../lib/serialize-shop";
 import { submitCheckout } from "../lib/submit-checkout";
 import { CheckoutSummary } from "./checkout/checkout-summary";

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { vibrateAddToCart } from "@/lib/utils/vibrate";
 
-import { useCart } from "../hooks/useCart";
+import { useCart } from "../context/use-cart";
 import { MinusButton, PlusButton } from "./quantity-button";
 
 type AddToCartButtonProps = {

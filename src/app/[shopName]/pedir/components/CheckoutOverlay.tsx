@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useCart } from "../hooks/useCart";
+import { useCart } from "../context/use-cart";
 import { useCheckoutOpen } from "../hooks/useCheckoutOpen";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import type { PlainShopItem } from "../lib/serialize-catalog";

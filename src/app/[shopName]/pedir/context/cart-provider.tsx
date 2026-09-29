@@ -1,55 +1,19 @@
 "use client";
 
+import { useCallback, useMemo, useReducer } from "react";
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useReducer,
-} from "react";
-import {
-  type CartItem,
   type CartProduct,
   cartReducer,
   getCartTotals,
   getItemQuantity,
   hasItemsWithAccessories,
   hasRequiredGroupsMissing,
-} from "./lib/cart-reducer";
+} from "../lib/cart-reducer";
 import type {
   PlainAccessoryGroup,
   PlainAccessoryOption,
-} from "./lib/serialize-catalog";
-
-const EMPTY_CART = { items: [] };
-
-export type CartContextValue = {
-  readonly items: readonly CartItem[];
-  readonly totalItems: number;
-  readonly totalPrice: number;
-  readonly isEmpty: boolean;
-  readonly hasItemsWithAccessories: (
-    accessoryGroupsByItemId: ReadonlyMap<
-      number,
-      readonly PlainAccessoryGroup[]
-    >,
-  ) => boolean;
-  readonly addItem: (product: CartProduct) => void;
-  readonly removeItem: (itemId: number) => void;
-  readonly setAccessories: (
-    itemId: number,
-    group: PlainAccessoryGroup,
-    selectedOptions: readonly PlainAccessoryOption[],
-  ) => void;
-  readonly clearCart: () => void;
-  readonly getQuantity: (itemId: number) => number;
-  readonly hasMissingRequiredGroups: (
-    itemId: number,
-    accessoryGroups: readonly PlainAccessoryGroup[],
-  ) => boolean;
-};
-
-const CartContext = createContext<CartContextValue | null>(null);
+} from "../lib/serialize-catalog";
+import { CartContext, EMPTY_CART } from "./cart-context";
 
 const addItemAction = (product: CartProduct) => ({
   type: "ADD_ITEM" as const,
@@ -153,14 +117,4 @@ export function CartProvider({
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
-}
-
-export function useCart(): CartContextValue {
-  const context = useContext(CartContext);
-
-  if (!context) {
-    throw new Error("useCart must be used within a CartProvider");
-  }
-
-  return context;
 }

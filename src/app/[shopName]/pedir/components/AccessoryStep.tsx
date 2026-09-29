@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 
-import { useCart } from "../hooks/useCart";
+import { useCart } from "../context/use-cart";
 import type { PlainShopItem } from "../lib/serialize-catalog";
 import { AccessoryStepItem } from "./accessory-groups/accessory-step-item";
 
