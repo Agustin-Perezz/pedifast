@@ -35,8 +35,8 @@ export function PrintableTicket({ order }: PrintableTicketProps) {
           : PICKUP_LABEL.toUpperCase()}
       </p>
       <hr className="my-1.5 border-t border-dashed border-black" />
-      {order.items.map((item, index) => (
-        <TicketItemLine key={`${item.name}-${index}`} item={item} />
+      {order.items.map((item) => (
+        <TicketItemLine key={item.name} item={item} />
       ))}
       <TicketTotals order={order} />
     </div>

@@ -7,8 +7,11 @@ export function TicketItemLine({ item }: TicketItemLineProps) {
         <span className="min-w-6 font-bold">{item.quantity}x</span>
         <span>{item.name}</span>
       </div>
-      {item.accessories.map((accessory, index) => (
-        <p key={index} className="m-0 ml-7 text-[11px] text-gray-700">
+      {item.accessories.map((accessory, occurrenceIndex) => (
+        <p
+          key={`${accessory.name}-${occurrenceIndex}`}
+          className="m-0 ml-7 text-[11px] text-gray-700"
+        >
           + {accessory.name}
         </p>
       ))}
