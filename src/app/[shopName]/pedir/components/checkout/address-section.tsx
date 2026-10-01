@@ -50,7 +50,10 @@ export function AddressSection({
         </Button>
       </div>
       {message && (
-        <p className="text-sm text-zinc-500" data-testid="delivery-status">
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="delivery-status"
+        >
           {message}
         </p>
       )}

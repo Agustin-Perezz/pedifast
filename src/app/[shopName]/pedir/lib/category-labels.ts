@@ -21,14 +21,3 @@ export const CATEGORY_ORDER: readonly ShopItemCategory[] = [
   ShopItemCategory.Sandwiches,
   ShopItemCategory.Ensaladas,
 ];
-
-export const CATEGORY_EMOJIS: Record<ShopItemCategory, string> = {
-  [ShopItemCategory.Hamburguesas]: "🍔",
-  [ShopItemCategory.Pizzas]: "🍕",
-  [ShopItemCategory.Empanadas]: "🥟",
-  [ShopItemCategory.Papas]: "🍟",
-  [ShopItemCategory.Milanesas]: "🥩",
-  [ShopItemCategory.Bebidas]: "🥤",
-  [ShopItemCategory.Sandwiches]: "🥪",
-  [ShopItemCategory.Ensaladas]: "🥗",
-};

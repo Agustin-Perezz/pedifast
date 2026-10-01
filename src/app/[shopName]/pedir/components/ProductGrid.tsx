@@ -13,11 +13,13 @@ export function ProductGrid({ groups, shopName }: ProductGridProps) {
       data-shop-catalog
     >
       {groups.map(({ key, label, products }, categoryIndex) => (
-        <section id={key} key={key} className="mb-8 pt-2">
-          <h2 className="mb-3 px-4 text-lg font-semibold text-zinc-700">
-            {label}
-          </h2>
-          <div className="scrollbar-hide flex gap-3 overflow-x-auto px-4 pb-2 md:grid md:grid-cols-3 md:overflow-x-visible lg:grid-cols-4">
+        <section id={key} key={key} className="mb-8 px-4 pt-2">
+          <div className="mb-3 flex items-baseline justify-between border-b border-border pb-2">
+            <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">
+              {label}
+            </h2>
+          </div>
+          <div className="flex flex-col gap-3 pb-2">
             {products.map((product, productIndex) => (
               <ProductCard
                 key={product.id}

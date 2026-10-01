@@ -33,7 +33,7 @@ type SummaryRowProps = {
 function SummaryRow({ label, value, emphasized = false }: SummaryRowProps) {
   return (
     <div className="flex justify-between">
-      <span className={emphasized ? "font-semibold" : "text-zinc-500"}>
+      <span className={emphasized ? "font-semibold" : "text-muted-foreground"}>
         {label}
       </span>
       <span className={emphasized ? "font-semibold" : ""}>{value}</span>

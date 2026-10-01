@@ -1,5 +1,7 @@
 "use client";
 
+import { Plus } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { vibrateAddToCart } from "@/lib/utils/vibrate";
 
@@ -31,11 +33,12 @@ export function AddToCartButton({
     return (
       <Button
         type="button"
-        variant="outline"
-        className="px-4 py-1.5"
+        variant="secondary"
+        className="rounded-full px-3.5 py-1.5 text-sm font-semibold active:scale-95"
         data-testid={`add-to-cart-${id}`}
         onClick={addItem}
       >
+        <Plus className="size-3.5" />
         {label}
       </Button>
     );
@@ -43,18 +46,23 @@ export function AddToCartButton({
 
   return (
     <div
-      className="flex items-center gap-2"
+      className="flex items-center gap-2 rounded-full bg-surface-container-high px-2 py-1"
       data-testid={`cart-controls-${id}`}
     >
       <MinusButton
         testId={`remove-from-cart-${id}`}
-        label="Remove one"
+        label="Quitar uno"
         onClick={removeItem}
       />
-      <span data-testid={`cart-quantity-${id}`}>{quantity}</span>
+      <span
+        className="px-1 text-sm font-bold text-foreground"
+        data-testid={`cart-quantity-${id}`}
+      >
+        {quantity}
+      </span>
       <PlusButton
         testId={`add-to-cart-${id}`}
-        label="Add one"
+        label="Agregar uno"
         onClick={addItem}
       />
     </div>

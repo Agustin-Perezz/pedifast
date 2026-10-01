@@ -47,7 +47,10 @@ export function DeliverySection({
         />
       )}
       {deliveryCost !== null && distanceKm !== null && (
-        <p className="text-sm text-zinc-500" data-testid="delivery-cost-label">
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="delivery-cost-label"
+        >
           Costo de envío: ${deliveryCost.toLocaleString(AR_LOCALE)} (
           {distanceKm} km)
         </p>

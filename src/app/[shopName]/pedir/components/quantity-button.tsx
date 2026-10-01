@@ -8,19 +8,28 @@ type QuantityButtonProps = {
   readonly testId: string;
   readonly label: string;
   readonly onClick: () => void;
+  readonly dark: boolean;
   readonly children: React.ReactNode;
 };
+
+type NamedQuantityButtonProps = Omit<QuantityButtonProps, "children" | "dark">;
 
 export function QuantityButton({
   testId,
   label,
   onClick,
+  dark,
   children,
 }: QuantityButtonProps) {
   return (
     <Button
       type="button"
       size="icon-sm"
+      className={
+        dark
+          ? "size-6 rounded-full bg-inverse-surface text-inverse-on-surface"
+          : "size-6 rounded-full bg-card text-foreground"
+      }
       data-testid={testId}
       onClick={onClick}
       aria-label={label}
@@ -30,18 +39,18 @@ export function QuantityButton({
   );
 }
 
-export function MinusButton(props: Omit<QuantityButtonProps, "children">) {
+export function MinusButton(props: NamedQuantityButtonProps) {
   return (
-    <QuantityButton {...props}>
-      <Minus className="size-4" />
+    <QuantityButton {...props} dark={false}>
+      <Minus className="size-3.5" />
     </QuantityButton>
   );
 }
 
-export function PlusButton(props: Omit<QuantityButtonProps, "children">) {
+export function PlusButton(props: NamedQuantityButtonProps) {
   return (
-    <QuantityButton {...props}>
-      <Plus className="size-4" />
+    <QuantityButton {...props} dark={true}>
+      <Plus className="size-3.5" />
     </QuantityButton>
   );
 }
