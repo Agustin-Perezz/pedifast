@@ -88,27 +88,6 @@ export type Database = {
           },
         ]
       }
-      books: {
-        Row: {
-          author: string
-          created_at: string
-          id: string
-          title: string
-        }
-        Insert: {
-          author: string
-          created_at?: string
-          id?: string
-          title: string
-        }
-        Update: {
-          author?: string
-          created_at?: string
-          id?: string
-          title?: string
-        }
-        Relationships: []
-      }
       orders: {
         Row: {
           address: string | null
