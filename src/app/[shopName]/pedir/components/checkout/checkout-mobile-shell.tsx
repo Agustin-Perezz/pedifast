@@ -20,7 +20,7 @@ export function CheckoutMobileShell({
         <SheetHeader>
           <SheetTitle>Confirm order</SheetTitle>
         </SheetHeader>
-        {children}
+        <div className="px-4 pb-4">{children}</div>
       </SheetContent>
     </Sheet>
   );
