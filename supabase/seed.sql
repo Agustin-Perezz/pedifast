@@ -108,10 +108,3 @@ join public.accessory_groups g
    where shop_id = (select id from public.shops where shop_name = 'pizzeria-luca')
  )
 on conflict do nothing;
-
--- Reference books (original starter seed, kept because books table remains).
-insert into public.books (title, author) values
-  ('The Pragmatic Programmer', 'David Thomas'),
-  ('Clean Architecture', 'Robert C. Martin'),
-  ('Refactoring', 'Martin Fowler')
-on conflict do nothing;
