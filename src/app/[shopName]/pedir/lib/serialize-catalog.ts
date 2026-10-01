@@ -29,21 +29,18 @@ export type PlainShopItem = {
 export type PlainCategoryGroup = {
   readonly key: string;
   readonly label: string;
-  readonly emoji: string;
   readonly products: readonly PlainShopItem[];
 };
 
 type SerializeItemsInput = {
   readonly items: readonly CatalogItem[];
   readonly categoryLabels: Readonly<Record<string, string>>;
-  readonly categoryEmojis: Readonly<Record<string, string>>;
   readonly categoryOrder: readonly string[];
 };
 
 export function serializeCategoryGroups({
   items,
   categoryLabels,
-  categoryEmojis,
   categoryOrder,
 }: SerializeItemsInput): readonly PlainCategoryGroup[] {
   const byCategory = new Map<string, PlainShopItem[]>();
@@ -69,7 +66,6 @@ export function serializeCategoryGroups({
     .map((key) => ({
       key,
       label: categoryLabels[key],
-      emoji: categoryEmojis[key],
       products: byCategory.get(key) ?? [],
     }));
 }

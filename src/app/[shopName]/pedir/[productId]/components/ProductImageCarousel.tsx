@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
+
+import { CarouselDots } from "./carousel-dots";
 
 type ProductImageCarouselProps = {
   readonly images: readonly string[];
@@ -12,11 +14,26 @@ export function ProductImageCarousel({
   productName,
 }: ProductImageCarouselProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  const scrollToImage = useCallback((index: number) => {
+    const track = trackRef.current;
+    if (track) {
+      track.scrollTo({ left: index * track.clientWidth, behavior: "smooth" });
+    }
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    const track = trackRef.current;
+    if (track) {
+      setSelectedIndex(Math.round(track.scrollLeft / track.clientWidth));
+    }
+  }, []);
 
   if (images.length === 0) {
     return (
-      <div className="relative flex flex-col overflow-hidden bg-white md:w-1/2 md:rounded-2xl">
-        <div className="flex items-center justify-center px-10 py-6">
+      <div className="relative flex flex-col overflow-hidden bg-card md:w-1/2 md:rounded-2xl">
+        <div className="flex items-center justify-center py-6 md:px-10">
           <div className="bg-muted flex aspect-square w-full max-w-[280px] items-center justify-center rounded-xl md:max-h-[400px]">
             <span className="text-muted-foreground text-sm">No images</span>
           </div>
@@ -26,15 +43,19 @@ export function ProductImageCarousel({
   }
 
   return (
-    <div className="relative flex flex-col overflow-hidden bg-white md:w-1/2 md:rounded-2xl">
-      <div className="scrollbar-hide flex snap-x snap-mandatory overflow-x-auto scroll-smooth">
+    <div className="relative flex flex-col overflow-hidden bg-card md:w-1/2 md:rounded-2xl">
+      <div
+        ref={trackRef}
+        onScroll={handleScroll}
+        className="scrollbar-hide flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
+      >
         {images.map((image, index) => (
           <div key={image} className="w-full shrink-0 snap-center">
-            <div className="flex items-center justify-center px-10 py-6">
+            <div className="flex items-center justify-center md:px-10 md:py-6">
               <img
                 src={image}
                 alt={`${productName} ${index + 1}`}
-                className="max-h-[280px] w-full object-contain md:max-h-[400px]"
+                className="aspect-square w-full object-cover md:max-h-[400px] md:object-contain"
                 loading={index === 0 ? "eager" : "lazy"}
                 decoding={index === 0 ? "sync" : "async"}
               />
@@ -43,27 +64,11 @@ export function ProductImageCarousel({
         ))}
       </div>
 
-      {images.length > 1 && (
-        <div className="absolute right-0 bottom-10 left-0 flex items-center justify-center gap-2.5">
-          {images.map((_, index) => (
-            <button
-              // The dot's identity IS its position: it navigates to image N
-              // and E2E selectors depend on carousel-dot-N.
-              // biome-ignore lint/suspicious/noArrayIndexKey: positional UI identity
-              key={index}
-              type="button"
-              aria-label={`Image ${index + 1}`}
-              data-testid={`carousel-dot-${index}`}
-              onClick={() => setSelectedIndex(index)}
-              className={`rounded-full transition-all duration-200 ${
-                index === selectedIndex
-                  ? "h-3 w-3 border border-zinc-400"
-                  : "h-2 w-2 bg-zinc-300"
-              }`}
-            />
-          ))}
-        </div>
-      )}
+      <CarouselDots
+        count={images.length}
+        selectedIndex={selectedIndex}
+        onSelect={scrollToImage}
+      />
     </div>
   );
 }

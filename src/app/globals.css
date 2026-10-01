@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-epilogue);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,6 +39,15 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+  --color-inverse-surface: var(--inverse-surface);
+  --color-inverse-on-surface: var(--inverse-on-surface);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -48,73 +57,97 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+ * Warm terracotta brand palette (Material-3-style ramp) mapped onto the
+ * shadcn semantic token contract. Values come from the approved design
+ * reference; do not swap them for neutral grays.
+ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --background: #fff8f5;
+  --foreground: #1e1b19;
+  --card: #ffffff;
+  --card-foreground: #1e1b19;
+  --popover: #ffffff;
+  --popover-foreground: #1e1b19;
+  --primary: #9b2f00;
+  --primary-foreground: #ffffff;
+  --secondary: #f4ece8;
+  --secondary-foreground: #1e1b19;
+  --muted: #f4ece8;
+  --muted-foreground: #59413a;
+  --accent: #eee7e3;
+  --accent-foreground: #1e1b19;
+  --destructive: #ba1a1a;
+  --border: #e1bfb5;
+  --input: #e9e1dd;
+  --ring: #9b2f00;
+  /* Material-3 surface ramp from the design reference */
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #faf2ee;
+  --surface-container: #f4ece8;
+  --surface-container-high: #eee7e3;
+  --surface-container-highest: #e9e1dd;
+  --outline: #8d7168;
+  --outline-variant: #e1bfb5;
+  --inverse-surface: #33302d;
+  --inverse-on-surface: #f7efeb;
+  --chart-1: #9b2f00;
+  --chart-2: #006d30;
+  --chart-3: #c2410c;
+  --chart-4: #ab0e14;
+  --chart-5: #59413a;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #faf2ee;
+  --sidebar-foreground: #1e1b19;
+  --sidebar-primary: #9b2f00;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eee7e3;
+  --sidebar-accent-foreground: #1e1b19;
+  --sidebar-border: #e1bfb5;
+  --sidebar-ring: #9b2f00;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #1a1412;
+  --foreground: #f7efeb;
+  --card: #241d1a;
+  --card-foreground: #f7efeb;
+  --popover: #241d1a;
+  --popover-foreground: #f7efeb;
+  --primary: #ffb597;
+  --primary-foreground: #5c1a00;
+  --secondary: #3a2e29;
+  --secondary-foreground: #f7efeb;
+  --muted: #3a2e29;
+  --muted-foreground: #d3b8ad;
+  --accent: #453530;
+  --accent-foreground: #f7efeb;
+  --destructive: #ff5449;
+  --border: #4a3a34;
+  --input: #4a3a34;
+  --ring: #ffb597;
+  --surface-container-lowest: #211a17;
+  --surface-container-low: #2b2220;
+  --surface-container: #352b28;
+  --surface-container-high: #40342f;
+  --surface-container-highest: #4b3d37;
+  --outline: #a08880;
+  --outline-variant: #5c463f;
+  --inverse-surface: #f7efeb;
+  --inverse-on-surface: #33302d;
+  --chart-1: #ffb597;
+  --chart-2: #92f5a4;
+  --chart-3: #ffc49d;
+  --chart-4: #ff8177;
+  --chart-5: #d3b8ad;
+  --sidebar: #241d1a;
+  --sidebar-foreground: #f7efeb;
+  --sidebar-primary: #ffb597;
+  --sidebar-primary-foreground: #5c1a00;
+  --sidebar-accent: #453530;
+  --sidebar-accent-foreground: #f7efeb;
+  --sidebar-border: #4a3a34;
+  --sidebar-ring: #ffb597;
 }
 
 @layer base {

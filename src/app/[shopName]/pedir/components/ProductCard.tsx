@@ -16,40 +16,44 @@ export function ProductCard({
   priority = false,
 }: ProductCardProps) {
   return (
-    <div className="flex w-64 shrink-0 flex-col overflow-hidden rounded-2xl bg-white md:w-full">
-      <a href={`/${shopName}/pedir/${product.id}`} tabIndex={-1}>
-        <img
-          src={product.images[0] ?? ""}
-          alt={product.name}
-          className="aspect-[4/3] w-full object-cover"
-          loading={priority ? "eager" : "lazy"}
-          decoding={priority ? "sync" : "async"}
-        />
-      </a>
-      <div className="flex flex-col gap-2 p-3">
+    <article className="flex gap-3 rounded-xl bg-card p-4 shadow-sm">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
         <a
           href={`/${shopName}/pedir/${product.id}`}
-          className="line-clamp-2 text-sm leading-snug font-semibold text-zinc-900"
+          className="truncate font-heading text-lg font-semibold tracking-tight text-foreground"
         >
           {product.name}
         </a>
         {product.description && (
-          <p className="line-clamp-2 text-xs leading-snug text-zinc-400">
+          <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
             {product.description}
           </p>
         )}
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-bold text-zinc-900">
+        <div className="mt-auto flex items-center justify-between pt-2">
+          <p className="text-lg font-bold text-foreground">
             {formatPrice(product.price)}
           </p>
           <AddToCartButton
             id={product.id}
             name={product.name}
             price={product.price}
-            label="Add"
+            label="Agregar"
           />
         </div>
       </div>
-    </div>
+      <a
+        href={`/${shopName}/pedir/${product.id}`}
+        tabIndex={-1}
+        className="size-24 shrink-0 self-center"
+      >
+        <img
+          src={product.images[0] ?? ""}
+          alt=""
+          className="size-24 rounded-xl object-cover"
+          loading={priority ? "eager" : "lazy"}
+          decoding={priority ? "sync" : "async"}
+        />
+      </a>
+    </article>
   );
 }

@@ -42,7 +42,7 @@ export default async function ProductDetailPage({
   }
 
   return (
-    <main className="flex min-h-screen flex-col bg-[#E0E0E0] md:bg-white">
+    <main className="flex min-h-screen flex-col bg-background">
       <div className="px-5 pt-5 pb-2 md:mx-auto md:w-full md:max-w-5xl">
         <a
           href={`/${shopName}/pedir`}
