@@ -6,6 +6,7 @@ import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
 import { HiddenPaymentRadio } from "./hidden-payment-radio";
+import { MercadoPagoChipsRow } from "./mercadopago-chips-row";
 import { ringClass } from "./payment-card-classes";
 import { PAYMENT_OPTION_IDS } from "./payment-option-ids";
 
@@ -50,18 +51,5 @@ export function MercadoPagoOptionCard({
       </div>
       <MercadoPagoChipsRow />
     </label>
-  );
-}
-
-function MercadoPagoChipsRow() {
-  return (
-    <div className="flex flex-wrap gap-2 pl-[52px]">
-      <span className="rounded bg-surface-container px-2 py-0.5 text-[10px] text-muted-foreground">
-        Hasta 3 cuotas
-      </span>
-      <span className="rounded bg-surface-container px-2 py-0.5 text-[10px] text-muted-foreground">
-        Aprobación instantánea
-      </span>
-    </div>
   );
 }

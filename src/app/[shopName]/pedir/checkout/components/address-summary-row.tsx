@@ -2,7 +2,7 @@
 
 import { MapPin } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { AddressSummaryActions } from "./address-summary-actions";
 
 export type AddressSummaryRowProps = {
   readonly address: string;
@@ -26,17 +26,5 @@ export function AddressSummaryRow({ address }: AddressSummaryRowProps) {
       </div>
       <AddressSummaryActions label="Editar" />
     </div>
-  );
-}
-
-function AddressSummaryActions({ label }: { readonly label: string }) {
-  return (
-    <Button
-      type="button"
-      disabled
-      className="shrink-0 cursor-not-allowed text-xs font-bold text-primary opacity-50"
-    >
-      {label}
-    </Button>
   );
 }

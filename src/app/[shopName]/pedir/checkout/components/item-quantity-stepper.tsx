@@ -1,8 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-
 import type { CartItem } from "../../lib/cart-reducer";
+import { StepperButton } from "./stepper-button";
 
 export type ItemQuantityStepperProps = {
   readonly item: CartItem;
@@ -38,31 +37,5 @@ export function ItemQuantityStepper({
         +
       </StepperButton>
     </div>
-  );
-}
-
-type StepperButtonProps = {
-  readonly label: string;
-  readonly testId: string;
-  readonly onClick: () => void;
-  readonly children: React.ReactNode;
-};
-
-function StepperButton({
-  label,
-  testId,
-  onClick,
-  children,
-}: StepperButtonProps) {
-  return (
-    <Button
-      type="button"
-      aria-label={label}
-      data-testid={testId}
-      onClick={onClick}
-      className="flex size-5 items-center justify-center rounded-full text-[14px] font-bold text-foreground hover:text-primary"
-    >
-      {children}
-    </Button>
   );
 }
