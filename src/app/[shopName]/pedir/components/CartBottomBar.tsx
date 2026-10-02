@@ -1,40 +1,18 @@
 "use client";
 
-import { ArrowRight, ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils/format";
 
 import { useCart } from "../context/use-cart";
+import { DockIcon } from "./cart-dock-icon";
+import { VerPedidoButton } from "./ver-pedido-button";
 
 const CHECKOUT_ROUTE_SEGMENT = "checkout";
 
 type CartBottomBarProps = {
   readonly shopName: string;
 };
-
-function DockIcon() {
-  return (
-    <span className="flex size-8 items-center justify-center rounded-full bg-surface-container-highest/20 text-inverse-on-surface">
-      <ShoppingBag className="size-[18px]" />
-    </span>
-  );
-}
-
-function VerPedidoButton({ onClick }: { readonly onClick: () => void }) {
-  return (
-    <Button
-      type="button"
-      data-testid="confirm-order-button"
-      className="rounded-lg bg-card px-4 py-2 text-sm font-bold text-inverse-surface hover:bg-card/90 active:scale-95"
-      onClick={onClick}
-    >
-      Ver pedido
-      <ArrowRight className="size-4" />
-    </Button>
-  );
-}
 
 export function CartBottomBar({ shopName }: CartBottomBarProps) {
   const cart = useCart();

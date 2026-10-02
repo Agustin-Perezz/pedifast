@@ -1,8 +1,6 @@
-"use client";
-
-import { CirclePlus } from "lucide-react";
 import type { CartItem } from "../../lib/cart-reducer";
 import type { CartItemExtras } from "../components/item-extras-map";
+import { AddMoreProductsLink } from "./add-more-products-link";
 import { OrderItemRow } from "./order-item-row";
 
 export type OrderItemsListProps = {
@@ -37,19 +35,5 @@ export function OrderItemsList({
       </div>
       <AddMoreProductsLink shopName={shopName} />
     </div>
-  );
-}
-
-function AddMoreProductsLink({ shopName }: { readonly shopName: string }) {
-  return (
-    <a
-      href={`/${shopName}/pedir`}
-      className="inline-flex items-center gap-1.5 self-start py-1 text-sm font-bold text-primary hover:text-primary-container"
-      data-testid="add-more-products"
-      aria-label="Agregar más productos al pedido"
-    >
-      <CirclePlus aria-hidden="true" className="size-[18px]" />
-      Agregar más productos
-    </a>
   );
 }

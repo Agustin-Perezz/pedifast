@@ -1,5 +1,7 @@
 import { AR_LOCALE } from "@/lib/utils/format";
 
+import { ReceiptRow } from "./receipt-row";
+
 const DATE_TIME_FORMAT = new Intl.DateTimeFormat(AR_LOCALE, {
   dateStyle: "medium",
   timeStyle: "short",
@@ -79,27 +81,6 @@ export function ReceiptCard({
           </span>
         </div>
       </div>
-    </div>
-  );
-}
-
-type ReceiptRowProps = {
-  readonly label: string;
-  readonly value: string;
-  readonly mono?: boolean;
-};
-
-function ReceiptRow({ label, value, mono }: ReceiptRowProps) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-xs text-zinc-500">{label}</span>
-      <span
-        className={
-          mono ? "font-mono text-xs text-zinc-950" : "text-xs text-zinc-950"
-        }
-      >
-        {value}
-      </span>
     </div>
   );
 }
