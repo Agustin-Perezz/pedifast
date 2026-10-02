@@ -2,7 +2,7 @@
 
 import { MapPin } from "lucide-react";
 
-import { addressChipLabels } from "./address-chip-labels";
+import { Button } from "@/components/ui/button";
 
 export type AddressSummaryRowProps = {
   readonly address: string;
@@ -20,23 +20,23 @@ export function AddressSummaryRow({ address }: AddressSummaryRowProps) {
             {address}
           </span>
           <span className="shrink-0 rounded-full bg-surface-container px-2 py-0.5 text-[10px] text-muted-foreground">
-            {addressChipLabels.tag}
+            Casa
           </span>
         </div>
       </div>
-      <AddressSummaryActions label={addressChipLabels.editCta} />
+      <AddressSummaryActions label="Editar" />
     </div>
   );
 }
 
 function AddressSummaryActions({ label }: { readonly label: string }) {
   return (
-    <button
+    <Button
       type="button"
       disabled
       className="shrink-0 cursor-not-allowed text-xs font-bold text-primary opacity-50"
     >
       {label}
-    </button>
+    </Button>
   );
 }

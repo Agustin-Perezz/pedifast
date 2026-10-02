@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+
 import type { CartItem } from "../../lib/cart-reducer";
 
 export type ItemQuantityStepperProps = {
@@ -53,7 +55,7 @@ function StepperButton({
   children,
 }: StepperButtonProps) {
   return (
-    <button
+    <Button
       type="button"
       aria-label={label}
       data-testid={testId}
@@ -61,6 +63,6 @@ function StepperButton({
       className="flex size-5 items-center justify-center rounded-full text-[14px] font-bold text-foreground hover:text-primary"
     >
       {children}
-    </button>
+    </Button>
   );
 }

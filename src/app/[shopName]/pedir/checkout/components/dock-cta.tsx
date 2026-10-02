@@ -2,6 +2,8 @@
 
 import { CircleCheck, Lock } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+
 export type DockCtaProps = {
   readonly payingWithMercadoPago: boolean;
   readonly submitting: boolean;
@@ -16,7 +18,7 @@ export function DockCta({
   const Icon = payingWithMercadoPago ? Lock : CircleCheck;
 
   return (
-    <button
+    <Button
       type="button"
       data-testid="checkout-submit"
       disabled={submitting}
@@ -27,6 +29,6 @@ export function DockCta({
       {payingWithMercadoPago
         ? "Pagar con Mercado Pago"
         : "Confirmar y Pagar en Mano"}
-    </button>
+    </Button>
   );
 }

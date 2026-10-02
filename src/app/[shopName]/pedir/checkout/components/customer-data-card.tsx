@@ -1,5 +1,7 @@
 "use client";
 
+import { Input } from "@/components/ui/input";
+
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
 
 const NAME_FIELD_ID = "checkout-nombre";
@@ -21,7 +23,7 @@ export function CustomerDataCard({
       <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
         Tus datos
       </span>
-      <input
+      <Input
         id={NAME_FIELD_ID}
         data-testid={`${NAME_FIELD_ID}-input`}
         type="text"
@@ -31,7 +33,7 @@ export function CustomerDataCard({
         onChange={(event) => onChange({ nombre: event.target.value })}
         className="h-11 w-full rounded-lg bg-surface-container px-3.5 text-sm text-foreground placeholder:text-outline"
       />
-      <input
+      <Input
         id={PHONE_FIELD_ID}
         data-testid={`${PHONE_FIELD_ID}-input`}
         type="tel"

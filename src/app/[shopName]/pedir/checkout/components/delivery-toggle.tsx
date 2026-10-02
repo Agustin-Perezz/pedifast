@@ -2,6 +2,7 @@
 
 import { Bike, Store } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
 
 import { DELIVERY_LABEL, PICKUP_LABEL } from "../../lib/checkout-labels";
@@ -47,7 +48,7 @@ function ToggleTab({ active, label, testId, onSelect }: ToggleTabProps) {
     : "text-muted-foreground hover:text-foreground";
 
   return (
-    <button
+    <Button
       type="button"
       data-testid={testId}
       aria-pressed={active}
@@ -56,6 +57,6 @@ function ToggleTab({ active, label, testId, onSelect }: ToggleTabProps) {
     >
       <Icon aria-hidden="true" className="size-4 shrink-0" />
       {label}
-    </button>
+    </Button>
   );
 }
