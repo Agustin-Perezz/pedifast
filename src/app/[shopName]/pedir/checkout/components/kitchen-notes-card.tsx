@@ -2,6 +2,8 @@
 
 import { CookingPot } from "lucide-react";
 
+import { Input } from "@/components/ui/input";
+
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
 
 const KITCHEN_NOTES_FIELD_ID = "kitchen-notes";
@@ -21,7 +23,7 @@ export function KitchenNotesCard({ value, onChange }: KitchenNotesCardProps) {
         <CookingPot aria-hidden="true" className="size-4 text-outline" />
         Aclaraciones para la cocina (opcional)
       </label>
-      <input
+      <Input
         id={KITCHEN_NOTES_FIELD_ID}
         type="text"
         value={value}

@@ -1,5 +1,6 @@
 import { Clock, MapPin, Search, User } from "lucide-react";
 
+import { Input } from "@/components/ui/input";
 import type { Shop } from "@/domain/entities/shop.entity";
 
 type ShopHeaderProps = {
@@ -60,7 +61,7 @@ export function ShopHeader({ shop, shopName }: ShopHeaderProps) {
 
           <div className="relative py-3">
             <Search className="absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-outline" />
-            <input
+            <Input
               type="text"
               disabled
               aria-disabled="true"

@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 type CarouselDotsProps = {
   readonly count: number;
   readonly selectedIndex: number;
@@ -16,7 +18,7 @@ export function CarouselDots({
   return (
     <div className="flex items-center justify-center gap-2.5 pb-4">
       {Array.from({ length: count }, (_, index) => (
-        <button
+        <Button
           // The dot's identity IS its position: it navigates to image N
           // and E2E selectors depend on carousel-dot-N.
           // biome-ignore lint/suspicious/noArrayIndexKey: positional UI identity

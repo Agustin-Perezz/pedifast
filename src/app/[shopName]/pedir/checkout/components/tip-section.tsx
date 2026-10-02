@@ -3,6 +3,8 @@
 import { SmilePlus } from "lucide-react";
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
+
 import type { TipValue } from "./tip-values";
 import { DEFAULT_TIP, TIP_OPTIONS, tipLabel } from "./tip-values";
 
@@ -20,7 +22,7 @@ export function TipSection() {
       </div>
       <div className="grid grid-cols-4 gap-2">
         {TIP_OPTIONS.map((value: TipValue) => (
-          <button
+          <Button
             key={value}
             type="button"
             data-testid={`tip-option-${value}`}
@@ -29,7 +31,7 @@ export function TipSection() {
             className={tipButtonClass(selectedTip === value)}
           >
             {tipLabel(value)}
-          </button>
+          </Button>
         ))}
       </div>
     </section>
