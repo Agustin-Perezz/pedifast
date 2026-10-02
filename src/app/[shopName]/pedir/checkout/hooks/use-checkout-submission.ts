@@ -10,6 +10,7 @@ export type CheckoutSubmissionState = {
   readonly submitting: boolean;
   readonly setError: (error: string | null) => void;
   readonly setFieldError: (field: CheckoutFieldError) => void;
+  readonly clearFieldError: () => void;
   readonly setSubmitting: (submitting: boolean) => void;
 };
 
@@ -28,12 +29,17 @@ export function useCheckoutSubmission(): CheckoutSubmissionState {
     setError(null);
   }
 
+  function clearFieldError(): void {
+    setFieldError(null);
+  }
+
   return {
     error,
     fieldError,
     submitting,
     setError: handleError,
     setFieldError: handleFieldError,
+    clearFieldError,
     setSubmitting,
   };
 }
