@@ -1,17 +1,17 @@
 "use client";
 
 import { ArrowRight, ShoppingBag } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils/format";
 
 import { useCart } from "../context/use-cart";
-import { useCheckoutOpen } from "../hooks/useCheckoutOpen";
 
-type DockContentProps = {
-  readonly totalItems: number;
-  readonly totalPrice: number;
-  readonly onOpenCheckout: () => void;
+const CHECKOUT_ROUTE_SEGMENT = "checkout";
+
+type CartBottomBarProps = {
+  readonly shopName: string;
 };
 
 function DockIcon() {
@@ -36,45 +36,36 @@ function VerPedidoButton({ onClick }: { readonly onClick: () => void }) {
   );
 }
 
-function DockContent({
-  totalItems,
-  totalPrice,
-  onOpenCheckout,
-}: DockContentProps) {
-  return (
-    <div className="flex items-center justify-between gap-3 rounded-xl bg-inverse-surface p-3 text-inverse-on-surface shadow-md">
-      <div className="flex items-center gap-3 pl-1">
-        <DockIcon />
-        <div className="flex min-w-0 flex-col">
-          <span className="text-[11px] tracking-wider uppercase text-inverse-on-surface/70">
-            Tu pedido
-          </span>
-          <span className="font-heading leading-none font-bold">
-            {totalItems} {totalItems === 1 ? "producto" : "productos"} ·{" "}
-            {formatPrice(totalPrice)}
-          </span>
-        </div>
-      </div>
-      <VerPedidoButton onClick={onOpenCheckout} />
-    </div>
-  );
-}
-
-export function CartBottomBar() {
+export function CartBottomBar({ shopName }: CartBottomBarProps) {
   const cart = useCart();
-  const { openCheckout } = useCheckoutOpen();
+  const router = useRouter();
 
   if (cart.isEmpty) {
     return null;
   }
 
+  function openCheckout(): void {
+    router.push(`/${shopName}/pedir/${CHECKOUT_ROUTE_SEGMENT}`);
+  }
+
   return (
     <aside className="fixed inset-x-4 bottom-24 z-40 mx-auto max-w-lg md:inset-x-0 md:max-w-xl">
-      <DockContent
-        totalItems={cart.totalItems}
-        totalPrice={cart.totalPrice}
-        onOpenCheckout={openCheckout}
-      />
+      <div className="flex items-center justify-between gap-3 rounded-xl bg-inverse-surface p-3 text-inverse-on-surface shadow-md">
+        <div className="flex items-center gap-3 pl-1">
+          <DockIcon />
+          <div className="flex min-w-0 flex-col">
+            <span className="text-[11px] uppercase tracking-wider text-inverse-on-surface/70">
+              Tu pedido
+            </span>
+            <span className="font-heading leading-none font-bold">
+              {cart.totalItems}{" "}
+              {cart.totalItems === 1 ? "producto" : "productos"} ·{" "}
+              {formatPrice(cart.totalPrice)}
+            </span>
+          </div>
+        </div>
+        <VerPedidoButton onClick={openCheckout} />
+      </div>
     </aside>
   );
 }

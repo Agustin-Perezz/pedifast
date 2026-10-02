@@ -1,13 +1,11 @@
 import { notFound } from "next/navigation";
+
 import { CartBottomBar } from "./components/CartBottomBar";
 import { CategoryNav } from "./components/CategoryNav";
-import { CheckoutOverlay } from "./components/CheckoutOverlay";
 import { ProductGrid } from "./components/ProductGrid";
 import { ShopHeader } from "./components/ShopHeader";
-import { CheckoutOpenProvider } from "./hooks/useCheckoutOpen";
 import { CATEGORY_LABELS, CATEGORY_ORDER } from "./lib/category-labels";
 import { serializeCategoryGroups } from "./lib/serialize-catalog";
-import { serializeShop } from "./lib/serialize-shop";
 import { getShopCatalog } from "./queries";
 
 export const revalidate = 30;
@@ -37,17 +35,11 @@ export default async function ShopCatalogPage({
   });
 
   return (
-    <CheckoutOpenProvider>
-      <main className="min-h-screen bg-background">
-        <ShopHeader shop={catalog.shop} shopName={shopName} />
-        <CategoryNav categories={groups} />
-        <ProductGrid groups={groups} shopName={shopName} />
-      </main>
-      <CartBottomBar />
-      <CheckoutOverlay
-        shop={serializeShop(catalog.shop, shopName)}
-        items={groups.flatMap((group) => group.products)}
-      />
-    </CheckoutOpenProvider>
+    <main className="min-h-screen bg-background">
+      <ShopHeader shop={catalog.shop} shopName={shopName} />
+      <CategoryNav categories={groups} />
+      <ProductGrid groups={groups} shopName={shopName} />
+      <CartBottomBar shopName={shopName} />
+    </main>
   );
 }

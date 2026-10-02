@@ -21,7 +21,7 @@ const INITIAL_STATE: CheckoutFormState = {
   notas: "",
   deliveryMethod: DeliveryMethod.Pickup,
   address: "",
-  paymentMethod: PaymentMethod.Efectivo,
+  paymentMethod: PaymentMethod.MercadoPago,
   deliveryCost: null,
 };
 
