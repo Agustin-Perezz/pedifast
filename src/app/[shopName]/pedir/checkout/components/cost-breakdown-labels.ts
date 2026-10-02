@@ -1,0 +1,9 @@
+export const COST_BREAKDOWN_TITLE = "Detalle del pago";
+export const SUBTOTAL_LABEL_PREFIX = "Subtotal";
+export const SUBTOTAL_WORD = "producto";
+export const SUBTOTAL_WORD_PLURAL = "productos";
+export const SHIPPING_LABEL = "Costo de envío";
+export const SHIPPING_FREE_LABEL = "Gratis";
+export const SHIPPING_PENDING_LABEL = "Calculando…";
+export const TOTAL_FINAL_LABEL = "Total final";
+export const TAXES_INCLUDED_LABEL = "Incluye todos los impuestos";

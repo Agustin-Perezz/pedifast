@@ -11,6 +11,7 @@ import { useCalculateDeliveryCost } from "./use-calculate-delivery-cost";
 type AddressSectionProps = {
   readonly shop: PlainShop;
   readonly address: string;
+  readonly onAddressChange: (address: string) => void;
   readonly onCostChange: (
     cost: number | null,
     distanceKm: number | null,
@@ -20,6 +21,7 @@ type AddressSectionProps = {
 export function AddressSection({
   shop,
   address,
+  onAddressChange,
   onCostChange,
 }: AddressSectionProps) {
   const [value, setValue] = useState(address);
@@ -44,7 +46,10 @@ export function AddressSection({
           variant="outline"
           data-testid="calculate-delivery-button"
           disabled={status === "calculating" || value.length === 0}
-          onClick={() => calculateCost(value)}
+          onClick={() => {
+            onAddressChange(value);
+            void calculateCost(value);
+          }}
         >
           {status === "calculating" ? "..." : "Calcular"}
         </Button>
