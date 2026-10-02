@@ -9,10 +9,6 @@ import { CashAmountOptions } from "./cash-amount-options";
 import { HiddenPaymentRadio } from "./hidden-payment-radio";
 import { ringClass } from "./payment-card-classes";
 import { PAYMENT_OPTION_IDS } from "./payment-option-ids";
-import {
-  CASH_OPTION_DESCRIPTION,
-  CASH_OPTION_LABEL,
-} from "./payment-section-labels";
 
 export type CashOptionCardProps = {
   readonly selected: boolean;
@@ -32,10 +28,10 @@ export function CashOptionCard({ selected, onChange }: CashOptionCardProps) {
         </span>
         <div className="min-w-0 flex-1">
           <span className="text-[15px] font-bold text-foreground">
-            {CASH_OPTION_LABEL}
+            Efectivo al recibir
           </span>
           <p className="text-[12px] text-muted-foreground">
-            {CASH_OPTION_DESCRIPTION}
+            Pagás en mano al repartidor
           </p>
         </div>
         <HiddenPaymentRadio

@@ -3,7 +3,6 @@
 import { CirclePlus } from "lucide-react";
 import type { CartItem } from "../../lib/cart-reducer";
 import type { CartItemExtras } from "../components/item-extras-map";
-import { ADD_MORE_ARIA_LABEL, ADD_MORE_LABEL } from "./add-more-labels";
 import { OrderItemRow } from "./order-item-row";
 
 export type OrderItemsListProps = {
@@ -47,10 +46,10 @@ function AddMoreProductsLink({ shopName }: { readonly shopName: string }) {
       href={`/${shopName}/pedir`}
       className="inline-flex items-center gap-1.5 self-start py-1 text-sm font-bold text-primary hover:text-primary-container"
       data-testid="add-more-products"
-      aria-label={ADD_MORE_ARIA_LABEL}
+      aria-label="Agregar más productos al pedido"
     >
       <CirclePlus aria-hidden="true" className="size-[18px]" />
-      {ADD_MORE_LABEL}
+      Agregar más productos
     </a>
   );
 }

@@ -4,7 +4,6 @@ import { Receipt } from "lucide-react";
 
 import { formatPrice } from "@/lib/utils/format";
 import { DockCta } from "./dock-cta";
-import { DOCK_TERMS_LABEL, DOCK_TOTAL_LABEL } from "./dock-labels";
 
 export type CheckoutDockProps = {
   readonly total: number;
@@ -28,7 +27,7 @@ export function CheckoutDock({
           </span>
           <div className="flex flex-col">
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              {DOCK_TOTAL_LABEL}
+              Total
             </span>
             <span className="text-[17px] font-bold leading-tight text-foreground">
               {formatPrice(total)}
@@ -42,7 +41,7 @@ export function CheckoutDock({
         />
       </div>
       <p className="mt-2 text-center text-[10px] text-muted-foreground">
-        {DOCK_TERMS_LABEL}
+        Al confirmar aceptás los términos y condiciones de Luca Pizzería
       </p>
     </div>
   );

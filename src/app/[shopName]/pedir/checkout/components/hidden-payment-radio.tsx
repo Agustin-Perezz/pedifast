@@ -2,7 +2,6 @@
 
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
-import { CASH_ARIA_LABEL, MP_ARIA_LABEL } from "./payment-radio-labels";
 
 export type HiddenPaymentRadioProps = {
   readonly inputId: string;
@@ -33,8 +32,8 @@ export function HiddenPaymentRadio({
 
 function labelFor(value: PaymentMethod): string {
   if (value === PaymentMethod.Efectivo) {
-    return CASH_ARIA_LABEL;
+    return "Efectivo al recibir";
   }
 
-  return MP_ARIA_LABEL;
+  return "Mercado Pago";
 }
