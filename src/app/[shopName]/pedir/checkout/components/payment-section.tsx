@@ -9,11 +9,13 @@ import { PaymentProtectedBadge } from "./payment-protected-badge";
 
 export type PaymentSectionProps = {
   readonly paymentMethod: PaymentMethod;
+  readonly isPickup: boolean;
   readonly onChange: (patch: PatchCheckoutForm) => void;
 };
 
 export function PaymentSection({
   paymentMethod,
+  isPickup,
   onChange,
 }: PaymentSectionProps) {
   const isMercadoPago = paymentMethod === PaymentMethod.MercadoPago;
@@ -28,7 +30,11 @@ export function PaymentSection({
         <PaymentProtectedBadge />
       </div>
       <MercadoPagoOptionCard selected={isMercadoPago} onChange={onChange} />
-      <CashOptionCard selected={isEfectivo} onChange={onChange} />
+      <CashOptionCard
+        selected={isEfectivo}
+        isPickup={isPickup}
+        onChange={onChange}
+      />
     </section>
   );
 }

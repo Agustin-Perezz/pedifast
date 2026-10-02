@@ -13,8 +13,11 @@ import { buildWhatsappMessage, type PendingWhatsappOrder } from "./whatsapp";
 
 const MP_PREFERENCE_API = "/api/mp/preference";
 
-type SubmitCheckoutResult = {
+export type CheckoutFieldError = "nombre" | "telefono" | "address";
+
+export type SubmitCheckoutResult = {
   readonly error: string | null;
+  readonly fieldError: CheckoutFieldError | null;
 };
 
 export async function submitCheckout(
@@ -23,25 +26,25 @@ export async function submitCheckout(
   cart: CartContextValue,
 ): Promise<SubmitCheckoutResult> {
   if (form.nombre.length === 0) {
-    return { error: "Ingresa tu nombre" };
+    return { error: "Ingresa tu nombre", fieldError: "nombre" };
   }
 
   if (
     shop.orderFlow === OrderFlow.Dashboard &&
     form.telefono.trim().length === 0
   ) {
-    return { error: "Ingresa tu teléfono" };
+    return { error: "Ingresa tu teléfono", fieldError: "telefono" };
   }
 
   if (
     form.deliveryMethod === DeliveryMethod.Delivery &&
     form.address.trim().length === 0
   ) {
-    return { error: "Ingresa la dirección de envío" };
+    return { error: "Ingresa la dirección de envío", fieldError: "address" };
   }
 
   if (cart.isEmpty) {
-    return { error: "Tu carrito está vacío" };
+    return { error: "Tu carrito está vacío", fieldError: null };
   }
 
   const deliveryCost = form.deliveryCost ?? 0;
@@ -78,7 +81,7 @@ async function submitWhatsappOrder(
   cart.clearCart();
   await redirectToPaymentOrReceipt(externalReference, form, cart);
 
-  return { error: null };
+  return { error: null, fieldError: null };
 }
 
 async function submitDashboardOrder(
@@ -102,13 +105,13 @@ async function submitDashboardOrder(
   });
 
   if (!result.ok) {
-    return { error: result.error };
+    return { error: result.error, fieldError: null };
   }
 
   cart.clearCart();
   await redirectToPaymentOrReceipt(result.externalReference, form, cart);
 
-  return { error: null };
+  return { error: null, fieldError: null };
 }
 
 function serializeCartItems(cart: CartContextValue): readonly OrderItemInput[] {

@@ -2,7 +2,7 @@ export type TipValue = "no" | "500" | "1000" | "1500";
 
 export const TIP_OPTIONS: readonly TipValue[] = ["no", "500", "1000", "1500"];
 
-export const DEFAULT_TIP: TipValue = "1000";
+export const DEFAULT_TIP: TipValue = "no";
 
 const NO_TIP_LABEL = "No";
 

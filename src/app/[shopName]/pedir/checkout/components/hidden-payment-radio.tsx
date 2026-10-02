@@ -1,6 +1,6 @@
 "use client";
 
-import { PaymentMethod } from "@/domain/entities/payment-method.enum";
+import type { PaymentMethod } from "@/domain/entities/payment-method.enum";
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
 
 export type HiddenPaymentRadioProps = {
@@ -8,6 +8,7 @@ export type HiddenPaymentRadioProps = {
   readonly value: PaymentMethod;
   readonly checked: boolean;
   readonly onChange: (patch: PatchCheckoutForm) => void;
+  readonly ariaLabel: string;
 };
 
 export function HiddenPaymentRadio({
@@ -15,6 +16,7 @@ export function HiddenPaymentRadio({
   value,
   checked,
   onChange,
+  ariaLabel,
 }: HiddenPaymentRadioProps) {
   return (
     <input
@@ -25,15 +27,7 @@ export function HiddenPaymentRadio({
       checked={checked}
       onChange={() => onChange({ paymentMethod: value })}
       className="size-5 shrink-0 accent-primary"
-      aria-label={labelFor(value)}
+      aria-label={ariaLabel}
     />
   );
-}
-
-function labelFor(value: PaymentMethod): string {
-  if (value === PaymentMethod.Efectivo) {
-    return "Efectivo al recibir";
-  }
-
-  return "Mercado Pago";
 }

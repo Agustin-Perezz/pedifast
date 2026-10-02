@@ -9,6 +9,7 @@ export type AddressEditorProps = {
   readonly onAddressChange: (address: string) => void;
   readonly onCostChange: (cost: number | null) => void;
   readonly onSaved: () => void;
+  readonly error: string | null;
 };
 
 export function AddressEditor({
@@ -17,6 +18,7 @@ export function AddressEditor({
   onAddressChange,
   onCostChange,
   onSaved,
+  error,
 }: AddressEditorProps) {
   return (
     <AddressSection
@@ -27,6 +29,7 @@ export function AddressEditor({
         onCostChange(cost);
         onSaved();
       }}
+      error={error}
     />
   );
 }

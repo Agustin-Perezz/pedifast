@@ -2,16 +2,38 @@
 
 import { useState } from "react";
 
+import type { CheckoutFieldError } from "../../lib/submit-checkout";
+
 export type CheckoutSubmissionState = {
   readonly error: string | null;
+  readonly fieldError: CheckoutFieldError | null;
   readonly submitting: boolean;
   readonly setError: (error: string | null) => void;
+  readonly setFieldError: (field: CheckoutFieldError) => void;
   readonly setSubmitting: (submitting: boolean) => void;
 };
 
 export function useCheckoutSubmission(): CheckoutSubmissionState {
   const [error, setError] = useState<string | null>(null);
+  const [fieldError, setFieldError] = useState<CheckoutFieldError | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  return { error, submitting, setError, setSubmitting };
+  function handleError(nextError: string | null): void {
+    setError(nextError);
+    setFieldError(null);
+  }
+
+  function handleFieldError(field: CheckoutFieldError): void {
+    setFieldError(field);
+    setError(null);
+  }
+
+  return {
+    error,
+    fieldError,
+    submitting,
+    setError: handleError,
+    setFieldError: handleFieldError,
+    setSubmitting,
+  };
 }

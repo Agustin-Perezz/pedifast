@@ -26,9 +26,7 @@ export function DockCta({
       className="flex h-11 items-center justify-center gap-2 rounded-full bg-foreground px-5 text-sm font-bold text-background shadow-md transition-all active:scale-[0.98] hover:bg-foreground/90 disabled:opacity-60"
     >
       <Icon aria-hidden="true" className="size-4" />
-      {payingWithMercadoPago
-        ? "Pagar con Mercado Pago"
-        : "Confirmar y Pagar en Mano"}
+      {payingWithMercadoPago ? "Pagar con Mercado Pago" : "Confirmar"}
     </Button>
   );
 }

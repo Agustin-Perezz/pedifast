@@ -1,6 +1,7 @@
 "use client";
 
 import { useCart } from "../../context/use-cart";
+import { scrollToCheckoutField } from "../../lib/scroll-to-checkout-field";
 import type { PlainShopItem } from "../../lib/serialize-catalog";
 import type { PlainShop } from "../../lib/serialize-shop";
 import { submitCheckout } from "../../lib/submit-checkout";
@@ -23,32 +24,35 @@ export function CheckoutScreen({
 }: CheckoutScreenProps) {
   const cart = useCart();
   const { form, update, itemExtras } = useCheckoutScreen(catalogItems);
-  const { error, submitting, setError, setSubmitting } =
-    useCheckoutSubmission();
-
+  const submission = useCheckoutSubmission();
   const menuHref = `/${shopName}/${MENU_ROUTE_SEGMENT}`;
-  const submission = { error, submitting, setError, setSubmitting };
-  const screenProps = {
-    form,
-    update,
-    itemExtras,
-    cart,
-    shop,
-    shopName,
-    menuHref,
-    submission,
-  };
 
   function handleSubmit(): void {
     void runSubmit();
   }
 
   async function runSubmit(): Promise<void> {
-    setSubmitting(true);
+    submission.setSubmitting(true);
     const result = await submitCheckout(shop, form, cart);
-    setSubmitting(false);
-    setError(result.error);
+    submission.setSubmitting(false);
+    submission.setError(result.error);
+    if (result.fieldError !== null) {
+      submission.setFieldError(result.fieldError);
+      scrollToCheckoutField(result.fieldError);
+    }
   }
 
-  return <CheckoutScreenBody {...screenProps} onSubmit={handleSubmit} />;
+  return (
+    <CheckoutScreenBody
+      form={form}
+      update={update}
+      itemExtras={itemExtras}
+      cart={cart}
+      shop={shop}
+      shopName={shopName}
+      menuHref={menuHref}
+      submission={submission}
+      onSubmit={handleSubmit}
+    />
+  );
 }

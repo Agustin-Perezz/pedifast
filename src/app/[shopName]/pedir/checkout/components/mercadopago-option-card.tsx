@@ -47,6 +47,7 @@ export function MercadoPagoOptionCard({
           value={PaymentMethod.MercadoPago}
           checked={selected}
           onChange={onChange}
+          ariaLabel="Mercado Pago"
         />
       </div>
       <MercadoPagoChipsRow />
