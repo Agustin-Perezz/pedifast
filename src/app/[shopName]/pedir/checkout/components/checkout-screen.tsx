@@ -5,6 +5,7 @@ import { scrollToCheckoutField } from "../../lib/scroll-to-checkout-field";
 import type { PlainShopItem } from "../../lib/serialize-catalog";
 import type { PlainShop } from "../../lib/serialize-shop";
 import { submitCheckout } from "../../lib/submit-checkout";
+import { updateWithFieldErrorClearing } from "../../lib/update-with-field-error-clearing";
 import { useCheckoutScreen } from "../hooks/use-checkout-screen";
 import { useCheckoutSubmission } from "../hooks/use-checkout-submission";
 import { CheckoutScreenBody } from "./checkout-screen-body";
@@ -26,6 +27,7 @@ export function CheckoutScreen({
   const { form, update, itemExtras } = useCheckoutScreen(catalogItems);
   const submission = useCheckoutSubmission();
   const menuHref = `/${shopName}/${MENU_ROUTE_SEGMENT}`;
+  const updateWithClearing = updateWithFieldErrorClearing(update, submission);
 
   function handleSubmit(): void {
     void runSubmit();
@@ -45,7 +47,7 @@ export function CheckoutScreen({
   return (
     <CheckoutScreenBody
       form={form}
-      update={update}
+      update={updateWithClearing}
       itemExtras={itemExtras}
       cart={cart}
       shop={shop}
