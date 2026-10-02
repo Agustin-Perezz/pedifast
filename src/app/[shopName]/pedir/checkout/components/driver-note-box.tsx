@@ -13,7 +13,7 @@ export function DriverNoteBox() {
         disabled
         value="Tocar timbre Luca. Dejar en portería si no responde."
         aria-label="Nota para el repartidor"
-        className="flex-1 bg-transparent text-[12px] text-muted-foreground"
+        className="flex-1 rounded-none border-none bg-transparent text-[12px] text-muted-foreground focus-visible:border-none focus-visible:ring-0 disabled:bg-transparent disabled:opacity-100"
       />
     </div>
   );

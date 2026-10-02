@@ -66,7 +66,7 @@ export function ShopHeader({ shop, shopName }: ShopHeaderProps) {
               disabled
               aria-disabled="true"
               placeholder="Buscar platos, pizzas o ingredientes..."
-              className="w-full rounded-xl bg-surface-container-low py-2 pr-4 pl-10 text-sm text-foreground placeholder:text-muted-foreground"
+              className="w-full rounded-xl bg-surface-container-low py-2 pr-4 pl-10 text-sm text-foreground placeholder:text-muted-foreground disabled:bg-surface-container-low disabled:opacity-100"
             />
           </div>
         </div>

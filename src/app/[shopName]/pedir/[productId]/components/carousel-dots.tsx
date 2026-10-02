@@ -24,10 +24,11 @@ export function CarouselDots({
           // biome-ignore lint/suspicious/noArrayIndexKey: positional UI identity
           key={index}
           type="button"
+          variant="ghost"
           aria-label={`Image ${index + 1}`}
           data-testid={`carousel-dot-${index}`}
           onClick={() => onSelect(index)}
-          className={`rounded-full transition-all duration-200 ${
+          className={`rounded-full transition-all duration-200 hover:bg-transparent ${
             index === selectedIndex
               ? "h-3 w-3 border border-outline"
               : "h-2 w-2 bg-surface-container-highest"

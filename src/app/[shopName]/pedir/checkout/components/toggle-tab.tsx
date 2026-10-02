@@ -14,12 +14,13 @@ export type ToggleTabProps = {
 export function ToggleTab({ active, label, testId, onSelect }: ToggleTabProps) {
   const Icon = label === DELIVERY_LABEL ? Bike : Store;
   const activeClass = active
-    ? "bg-foreground text-background shadow-sm"
-    : "text-muted-foreground hover:text-foreground";
+    ? "bg-foreground text-background shadow-sm hover:bg-foreground hover:text-background"
+    : "text-muted-foreground hover:text-foreground hover:bg-transparent";
 
   return (
     <Button
       type="button"
+      variant="ghost"
       data-testid={testId}
       aria-pressed={active}
       onClick={onSelect}
