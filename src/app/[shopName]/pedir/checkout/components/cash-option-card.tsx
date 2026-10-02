@@ -12,10 +12,19 @@ import { PAYMENT_OPTION_IDS } from "./payment-option-ids";
 
 export type CashOptionCardProps = {
   readonly selected: boolean;
+  readonly isPickup: boolean;
   readonly onChange: (patch: PatchCheckoutForm) => void;
 };
 
-export function CashOptionCard({ selected, onChange }: CashOptionCardProps) {
+export function CashOptionCard({
+  selected,
+  isPickup,
+  onChange,
+}: CashOptionCardProps) {
+  const description = isPickup
+    ? "Pagás al retirar en el local"
+    : "Pagás en mano al repartidor";
+
   return (
     <label
       className={`flex cursor-pointer flex-col gap-2 rounded-xl bg-card p-4 shadow-sm ${ringClass(selected)}`}
@@ -28,17 +37,16 @@ export function CashOptionCard({ selected, onChange }: CashOptionCardProps) {
         </span>
         <div className="min-w-0 flex-1">
           <span className="text-[15px] font-bold text-foreground">
-            Efectivo al recibir
+            {isPickup ? "Efectivo al retirar" : "Efectivo al recibir"}
           </span>
-          <p className="text-[12px] text-muted-foreground">
-            Pagás en mano al repartidor
-          </p>
+          <p className="text-[12px] text-muted-foreground">{description}</p>
         </div>
         <HiddenPaymentRadio
           inputId={PAYMENT_OPTION_IDS.efectivoInputId}
           value={PaymentMethod.Efectivo}
           checked={selected}
           onChange={onChange}
+          ariaLabel={isPickup ? "Efectivo al retirar" : "Efectivo al recibir"}
         />
       </div>
       {selected && <CashAmountOptions />}

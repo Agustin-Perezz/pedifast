@@ -12,6 +12,7 @@ export type DeliveryDetailsCardProps = {
   readonly address: string;
   readonly onAddressChange: (address: string) => void;
   readonly onCostChange: (cost: number | null) => void;
+  readonly addressError: string | null;
 };
 
 export function DeliveryDetailsCard({
@@ -19,6 +20,7 @@ export function DeliveryDetailsCard({
   address,
   onAddressChange,
   onCostChange,
+  addressError,
 }: DeliveryDetailsCardProps) {
   const [isEditing, setIsEditing] = useState(true);
   const showEditor = isEditing || address.length === 0;
@@ -45,6 +47,7 @@ export function DeliveryDetailsCard({
           onAddressChange={onAddressChange}
           onCostChange={handleCostCalculated}
           onSaved={() => setIsEditing(false)}
+          error={addressError}
         />
       ) : (
         <AddressSummaryRow address={address} />

@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import type { PlainShop } from "../../lib/serialize-shop";
+import { FieldErrorText } from "../field-error-text";
 import { useCalculateDeliveryCost } from "./use-calculate-delivery-cost";
 
 type AddressSectionProps = {
@@ -16,6 +16,7 @@ type AddressSectionProps = {
     cost: number | null,
     distanceKm: number | null,
   ) => void;
+  readonly error: string | null;
 };
 
 export function AddressSection({
@@ -23,6 +24,7 @@ export function AddressSection({
   address,
   onAddressChange,
   onCostChange,
+  error,
 }: AddressSectionProps) {
   const [value, setValue] = useState(address);
   const { status, message, calculateCost } = useCalculateDeliveryCost(
@@ -38,6 +40,7 @@ export function AddressSection({
           id="checkout-address"
           data-testid="checkout-address-input"
           value={value}
+          aria-invalid={error !== null}
           onChange={(event) => setValue(event.target.value)}
           placeholder="Calle y número"
         />
@@ -54,6 +57,7 @@ export function AddressSection({
           {status === "calculating" ? "..." : "Calcular"}
         </Button>
       </div>
+      <FieldErrorText message={error} />
       {message && (
         <p
           className="text-sm text-muted-foreground"

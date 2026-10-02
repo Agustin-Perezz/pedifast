@@ -7,13 +7,22 @@ import { TipSection } from "./tip-section";
 
 export type PaymentAndTipProps = {
   readonly paymentMethod: CheckoutFormState["paymentMethod"];
+  readonly isPickup: boolean;
   readonly onChange: (patch: PatchCheckoutForm) => void;
 };
 
-export function PaymentAndTip({ paymentMethod, onChange }: PaymentAndTipProps) {
+export function PaymentAndTip({
+  paymentMethod,
+  isPickup,
+  onChange,
+}: PaymentAndTipProps) {
   return (
     <>
-      <PaymentSection paymentMethod={paymentMethod} onChange={onChange} />
+      <PaymentSection
+        paymentMethod={paymentMethod}
+        isPickup={isPickup}
+        onChange={onChange}
+      />
       <TipSection />
     </>
   );

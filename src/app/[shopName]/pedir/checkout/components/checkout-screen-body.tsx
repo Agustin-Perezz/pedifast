@@ -44,8 +44,13 @@ export function CheckoutScreenBody(props: CheckoutScreenBodyProps) {
           shopName={shopName}
           shop={shop}
           isDelivery={isDelivery}
+          fieldError={submission.fieldError}
         />
-        <PaymentAndTip paymentMethod={form.paymentMethod} onChange={update} />
+        <PaymentAndTip
+          paymentMethod={form.paymentMethod}
+          isPickup={!isDelivery}
+          onChange={update}
+        />
         <CostBreakdown
           totalItems={cart.totalItems}
           itemsTotal={cart.totalPrice}
