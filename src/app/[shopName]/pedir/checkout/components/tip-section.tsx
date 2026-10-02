@@ -25,6 +25,7 @@ export function TipSection() {
           <Button
             key={value}
             type="button"
+            variant="ghost"
             data-testid={`tip-option-${value}`}
             aria-pressed={selectedTip === value}
             onClick={() => setSelectedTip(value)}
@@ -40,7 +41,7 @@ export function TipSection() {
 
 function tipButtonClass(selected: boolean): string {
   if (selected) {
-    return "rounded-lg bg-foreground py-2 text-center text-[12px] font-bold text-background shadow-sm transition-colors";
+    return "rounded-lg bg-foreground py-2 text-center text-[12px] font-bold text-background shadow-sm transition-colors hover:bg-foreground";
   }
 
   return "rounded-lg bg-surface-container py-2 text-center text-[12px] font-semibold text-foreground transition-colors hover:bg-surface-container-high";
