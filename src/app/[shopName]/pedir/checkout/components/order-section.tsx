@@ -7,7 +7,6 @@ import type { CartItemExtras } from "./item-extras-map";
 import { itemsCountLabel } from "./items-count-label";
 import { KitchenNotesCard } from "./kitchen-notes-card";
 import { OrderItemsList } from "./order-items-list";
-import { ITEMS_SECTION_TITLE } from "./section-titles";
 
 export type OrderSectionProps = {
   readonly cart: CartContextValue;
@@ -28,7 +27,7 @@ export function OrderSection({
     <section className="mt-6 flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          {ITEMS_SECTION_TITLE}
+          Tu pedido
         </h3>
         <span className="text-xs text-muted-foreground">
           {itemsCountLabel(cart.totalItems)}

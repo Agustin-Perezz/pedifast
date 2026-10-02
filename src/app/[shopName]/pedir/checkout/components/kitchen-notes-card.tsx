@@ -3,10 +3,6 @@
 import { CookingPot } from "lucide-react";
 
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
-import {
-  KITCHEN_NOTES_LABEL,
-  KITCHEN_NOTES_PLACEHOLDER,
-} from "./kitchen-notes-labels";
 
 const KITCHEN_NOTES_FIELD_ID = "kitchen-notes";
 
@@ -23,13 +19,13 @@ export function KitchenNotesCard({ value, onChange }: KitchenNotesCardProps) {
         className="flex items-center gap-1.5 text-xs font-bold text-foreground"
       >
         <CookingPot aria-hidden="true" className="size-4 text-outline" />
-        {KITCHEN_NOTES_LABEL}
+        Aclaraciones para la cocina (opcional)
       </label>
       <input
         id={KITCHEN_NOTES_FIELD_ID}
         type="text"
         value={value}
-        placeholder={KITCHEN_NOTES_PLACEHOLDER}
+        placeholder="Ej: Masa bien tostada, orégano aparte..."
         onChange={(event) => onChange({ notas: event.target.value })}
         className="h-11 w-full rounded-lg bg-surface-container px-3.5 text-sm text-foreground placeholder:text-outline"
       />

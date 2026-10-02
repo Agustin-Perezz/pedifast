@@ -1,5 +1,3 @@
-export const PAYMENT_PROTECTED_LABEL = "100% protegido";
-
 export type PaymentOptionIdsPair = {
   readonly mercadoPagoTestId: string;
   readonly mercadoPagoInputId: string;

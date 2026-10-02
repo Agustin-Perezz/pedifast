@@ -3,10 +3,6 @@
 import { SmilePlus } from "lucide-react";
 import { useState } from "react";
 
-import {
-  TIP_FULL_FOR_COURIER_LABEL,
-  TIP_SECTION_TITLE,
-} from "./tip-section-labels";
 import type { TipValue } from "./tip-values";
 import { DEFAULT_TIP, TIP_OPTIONS, tipLabel } from "./tip-values";
 
@@ -18,11 +14,9 @@ export function TipSection() {
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-[15px] font-bold text-foreground">
           <SmilePlus aria-hidden="true" className="size-[18px] text-chart-2" />
-          {TIP_SECTION_TITLE}
+          Propina para el repartidor
         </span>
-        <span className="text-[11px] text-muted-foreground">
-          {TIP_FULL_FOR_COURIER_LABEL}
-        </span>
+        <span className="text-[11px] text-muted-foreground">100% para él</span>
       </div>
       <div className="grid grid-cols-4 gap-2">
         {TIP_OPTIONS.map((value: TipValue) => (

@@ -6,7 +6,6 @@ import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
 import { CashOptionCard } from "./cash-option-card";
 import { MercadoPagoOptionCard } from "./mercadopago-option-card";
 import { PaymentProtectedBadge } from "./payment-protected-badge";
-import { PAYMENT_SECTION_TITLE } from "./section-titles";
 
 export type PaymentSectionProps = {
   readonly paymentMethod: PaymentMethod;
@@ -24,7 +23,7 @@ export function PaymentSection({
     <section className="mt-6 flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <h3 className="font-heading text-lg font-bold text-foreground">
-          {PAYMENT_SECTION_TITLE}
+          Método de pago
         </h3>
         <PaymentProtectedBadge />
       </div>

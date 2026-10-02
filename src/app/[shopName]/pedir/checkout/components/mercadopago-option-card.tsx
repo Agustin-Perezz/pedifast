@@ -8,13 +8,6 @@ import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
 import { HiddenPaymentRadio } from "./hidden-payment-radio";
 import { ringClass } from "./payment-card-classes";
 import { PAYMENT_OPTION_IDS } from "./payment-option-ids";
-import {
-  MP_CHIP_INSTALLMENTS,
-  MP_CHIP_INSTANT,
-  MP_OPTION_DESCRIPTION,
-  MP_OPTION_LABEL,
-  MP_RECOMMENDED_CHIP,
-} from "./payment-section-labels";
 
 export type MercadoPagoOptionCardProps = {
   readonly selected: boolean;
@@ -38,14 +31,14 @@ export function MercadoPagoOptionCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-[15px] font-bold text-foreground">
-              {MP_OPTION_LABEL}
+              Mercado Pago
             </span>
             <span className="rounded-full bg-secondary-container px-2 py-0.5 text-[10px] font-bold text-on-secondary-container">
-              {MP_RECOMMENDED_CHIP}
+              Recomendado
             </span>
           </div>
           <p className="text-[12px] text-muted-foreground">
-            {MP_OPTION_DESCRIPTION}
+            Dinero en cuenta, débito o crédito
           </p>
         </div>
         <HiddenPaymentRadio
@@ -64,10 +57,10 @@ function MercadoPagoChipsRow() {
   return (
     <div className="flex flex-wrap gap-2 pl-[52px]">
       <span className="rounded bg-surface-container px-2 py-0.5 text-[10px] text-muted-foreground">
-        {MP_CHIP_INSTALLMENTS}
+        Hasta 3 cuotas
       </span>
       <span className="rounded bg-surface-container px-2 py-0.5 text-[10px] text-muted-foreground">
-        {MP_CHIP_INSTANT}
+        Aprobación instantánea
       </span>
     </div>
   );
