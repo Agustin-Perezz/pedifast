@@ -7,6 +7,7 @@ import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 import { createOrderAction } from "../actions";
 import type { CheckoutFormState } from "../components/checkout/use-checkout-form";
 import type { CartContextValue } from "../context/cart-context";
+import { getItemUnitPrice } from "./cart-reducer";
 import { persistPendingWhatsappOrder } from "./order-storage";
 import type { PlainShop } from "./serialize-shop";
 import { buildWhatsappMessage, type PendingWhatsappOrder } from "./whatsapp";
@@ -118,7 +119,9 @@ function serializeCartItems(cart: CartContextValue): readonly OrderItemInput[] {
   return cart.items.map((item) => ({
     name: item.product.name,
     quantity: item.quantity,
-    unitPrice: item.product.price,
+    // Unit price must include accessory surcharges so the server-side total
+    // and the MercadoPago preference match the total the customer sees.
+    unitPrice: getItemUnitPrice(item),
     accessories: item.selectedAccessories.map((accessory) => ({
       name: accessory.name,
       priceDelta: accessory.priceDelta,
