@@ -16,6 +16,8 @@ export function CheckoutScreenBody(props: CheckoutScreenBodyProps) {
     form,
     update,
     itemExtras,
+    accessoryGroupsByItemId,
+    onSelectAccessories,
     cart,
     shop,
     shopName,
@@ -40,11 +42,14 @@ export function CheckoutScreenBody(props: CheckoutScreenBodyProps) {
           form={form}
           update={update}
           itemExtras={itemExtras}
+          accessoryGroupsByItemId={accessoryGroupsByItemId}
+          onSelectAccessories={onSelectAccessories}
           cart={cart}
           shopName={shopName}
           shop={shop}
           isDelivery={isDelivery}
           fieldError={submission.fieldError}
+          showMissingAccessoryHints={submission.missingRequiredGroups}
         />
         <PaymentAndTip
           paymentMethod={form.paymentMethod}
