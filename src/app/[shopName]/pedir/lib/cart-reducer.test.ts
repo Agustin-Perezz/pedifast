@@ -181,11 +181,72 @@ describe("cartReducer", () => {
     expect(afterB.items[0]?.selectedAccessories[0]?.optionId).toBe(102);
   });
 
-  it("multi-select toggles options", () => {
+  it("multi-select accepts the full desired set idempotently", () => {
+    const base: CartItem[] = [
+      { product: accessoryProduct, quantity: 1, selectedAccessories: [] },
+    ];
+
     const afterA = cartReducer(
+      { items: base },
+      {
+        type: "SET_ACCESSORIES",
+        itemId: accessoryProduct.id,
+        group: multiGroup,
+        selectedOptions: [multiGroup.options[0]],
+      },
+    );
+
+    expect(afterA.items[0]?.selectedAccessories).toHaveLength(1);
+    expect(afterA.items[0]?.selectedAccessories[0]?.optionId).toBe(101);
+
+    const afterFull = cartReducer(afterA, {
+      type: "SET_ACCESSORIES",
+      itemId: accessoryProduct.id,
+      group: multiGroup,
+      selectedOptions: multiGroup.options,
+    });
+
+    expect(afterFull.items[0]?.selectedAccessories).toHaveLength(2);
+
+    // Dispatching the same full set again must not change the selection.
+    const afterRepeat = cartReducer(afterFull, {
+      type: "SET_ACCESSORIES",
+      itemId: accessoryProduct.id,
+      group: multiGroup,
+      selectedOptions: multiGroup.options,
+    });
+
+    expect(afterRepeat).toEqual(afterFull);
+
+    // Submitting the full set when only a subset was previously selected
+    // replaces the group's selection rather than toggling against it.
+    const afterSubset = cartReducer(afterFull, {
+      type: "SET_ACCESSORIES",
+      itemId: accessoryProduct.id,
+      group: multiGroup,
+      selectedOptions: [multiGroup.options[1]],
+    });
+
+    expect(afterSubset.items[0]?.selectedAccessories).toHaveLength(1);
+    expect(afterSubset.items[0]?.selectedAccessories[0]?.optionId).toBe(102);
+  });
+
+  it("clears the group selection when the submitted set is empty", () => {
+    const afterSet = cartReducer(
       {
         items: [
-          { product: accessoryProduct, quantity: 1, selectedAccessories: [] },
+          {
+            product: accessoryProduct,
+            quantity: 1,
+            selectedAccessories: [
+              {
+                optionId: 101,
+                groupId: multiGroup.id,
+                name: "A",
+                priceDelta: 100,
+              },
+            ],
+          },
         ],
       },
       {
@@ -195,21 +256,15 @@ describe("cartReducer", () => {
         selectedOptions: [multiGroup.options[0]],
       },
     );
-    const afterB = cartReducer(afterA, {
+
+    const afterClear = cartReducer(afterSet, {
       type: "SET_ACCESSORIES",
       itemId: accessoryProduct.id,
       group: multiGroup,
-      selectedOptions: multiGroup.options,
-    });
-    const afterToggleA = cartReducer(afterB, {
-      type: "SET_ACCESSORIES",
-      itemId: accessoryProduct.id,
-      group: multiGroup,
-      selectedOptions: [multiGroup.options[1]],
+      selectedOptions: [],
     });
 
-    expect(afterToggleA.items[0]?.selectedAccessories).toHaveLength(1);
-    expect(afterToggleA.items[0]?.selectedAccessories[0]?.optionId).toBe(102);
+    expect(afterClear.items[0]?.selectedAccessories).toHaveLength(0);
   });
 
   it("required group blocks continuation when empty", () => {

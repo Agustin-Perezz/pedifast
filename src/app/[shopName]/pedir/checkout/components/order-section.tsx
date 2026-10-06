@@ -1,6 +1,10 @@
 "use client";
 
 import type { CartContextValue } from "../../context/cart-context";
+import type {
+  PlainAccessoryGroup,
+  PlainAccessoryOption,
+} from "../../lib/serialize-catalog";
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
 import { cartProductFromItem } from "./cart-product-from-item";
 import type { CartItemExtras } from "./item-extras-map";
@@ -11,6 +15,16 @@ import { OrderItemsList } from "./order-items-list";
 export type OrderSectionProps = {
   readonly cart: CartContextValue;
   readonly itemExtras: ReadonlyMap<number, CartItemExtras>;
+  readonly accessoryGroupsByItemId: ReadonlyMap<
+    number,
+    readonly PlainAccessoryGroup[]
+  >;
+  readonly onSelectAccessories: (
+    itemId: number,
+    group: PlainAccessoryGroup,
+    selectedOptions: readonly PlainAccessoryOption[],
+  ) => void;
+  readonly showMissingAccessoryHints: boolean;
   readonly shopName: string;
   readonly notas: string;
   readonly onChange: (patch: PatchCheckoutForm) => void;
@@ -19,6 +33,9 @@ export type OrderSectionProps = {
 export function OrderSection({
   cart,
   itemExtras,
+  accessoryGroupsByItemId,
+  onSelectAccessories,
+  showMissingAccessoryHints,
   shopName,
   notas,
   onChange,
@@ -36,6 +53,9 @@ export function OrderSection({
       <OrderItemsList
         items={cart.items}
         itemExtras={itemExtras}
+        accessoryGroupsByItemId={accessoryGroupsByItemId}
+        onSelectAccessories={onSelectAccessories}
+        showMissingAccessoryHints={showMissingAccessoryHints}
         shopName={shopName}
         onAddItem={(item) => cart.addItem(cartProductFromItem(item))}
         onRemoveItem={(item) => cart.removeItem(item.product.id)}

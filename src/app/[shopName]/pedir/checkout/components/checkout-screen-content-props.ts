@@ -1,17 +1,15 @@
-"use client";
-
 import type { CheckoutFormState } from "../../components/checkout/use-checkout-form";
 import type { CartContextValue } from "../../context/cart-context";
 import type {
   PlainAccessoryGroup,
   PlainAccessoryOption,
 } from "../../lib/serialize-catalog";
-import type { PlainShop } from "../../lib/serialize-shop";
+import type { CheckoutFieldError } from "../../lib/submit-checkout";
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
-import type { CheckoutSubmissionState } from "../hooks/use-checkout-submission";
+import type { CheckoutScreenContentShop } from "./checkout-screen-content-shop";
 import type { CartItemExtras } from "./item-extras-map";
 
-export type CheckoutScreenBodyProps = {
+export type CheckoutScreenContentProps = {
   readonly form: CheckoutFormState;
   readonly update: (patch: PatchCheckoutForm) => void;
   readonly itemExtras: ReadonlyMap<number, CartItemExtras>;
@@ -25,9 +23,9 @@ export type CheckoutScreenBodyProps = {
     selectedOptions: readonly PlainAccessoryOption[],
   ) => void;
   readonly cart: CartContextValue;
-  readonly shop: PlainShop;
   readonly shopName: string;
-  readonly menuHref: string;
-  readonly submission: CheckoutSubmissionState;
-  readonly onSubmit: () => void;
+  readonly shop: CheckoutScreenContentShop;
+  readonly isDelivery: boolean;
+  readonly fieldError: CheckoutFieldError | null;
+  readonly showMissingAccessoryHints: boolean;
 };

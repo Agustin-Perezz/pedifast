@@ -1,16 +1,17 @@
 "use client";
 
 import { useCart } from "../../context/use-cart";
-import { scrollToCheckoutField } from "../../lib/scroll-to-checkout-field";
-import type { PlainShopItem } from "../../lib/serialize-catalog";
+import type {
+  PlainAccessoryGroup,
+  PlainAccessoryOption,
+  PlainShopItem,
+} from "../../lib/serialize-catalog";
 import type { PlainShop } from "../../lib/serialize-shop";
-import { submitCheckout } from "../../lib/submit-checkout";
 import { updateWithFieldErrorClearing } from "../../lib/update-with-field-error-clearing";
 import { useCheckoutScreen } from "../hooks/use-checkout-screen";
 import { useCheckoutSubmission } from "../hooks/use-checkout-submission";
+import { useCheckoutSubmit } from "../hooks/use-checkout-submit";
 import { CheckoutScreenBody } from "./checkout-screen-body";
-
-const MENU_ROUTE_SEGMENT = "pedir";
 
 export type CheckoutScreenProps = {
   readonly shop: PlainShop;
@@ -24,24 +25,29 @@ export function CheckoutScreen({
   catalogItems,
 }: CheckoutScreenProps) {
   const cart = useCart();
-  const { form, update, itemExtras } = useCheckoutScreen(catalogItems);
+  const { form, update, itemExtras, accessoryGroupsByItemId } =
+    useCheckoutScreen(catalogItems);
   const submission = useCheckoutSubmission();
-  const menuHref = `/${shopName}/${MENU_ROUTE_SEGMENT}`;
   const updateWithClearing = updateWithFieldErrorClearing(update, submission);
 
-  function handleSubmit(): void {
-    void runSubmit();
-  }
+  const submit = useCheckoutSubmit({
+    shop,
+    form,
+    cart,
+    accessoryGroupsByItemId,
+    onMissingRequiredGroups: () => submission.setMissingRequiredGroups(true),
+    onError: submission.setError,
+    onFieldError: submission.setFieldError,
+    setSubmitting: submission.setSubmitting,
+  });
 
-  async function runSubmit(): Promise<void> {
-    submission.setSubmitting(true);
-    const result = await submitCheckout(shop, form, cart);
-    submission.setSubmitting(false);
-    submission.setError(result.error);
-    if (result.fieldError !== null) {
-      submission.setFieldError(result.fieldError);
-      scrollToCheckoutField(result.fieldError);
-    }
+  function handleSelectAccessories(
+    itemId: number,
+    group: PlainAccessoryGroup,
+    selectedOptions: readonly PlainAccessoryOption[],
+  ): void {
+    cart.setAccessories(itemId, group, selectedOptions);
+    submission.setMissingRequiredGroups(false);
   }
 
   return (
@@ -49,12 +55,14 @@ export function CheckoutScreen({
       form={form}
       update={updateWithClearing}
       itemExtras={itemExtras}
+      accessoryGroupsByItemId={accessoryGroupsByItemId}
+      onSelectAccessories={handleSelectAccessories}
       cart={cart}
       shop={shop}
       shopName={shopName}
-      menuHref={menuHref}
+      menuHref={`/${shopName}/pedir`}
       submission={submission}
-      onSubmit={handleSubmit}
+      onSubmit={() => void submit()}
     />
   );
 }
