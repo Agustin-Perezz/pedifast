@@ -1,4 +1,3 @@
-import { AccessorySelectionMode } from "@/domain/entities/accessory-selection-mode.enum";
 import type {
   PlainAccessoryGroup,
   PlainAccessoryOption,
@@ -120,6 +119,8 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
     }
 
     case "SET_ACCESSORIES": {
+      // Contract: selectedOptions is the FULL desired set for this group.
+      // Idempotent — dispatching the same set twice yields the same state.
       const existingIndex = state.items.findIndex(
         (cartItem) => cartItem.product.id === action.itemId,
       );
@@ -134,21 +135,12 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
         (accessory) => accessory.groupId !== action.group.id,
       );
 
-      const nextAccessories =
-        action.selectedOptions.length === 0
-          ? keep
-          : action.group.selectionMode === AccessorySelectionMode.Single
-            ? [
-                ...keep,
-                ...action.selectedOptions.map((option) =>
-                  toCartItemAccessory(action.group.id, option),
-                ),
-              ]
-            : action.selectedOptions.reduce<readonly CartItemAccessory[]>(
-                (accessories, option) =>
-                  toggleAccessory(accessories, action.group.id, option),
-                keep,
-              );
+      const nextAccessories = [
+        ...keep,
+        ...action.selectedOptions.map((option) =>
+          toCartItemAccessory(action.group.id, option),
+        ),
+      ];
 
       const nextItems = [...state.items];
       nextItems[existingIndex] = {
@@ -177,26 +169,6 @@ function toCartItemAccessory(
     name: option.name,
     priceDelta: option.priceDelta,
   };
-}
-
-function toggleAccessory(
-  accessories: readonly CartItemAccessory[],
-  groupId: number,
-  option: PlainAccessoryOption,
-): readonly CartItemAccessory[] {
-  const index = accessories.findIndex(
-    (accessory) =>
-      accessory.groupId === groupId && accessory.optionId === option.id,
-  );
-
-  if (index === -1) {
-    return [...accessories, toCartItemAccessory(groupId, option)];
-  }
-
-  return accessories.filter(
-    (accessory) =>
-      !(accessory.groupId === groupId && accessory.optionId === option.id),
-  );
 }
 
 export function getCartTotals(items: readonly CartItem[]): {
@@ -237,12 +209,21 @@ export function hasRequiredGroupsMissing(
   item: CartItem,
   accessoryGroups: readonly PlainAccessoryGroup[],
 ): boolean {
-  return accessoryGroups.some(
-    (group) =>
-      group.isRequired &&
-      !item.selectedAccessories.some(
-        (accessory) => accessory.groupId === group.id,
-      ),
+  return findRequiredGroupMissing(item, accessoryGroups) !== null;
+}
+
+export function findRequiredGroupMissing(
+  item: CartItem,
+  accessoryGroups: readonly PlainAccessoryGroup[],
+): PlainAccessoryGroup | null {
+  return (
+    accessoryGroups.find(
+      (group) =>
+        group.isRequired &&
+        !item.selectedAccessories.some(
+          (accessory) => accessory.groupId === group.id,
+        ),
+    ) ?? null
   );
 }
 
