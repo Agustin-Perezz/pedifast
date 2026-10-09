@@ -24,4 +24,24 @@ export class SupabaseUpdateOrderStatusRepository
 
     return orderMapper.toDomain(data);
   }
+
+  async updateStatusForShop(
+    orderId: number,
+    shopId: number,
+    status: OrderStatus,
+  ): Promise<Order | null> {
+    const { data, error } = await this.supabase
+      .from("orders")
+      .update({ status })
+      .eq("id", orderId)
+      .eq("shop_id", shopId)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`Failed to update order status: ${error.message}`);
+    }
+
+    return data ? orderMapper.toDomain(data) : null;
+  }
 }

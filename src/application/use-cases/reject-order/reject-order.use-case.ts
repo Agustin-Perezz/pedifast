@@ -8,16 +8,15 @@ export class RejectOrderUseCase {
   constructor(private readonly repository: RejectOrderRepository) {}
 
   async execute(dto: RejectOrderRequestDto): Promise<RejectOrderResponseDto> {
-    const orders = await this.repository.findByShopId(dto.shopId);
-
-    if (!orders.some((order) => order.id === dto.orderId)) {
-      throw new OrderNotOwnedByShopError();
-    }
-
-    const order = await this.repository.updateStatus(
+    const order = await this.repository.updateStatusForShop(
       dto.orderId,
+      dto.shopId,
       OrderStatus.Rejected,
     );
+
+    if (!order) {
+      throw new OrderNotOwnedByShopError();
+    }
 
     return { order };
   }

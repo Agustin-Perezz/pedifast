@@ -6,52 +6,62 @@ import { makeOrder } from "../testing/order.factory";
 import type { RejectOrderRepository } from "./reject-order.repository.interface";
 import { RejectOrderUseCase } from "./reject-order.use-case";
 
-function makeRepository(orders: Order[]): {
-  repository: RejectOrderRepository;
-  updateStatus: ReturnType<typeof vi.fn>;
-} {
-  const findByShopId = vi
-    .fn()
-    .mockImplementation((shopId: number) =>
-      Promise.resolve(orders.filter((order) => order.shopId === shopId)),
-    );
-  const updateStatus = vi
-    .fn()
-    .mockImplementation((orderId: number) =>
-      Promise.resolve(makeOrder({ id: orderId, status: OrderStatus.Rejected })),
-    );
+type UpdateStatusForShopFn = (
+  orderId: number,
+  shopId: number,
+  status: OrderStatus,
+) => Promise<Order | null>;
 
-  return {
-    repository: { findByShopId, updateStatus },
-    updateStatus,
-  };
+function makeRepository(orderForShop: Order | null): {
+  repository: RejectOrderRepository;
+  updateStatusForShop: ReturnType<typeof vi.fn<UpdateStatusForShopFn>>;
+} {
+  const updateStatusForShop = vi
+    .fn<UpdateStatusForShopFn>()
+    .mockResolvedValue(orderForShop);
+  const repository: RejectOrderRepository = { updateStatusForShop };
+  return { repository, updateStatusForShop };
 }
 
 describe("RejectOrderUseCase", () => {
   it("rejects a pending order belonging to the shop", async () => {
-    const pending = makeOrder({
+    const rejected = makeOrder({
       id: 10,
       shopId: 7,
-      status: OrderStatus.Pending,
+      status: OrderStatus.Rejected,
     });
-    const { repository, updateStatus } = makeRepository([pending]);
+    const { repository, updateStatusForShop } = makeRepository(rejected);
     const useCase = new RejectOrderUseCase(repository);
 
     const result = await useCase.execute({ orderId: 10, shopId: 7 });
 
-    expect(updateStatus).toHaveBeenCalledWith(10, OrderStatus.Rejected);
+    expect(updateStatusForShop).toHaveBeenCalledWith(
+      10,
+      7,
+      OrderStatus.Rejected,
+    );
     expect(result.order.status).toBe(OrderStatus.Rejected);
   });
 
   it("fails on a cross-shop order without changing any order", async () => {
-    const otherShopOrder = makeOrder({ id: 10, shopId: 99 });
-    const { repository, updateStatus } = makeRepository([otherShopOrder]);
+    const { repository, updateStatusForShop } = makeRepository(null);
     const useCase = new RejectOrderUseCase(repository);
 
     await expect(useCase.execute({ orderId: 10, shopId: 7 })).rejects.toThrow(
       OrderNotOwnedByShopError,
     );
 
-    expect(updateStatus).not.toHaveBeenCalled();
+    expect(updateStatusForShop).toHaveBeenCalledTimes(1);
+  });
+
+  it("fails on an order id that does not exist", async () => {
+    const { repository, updateStatusForShop } = makeRepository(null);
+    const useCase = new RejectOrderUseCase(repository);
+
+    await expect(useCase.execute({ orderId: 999, shopId: 7 })).rejects.toThrow(
+      OrderNotOwnedByShopError,
+    );
+
+    expect(updateStatusForShop).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,5 +1,10 @@
-import type { ListOrdersByShopRepository } from "../list-orders-by-shop/list-orders-by-shop.repository.interface";
-import type { UpdateOrderStatusRepository } from "../update-order-status/update-order-status.repository.interface";
+import type { Order } from "@/domain/entities/order.entity";
+import type { OrderStatus } from "@/domain/entities/order-status.enum";
 
-export type RejectOrderRepository = ListOrdersByShopRepository &
-  Pick<UpdateOrderStatusRepository, "updateStatus">;
+export interface RejectOrderRepository {
+  updateStatusForShop(
+    orderId: number,
+    shopId: number,
+    status: OrderStatus,
+  ): Promise<Order | null>;
+}

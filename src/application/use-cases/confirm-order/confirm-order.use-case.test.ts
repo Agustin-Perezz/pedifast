@@ -6,65 +6,62 @@ import { makeOrder } from "../testing/order.factory";
 import type { ConfirmOrderRepository } from "./confirm-order.repository.interface";
 import { ConfirmOrderUseCase } from "./confirm-order.use-case";
 
-function makeRepository(orders: Order[]): {
-  repository: ConfirmOrderRepository;
-  updateStatus: ReturnType<typeof vi.fn>;
-} {
-  const findByShopId = vi
-    .fn()
-    .mockImplementation((shopId: number) =>
-      Promise.resolve(orders.filter((order) => order.shopId === shopId)),
-    );
-  const updateStatus = vi
-    .fn()
-    .mockImplementation((orderId: number) =>
-      Promise.resolve(
-        makeOrder({ id: orderId, status: OrderStatus.Confirmed }),
-      ),
-    );
+type UpdateStatusForShopFn = (
+  orderId: number,
+  shopId: number,
+  status: OrderStatus,
+) => Promise<Order | null>;
 
-  return {
-    repository: { findByShopId, updateStatus },
-    updateStatus,
-  };
+function makeRepository(orderForShop: Order | null): {
+  repository: ConfirmOrderRepository;
+  updateStatusForShop: ReturnType<typeof vi.fn<UpdateStatusForShopFn>>;
+} {
+  const updateStatusForShop = vi
+    .fn<UpdateStatusForShopFn>()
+    .mockResolvedValue(orderForShop);
+  const repository: ConfirmOrderRepository = { updateStatusForShop };
+  return { repository, updateStatusForShop };
 }
 
 describe("ConfirmOrderUseCase", () => {
   it("confirms a pending order belonging to the shop", async () => {
-    const pending = makeOrder({
+    const confirmed = makeOrder({
       id: 10,
       shopId: 7,
-      status: OrderStatus.Pending,
+      status: OrderStatus.Confirmed,
     });
-    const { repository, updateStatus } = makeRepository([pending]);
+    const { repository, updateStatusForShop } = makeRepository(confirmed);
     const useCase = new ConfirmOrderUseCase(repository);
 
     const result = await useCase.execute({ orderId: 10, shopId: 7 });
 
-    expect(updateStatus).toHaveBeenCalledWith(10, OrderStatus.Confirmed);
+    expect(updateStatusForShop).toHaveBeenCalledWith(
+      10,
+      7,
+      OrderStatus.Confirmed,
+    );
     expect(result.order.status).toBe(OrderStatus.Confirmed);
   });
 
-  it("rejects a cross-shop order without changing any order", async () => {
-    const otherShopOrder = makeOrder({ id: 10, shopId: 99 });
-    const { repository, updateStatus } = makeRepository([otherShopOrder]);
+  it("fails on a cross-shop order without changing any order", async () => {
+    const { repository, updateStatusForShop } = makeRepository(null);
     const useCase = new ConfirmOrderUseCase(repository);
 
     await expect(useCase.execute({ orderId: 10, shopId: 7 })).rejects.toThrow(
       OrderNotOwnedByShopError,
     );
 
-    expect(updateStatus).not.toHaveBeenCalled();
+    expect(updateStatusForShop).toHaveBeenCalledTimes(1);
   });
 
-  it("rejects an order id that does not exist", async () => {
-    const { repository, updateStatus } = makeRepository([]);
+  it("fails on an order id that does not exist", async () => {
+    const { repository, updateStatusForShop } = makeRepository(null);
     const useCase = new ConfirmOrderUseCase(repository);
 
     await expect(useCase.execute({ orderId: 999, shopId: 7 })).rejects.toThrow(
       OrderNotOwnedByShopError,
     );
 
-    expect(updateStatus).not.toHaveBeenCalled();
+    expect(updateStatusForShop).toHaveBeenCalledTimes(1);
   });
 });
