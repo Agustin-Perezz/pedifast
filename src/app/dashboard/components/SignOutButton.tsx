@@ -1,7 +1,7 @@
 "use client";
 
 import { signOutAction } from "../actions";
-import { SubmitButton } from "./sign-out-submit-button";
+import { SubmitButton } from "./SignOutSubmitButton";
 
 export function SignOutButton() {
   return (

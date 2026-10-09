@@ -11,7 +11,7 @@ import { updateWithFieldErrorClearing } from "../../lib/update-with-field-error-
 import { useCheckoutScreen } from "../hooks/use-checkout-screen";
 import { useCheckoutSubmission } from "../hooks/use-checkout-submission";
 import { useCheckoutSubmit } from "../hooks/use-checkout-submit";
-import { CheckoutScreenBody } from "./checkout-screen-body";
+import { CheckoutScreenBody } from "./CheckoutScreenBody";
 
 export type CheckoutScreenProps = {
   readonly shop: PlainShop;

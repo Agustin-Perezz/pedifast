@@ -1,15 +1,15 @@
 "use client";
 
+import { CustomerDataCard } from "./CustomerDataCard";
 import type { CheckoutScreenContentProps } from "./checkout-screen-content-props";
-import { CustomerDataCard } from "./customer-data-card";
-import { DeliveryDetailsCard } from "./delivery-details-card";
-import { DeliverySegmentedToggle } from "./delivery-toggle";
+import { DeliveryDetailsCard } from "./DeliveryDetailsCard";
+import { DeliverySegmentedToggle } from "./DeliveryToggle";
 import {
   ADDRESS_ERROR_MESSAGE,
   NAME_ERROR_MESSAGE,
   PHONE_ERROR_MESSAGE,
 } from "./field-error-messages";
-import { OrderSection } from "./order-section";
+import { OrderSection } from "./OrderSection";
 
 export function CheckoutScreenContent(props: CheckoutScreenContentProps) {
   const {

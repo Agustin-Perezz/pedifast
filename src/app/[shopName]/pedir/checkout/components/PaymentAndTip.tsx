@@ -2,8 +2,8 @@
 
 import type { CheckoutFormState } from "../../components/checkout/use-checkout-form";
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
-import { PaymentSection } from "./payment-section";
-import { TipSection } from "./tip-section";
+import { PaymentSection } from "./PaymentSection";
+import { TipSection } from "./TipSection";
 
 export type PaymentAndTipProps = {
   readonly paymentMethod: CheckoutFormState["paymentMethod"];

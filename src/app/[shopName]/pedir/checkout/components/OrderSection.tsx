@@ -9,8 +9,8 @@ import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
 import { cartProductFromItem } from "./cart-product-from-item";
 import type { CartItemExtras } from "./item-extras-map";
 import { itemsCountLabel } from "./items-count-label";
-import { KitchenNotesCard } from "./kitchen-notes-card";
-import { OrderItemsList } from "./order-items-list";
+import { KitchenNotesCard } from "./KitchenNotesCard";
+import { OrderItemsList } from "./OrderItemsList";
 
 export type OrderSectionProps = {
   readonly cart: CartContextValue;

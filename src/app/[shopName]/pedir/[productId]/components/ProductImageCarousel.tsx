@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 
-import { CarouselDots } from "./carousel-dots";
+import { CarouselDots } from "./CarouselDots";
 
 type ProductImageCarouselProps = {
   readonly images: readonly string[];

@@ -1,9 +1,9 @@
 "use client";
 
 import { formatPrice } from "@/lib/utils/format";
+import { CostRow } from "./CostRow";
 import type { CostBreakdownProps } from "./cost-breakdown-props";
-import { CostRow } from "./cost-row";
-import { ShippingRow } from "./shipping-row";
+import { ShippingRow } from "./ShippingRow";
 
 export function CostBreakdown({
   totalItems,

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { PlainShop } from "../../lib/serialize-shop";
-import { FieldErrorText } from "../field-error-text";
+import { FieldErrorText } from "../FieldErrorText";
 import { useCalculateDeliveryCost } from "./use-calculate-delivery-cost";
 
 type AddressSectionProps = {
@@ -33,7 +33,7 @@ export function AddressSection({
   );
 
   return (
-    <div className="space-y-2" data-testid="address-section">
+    <div className="space-y-2" data-testid="AddressSection">
       <Label htmlFor="checkout-address">Dirección</Label>
       <div className="flex gap-2">
         <Input

@@ -2,14 +2,14 @@
 
 import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
-import { CheckoutDock } from "./checkout-dock";
-import { CheckoutHeader } from "./checkout-header";
+import { CheckoutDock } from "./CheckoutDock";
+import { CheckoutHeader } from "./CheckoutHeader";
+import { CheckoutScreenContent } from "./CheckoutScreenContent";
+import { CostBreakdown } from "./CostBreakdown";
 import type { CheckoutScreenBodyProps } from "./checkout-screen-body-props";
-import { CheckoutScreenContent } from "./checkout-screen-content";
-import { CostBreakdown } from "./cost-breakdown";
 import { dockTotal } from "./dock-total";
-import { ErrorText } from "./error-text";
-import { PaymentAndTip } from "./payment-and-tip";
+import { ErrorText } from "./ErrorText";
+import { PaymentAndTip } from "./PaymentAndTip";
 
 export function CheckoutScreenBody(props: CheckoutScreenBodyProps) {
   const {

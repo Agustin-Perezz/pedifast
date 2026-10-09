@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import type { PlainShop } from "../../lib/serialize-shop";
-import { AddressEditor } from "./address-editor";
-import { AddressSummaryRow } from "./address-summary-row";
-import { DriverNoteBox } from "./driver-note-box";
-import { EtaRow } from "./eta-row";
+import { AddressEditor } from "./AddressEditor";
+import { AddressSummaryRow } from "./AddressSummaryRow";
+import { DriverNoteBox } from "./DriverNoteBox";
+import { EtaRow } from "./EtaRow";
 
 export type DeliveryDetailsCardProps = {
   readonly shop: PlainShop;
@@ -38,7 +38,7 @@ export function DeliveryDetailsCard({
   return (
     <div
       className="mt-4 flex flex-col gap-3 rounded-xl bg-card p-4 shadow-sm"
-      data-testid="delivery-details-card"
+      data-testid="DeliveryDetailsCard"
     >
       {showEditor ? (
         <AddressEditor

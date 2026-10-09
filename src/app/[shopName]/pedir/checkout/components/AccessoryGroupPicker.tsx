@@ -6,8 +6,8 @@ import type {
   PlainAccessoryGroup,
   PlainAccessoryOption,
 } from "../../lib/serialize-catalog";
-import { AccessoryGroupHeader } from "./accessory-group-header";
-import { AccessoryOptionPill } from "./accessory-option-pill";
+import { AccessoryGroupHeader } from "./AccessoryGroupHeader";
+import { AccessoryOptionPill } from "./AccessoryOptionPill";
 
 export type AccessoryGroupPickerProps = {
   readonly item: CartItem;

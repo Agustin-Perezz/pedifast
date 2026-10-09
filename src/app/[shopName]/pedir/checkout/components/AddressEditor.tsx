@@ -1,6 +1,6 @@
 "use client";
 
-import { AddressSection } from "../../components/checkout/address-section";
+import { AddressSection } from "../../components/checkout/AddressSection";
 import type { PlainShop } from "../../lib/serialize-shop";
 
 export type AddressEditorProps = {

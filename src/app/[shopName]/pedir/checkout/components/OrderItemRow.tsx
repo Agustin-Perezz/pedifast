@@ -1,8 +1,8 @@
 "use client";
 
-import { ItemMetadataRow } from "./item-metadata-row";
-import { ItemNameRow } from "./item-name-row";
-import { ItemThumbnail } from "./item-thumbnail";
+import { ItemMetadataRow } from "./ItemMetadataRow";
+import { ItemNameRow } from "./ItemNameRow";
+import { ItemThumbnail } from "./ItemThumbnail";
 import type { OrderItemRowProps } from "./order-item-row-types";
 
 export function OrderItemRow({

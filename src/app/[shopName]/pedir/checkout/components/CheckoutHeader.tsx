@@ -1,7 +1,7 @@
 "use client";
 
 import type { PlainShop } from "../../lib/serialize-shop";
-import { BackButton, StepBadge } from "./header-parts";
+import { BackButton, StepBadge } from "./HeaderParts";
 
 export type CheckoutHeaderProps = {
   readonly shop: PlainShop;

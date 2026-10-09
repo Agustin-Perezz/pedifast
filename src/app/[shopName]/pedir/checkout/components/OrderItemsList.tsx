@@ -4,9 +4,9 @@ import type {
   PlainAccessoryOption,
 } from "../../lib/serialize-catalog";
 import type { CartItemExtras } from "../components/item-extras-map";
-import { AddMoreProductsLink } from "./add-more-products-link";
-import { ItemAccessoryGroups } from "./item-accessory-groups";
-import { OrderItemRow } from "./order-item-row";
+import { AddMoreProductsLink } from "./AddMoreProductsLink";
+import { ItemAccessoryGroups } from "./ItemAccessoryGroups";
+import { OrderItemRow } from "./OrderItemRow";
 
 export type OrderItemsListProps = {
   readonly items: readonly CartItem[];
