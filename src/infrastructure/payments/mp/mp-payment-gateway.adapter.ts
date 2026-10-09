@@ -9,7 +9,6 @@ type GetSellerAccessTokenProvider = {
   ): Promise<GetSellerAccessTokenResponseDto>;
 };
 
-// NOTE: I still don't gate why we need this adapter ? Also why three mp service classes ? when we can have only one with all the methods.
 export class MpPaymentGatewayAdapter implements MpPaymentGateway {
   constructor(
     private readonly getSellerAccessToken: GetSellerAccessTokenProvider,
