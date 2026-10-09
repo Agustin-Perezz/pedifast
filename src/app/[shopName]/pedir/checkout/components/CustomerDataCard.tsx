@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 
-import { FieldErrorText } from "../../components/field-error-text";
+import { FieldErrorText } from "../../components/FieldErrorText";
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
 
 const NAME_FIELD_ID = "checkout-nombre";

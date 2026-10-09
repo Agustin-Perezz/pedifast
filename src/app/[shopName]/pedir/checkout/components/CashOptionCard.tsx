@@ -5,8 +5,8 @@ import { Banknote } from "lucide-react";
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
-import { CashAmountOptions } from "./cash-amount-options";
-import { HiddenPaymentRadio } from "./hidden-payment-radio";
+import { CashAmountOptions } from "./CashAmountOptions";
+import { HiddenPaymentRadio } from "./HiddenPaymentRadio";
 import { ringClass } from "./payment-card-classes";
 import { PAYMENT_OPTION_IDS } from "./payment-option-ids";
 

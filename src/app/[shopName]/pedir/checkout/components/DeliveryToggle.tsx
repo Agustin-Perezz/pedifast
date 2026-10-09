@@ -3,7 +3,7 @@
 import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
 
 import { DELIVERY_LABEL, PICKUP_LABEL } from "../../lib/checkout-labels";
-import { ToggleTab } from "./toggle-tab";
+import { ToggleTab } from "./ToggleTab";
 
 type DeliverySegmentedToggleProps = {
   readonly value: DeliveryMethod;

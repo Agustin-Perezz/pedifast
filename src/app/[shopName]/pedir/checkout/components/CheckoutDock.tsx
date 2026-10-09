@@ -3,7 +3,7 @@
 import { Receipt } from "lucide-react";
 
 import { formatPrice } from "@/lib/utils/format";
-import { DockCta } from "./dock-cta";
+import { DockCta } from "./DockCta";
 
 export type CheckoutDockProps = {
   readonly total: number;

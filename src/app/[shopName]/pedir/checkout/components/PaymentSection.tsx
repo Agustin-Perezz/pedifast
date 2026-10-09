@@ -3,9 +3,9 @@
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 
 import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
-import { CashOptionCard } from "./cash-option-card";
-import { MercadoPagoOptionCard } from "./mercadopago-option-card";
-import { PaymentProtectedBadge } from "./payment-protected-badge";
+import { CashOptionCard } from "./CashOptionCard";
+import { MercadoPagoOptionCard } from "./MercadopagoOptionCard";
+import { PaymentProtectedBadge } from "./PaymentProtectedBadge";
 
 export type PaymentSectionProps = {
   readonly paymentMethod: PaymentMethod;

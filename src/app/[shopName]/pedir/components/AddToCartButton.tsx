@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { vibrateAddToCart } from "@/lib/utils/vibrate";
 
 import { useCart } from "../context/use-cart";
-import { MinusButton, PlusButton } from "./quantity-button";
+import { MinusButton, PlusButton } from "./QuantityButton";
 
 type AddToCartButtonProps = {
   readonly id: number;

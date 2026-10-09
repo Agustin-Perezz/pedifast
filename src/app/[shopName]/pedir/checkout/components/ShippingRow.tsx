@@ -1,6 +1,6 @@
 "use client";
 
-import { ShippingValue } from "./shipping-value";
+import { ShippingValue } from "./ShippingValue";
 
 export type ShippingRowProps = {
   readonly deliveryCost: number | null;

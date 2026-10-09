@@ -3,7 +3,7 @@ import { CATEGORY_LABELS, CATEGORY_ORDER } from "../lib/category-labels";
 import { serializeCategoryGroups } from "../lib/serialize-catalog";
 import { serializeShop } from "../lib/serialize-shop";
 import { getShopCatalog } from "../queries";
-import { CheckoutScreen } from "./components/checkout-screen";
+import { CheckoutScreen } from "./components/CheckoutScreen";
 
 export const revalidate = 30;
 

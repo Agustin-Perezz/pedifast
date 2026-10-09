@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { signInWithMagicLinkAction } from "../actions";
-import { SubmitButton } from "./magic-link-submit-button";
+import { SubmitButton } from "./MagicLinkSubmitButton";
 
 export function MagicLinkForm() {
   const [state, formAction] = useActionState(signInWithMagicLinkAction, {});

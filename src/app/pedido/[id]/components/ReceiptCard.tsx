@@ -1,6 +1,6 @@
 import { AR_LOCALE } from "@/lib/utils/format";
 
-import { ReceiptRow } from "./receipt-row";
+import { ReceiptRow } from "./ReceiptRow";
 
 const DATE_TIME_FORMAT = new Intl.DateTimeFormat(AR_LOCALE, {
   dateStyle: "medium",

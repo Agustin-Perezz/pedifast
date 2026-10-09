@@ -2,7 +2,7 @@
 
 import { MapPin } from "lucide-react";
 
-import { AddressSummaryActions } from "./address-summary-actions";
+import { AddressSummaryActions } from "./AddressSummaryActions";
 
 export type AddressSummaryRowProps = {
   readonly address: string;

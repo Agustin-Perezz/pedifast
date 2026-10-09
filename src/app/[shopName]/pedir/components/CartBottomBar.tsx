@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/utils/format";
 
 import { useCart } from "../context/use-cart";
-import { DockIcon } from "./cart-dock-icon";
-import { VerPedidoButton } from "./ver-pedido-button";
+import { DockIcon } from "./CartDockIcon";
+import { VerPedidoButton } from "./VerPedidoButton";
 
 const CHECKOUT_ROUTE_SEGMENT = "checkout";
 

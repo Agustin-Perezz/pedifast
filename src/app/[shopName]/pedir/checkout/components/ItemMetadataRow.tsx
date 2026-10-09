@@ -1,7 +1,7 @@
 "use client";
 
 import type { CartItem } from "../../lib/cart-reducer";
-import { ItemQuantityStepper } from "./item-quantity-stepper";
+import { ItemQuantityStepper } from "./ItemQuantityStepper";
 
 export type ItemMetadataRowProps = {
   readonly item: CartItem;

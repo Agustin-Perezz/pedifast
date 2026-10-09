@@ -1,7 +1,7 @@
 "use client";
 
 import type { CartItem } from "../../lib/cart-reducer";
-import { StepperButton } from "./stepper-button";
+import { StepperButton } from "./StepperButton";
 
 export type ItemQuantityStepperProps = {
   readonly item: CartItem;

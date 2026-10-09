@@ -12,7 +12,7 @@ export function TipSection() {
   const [selectedTip, setSelectedTip] = useState<TipValue>(DEFAULT_TIP);
 
   return (
-    <section className="mt-6 flex flex-col gap-2" data-testid="tip-section">
+    <section className="mt-6 flex flex-col gap-2" data-testid="TipSection">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-[15px] font-bold text-foreground">
           <SmilePlus aria-hidden="true" className="size-[18px] text-chart-2" />
