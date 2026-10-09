@@ -1,14 +1,14 @@
 "use client";
 
-import type { CheckoutFormState } from "../../components/checkout/use-checkout-form";
 import type { CartContextValue } from "../../context/cart-context";
+import type { CheckoutFormState } from "../../hooks/useCheckoutForm";
 import type {
   PlainAccessoryGroup,
   PlainAccessoryOption,
 } from "../../lib/serialize-catalog";
 import type { PlainShop } from "../../lib/serialize-shop";
-import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
-import type { CheckoutSubmissionState } from "../hooks/use-checkout-submission";
+import type { PatchCheckoutForm } from "../hooks/useCheckoutScreen";
+import type { CheckoutSubmissionState } from "../hooks/useCheckoutSubmission";
 import type { CartItemExtras } from "./item-extras-map";
 
 export type CheckoutScreenBodyProps = {

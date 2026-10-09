@@ -1,7 +1,7 @@
 "use client";
 
-import type { CheckoutFormState } from "../../components/checkout/use-checkout-form";
 import type { CartContextValue } from "../../context/cart-context";
+import type { CheckoutFormState } from "../../hooks/useCheckoutForm";
 import { findRequiredGroupMissingInCart } from "../../lib/find-required-group-missing-in-cart";
 import { scrollToCheckoutField } from "../../lib/scroll-to-checkout-field";
 import type { PlainAccessoryGroup } from "../../lib/serialize-catalog";

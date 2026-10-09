@@ -1,6 +1,6 @@
 "use client";
 
-import { useCart } from "../../context/use-cart";
+import { useCart } from "../../context/useCart";
 import type {
   PlainAccessoryGroup,
   PlainAccessoryOption,
@@ -8,9 +8,9 @@ import type {
 } from "../../lib/serialize-catalog";
 import type { PlainShop } from "../../lib/serialize-shop";
 import { updateWithFieldErrorClearing } from "../../lib/update-with-field-error-clearing";
-import { useCheckoutScreen } from "../hooks/use-checkout-screen";
-import { useCheckoutSubmission } from "../hooks/use-checkout-submission";
-import { useCheckoutSubmit } from "../hooks/use-checkout-submit";
+import { useCheckoutScreen } from "../hooks/useCheckoutScreen";
+import { useCheckoutSubmission } from "../hooks/useCheckoutSubmission";
+import { useCheckoutSubmit } from "../hooks/useCheckoutSubmit";
 import { CheckoutScreenBody } from "./CheckoutScreenBody";
 
 export type CheckoutScreenProps = {

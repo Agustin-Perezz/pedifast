@@ -4,7 +4,7 @@ import { Wallet } from "lucide-react";
 
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 
-import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
+import type { PatchCheckoutForm } from "../hooks/useCheckoutScreen";
 import { HiddenPaymentRadio } from "./HiddenPaymentRadio";
 import { MercadoPagoChipsRow } from "./MercadopagoChipsRow";
 import { ringClass } from "./payment-card-classes";

@@ -1,11 +1,11 @@
-import type { CheckoutFormState } from "../../components/checkout/use-checkout-form";
 import type { CartContextValue } from "../../context/cart-context";
+import type { CheckoutFormState } from "../../hooks/useCheckoutForm";
 import type {
   PlainAccessoryGroup,
   PlainAccessoryOption,
 } from "../../lib/serialize-catalog";
 import type { CheckoutFieldError } from "../../lib/submit-checkout";
-import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
+import type { PatchCheckoutForm } from "../hooks/useCheckoutScreen";
 import type { CheckoutScreenContentShop } from "./checkout-screen-content-shop";
 import type { CartItemExtras } from "./item-extras-map";
 

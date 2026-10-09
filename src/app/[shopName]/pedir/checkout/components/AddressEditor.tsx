@@ -1,7 +1,7 @@
 "use client";
 
-import { AddressSection } from "../../components/checkout/AddressSection";
 import type { PlainShop } from "../../lib/serialize-shop";
+import { AddressSection } from "./AddressSection";
 
 export type AddressEditorProps = {
   readonly shop: PlainShop;
@@ -25,7 +25,7 @@ export function AddressEditor({
       shop={shop}
       address={address}
       onAddressChange={onAddressChange}
-      onCostChange={(cost, _calculatedKm) => {
+      onCostChange={(cost: number | null, _calculatedKm: number | null) => {
         onCostChange(cost);
         onSaved();
       }}

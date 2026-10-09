@@ -5,7 +5,7 @@ import type {
   PlainAccessoryGroup,
   PlainAccessoryOption,
 } from "../../lib/serialize-catalog";
-import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
+import type { PatchCheckoutForm } from "../hooks/useCheckoutScreen";
 import { cartProductFromItem } from "./cart-product-from-item";
 import type { CartItemExtras } from "./item-extras-map";
 import { itemsCountLabel } from "./items-count-label";

@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 
 import { FieldErrorText } from "../../components/FieldErrorText";
-import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
+import type { PatchCheckoutForm } from "../hooks/useCheckoutScreen";
 
 const NAME_FIELD_ID = "checkout-nombre";
 const PHONE_FIELD_ID = "checkout-telefono";

@@ -4,7 +4,7 @@ import { CookingPot } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 
-import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
+import type { PatchCheckoutForm } from "../hooks/useCheckoutScreen";
 
 const KITCHEN_NOTES_FIELD_ID = "kitchen-notes";
 

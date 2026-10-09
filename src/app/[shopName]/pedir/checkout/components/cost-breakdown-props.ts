@@ -1,4 +1,4 @@
-import type { CheckoutFormState } from "../../components/checkout/use-checkout-form";
+import type { CheckoutFormState } from "../../hooks/useCheckoutForm";
 
 export type CheckoutScreenFormProps = {
   readonly form: CheckoutFormState;
