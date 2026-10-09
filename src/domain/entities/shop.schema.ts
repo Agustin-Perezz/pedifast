@@ -14,7 +14,7 @@ export const shopSchema = z.object({
   lat: z.coerce.number().default(0),
   lng: z.coerce.number().default(0),
   pricePerKm: z.coerce.number().default(0),
-  orderFlow: z.nativeEnum(OrderFlow),
+  orderFlow: z.enum(OrderFlow),
   dashboardPinHash: z.string().nullable(),
   mpAccessToken: z.string().nullable(),
   mpRefreshToken: z.string().nullable(),
