@@ -1,17 +1,10 @@
 import type { Order } from "@/domain/entities/order.entity";
+import type { PaymentStatus } from "@/domain/entities/payment-status.enum";
 
-export type VerifyMpPaymentRepository = {
+export interface VerifyMpPaymentRepository {
   findByExternalReference(externalReference: string): Promise<Order | null>;
   updatePaymentStatus(
     externalReference: string,
-    paymentStatus: string,
+    paymentStatus: PaymentStatus,
   ): Promise<Order | null>;
-  getPaymentStatus(
-    shopName: string,
-    paymentId: string,
-  ): Promise<{
-    status: string;
-    externalReference: string | null;
-  }>;
-  getSellerAccessToken(shopName: string): Promise<string>;
-};
+}

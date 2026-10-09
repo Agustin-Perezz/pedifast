@@ -1,11 +1,15 @@
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 import { PaymentStatus } from "@/domain/entities/payment-status.enum";
+import type { MpPaymentGateway } from "@/infrastructure/payments/mp/mp-payment-gateway.interface";
 import type { VerifyMpPaymentRepository } from "./verify-mp-payment.repository.interface";
 import type { VerifyMpPaymentRequestDto } from "./verify-mp-payment.request.dto";
 import type { VerifyMpPaymentResponseDto } from "./verify-mp-payment.response.dto";
 
 export class VerifyMpPaymentUseCase {
-  constructor(private readonly repository: VerifyMpPaymentRepository) {}
+  constructor(
+    private readonly repository: VerifyMpPaymentRepository,
+    private readonly gateway: MpPaymentGateway,
+  ) {}
 
   async execute(
     dto: VerifyMpPaymentRequestDto,
@@ -40,7 +44,7 @@ export class VerifyMpPaymentUseCase {
     }
 
     try {
-      const payment = await this.repository.getPaymentStatus(
+      const payment = await this.gateway.getPaymentStatus(
         shopName,
         dto.paymentIdParam,
       );
@@ -58,9 +62,7 @@ export class VerifyMpPaymentUseCase {
       if (isDashboardFlow) {
         await this.repository.updatePaymentStatus(
           dto.orderId,
-          verifiedStatus === PaymentMethod.Efectivo
-            ? PaymentStatus.Pending
-            : verifiedStatus,
+          this.buildPersistedStatus(verifiedStatus),
         );
       }
 
@@ -83,14 +85,32 @@ export class VerifyMpPaymentUseCase {
     return lastDash > 0 ? orderId.slice(0, lastDash) : null;
   }
 
-  private normalizeStatus(
-    status: string,
-  ): VerifyMpPaymentResponseDto["verifiedStatus"] {
+  private normalizeStatus(status: string): PaymentStatus {
     if (
       status === PaymentStatus.Approved ||
       status === PaymentStatus.Rejected
     ) {
       return status;
+    }
+
+    return PaymentStatus.Pending;
+  }
+
+  /**
+   * Converts the response-DTO status into the `PaymentStatus` enum the
+   * repository persists. The cash value has no persisted counterpart and
+   * degrades to pending, matching the original ternary behavior for every
+   * possible input.
+   */
+  private buildPersistedStatus(
+    verifiedStatus: VerifyMpPaymentResponseDto["verifiedStatus"],
+  ): PaymentStatus {
+    if (verifiedStatus === PaymentStatus.Approved) {
+      return PaymentStatus.Approved;
+    }
+
+    if (verifiedStatus === PaymentStatus.Rejected) {
+      return PaymentStatus.Rejected;
     }
 
     return PaymentStatus.Pending;
