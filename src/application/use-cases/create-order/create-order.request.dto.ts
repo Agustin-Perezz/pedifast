@@ -10,9 +10,9 @@ export const createOrderRequestDto = z
     customerName: z.string().min(1),
     customerPhone: z.string().min(1).nullable(),
     notes: z.string().nullable(),
-    deliveryMethod: z.nativeEnum(DeliveryMethod),
+    deliveryMethod: z.enum(DeliveryMethod),
     address: z.string().min(1).nullable(),
-    paymentMethod: z.nativeEnum(PaymentMethod),
+    paymentMethod: z.enum(PaymentMethod),
     items: z.array(orderItemSchema),
     deliveryCost: z.number().nonnegative(),
   })

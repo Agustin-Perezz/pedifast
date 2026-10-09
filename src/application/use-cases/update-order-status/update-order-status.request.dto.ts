@@ -3,7 +3,7 @@ import { OrderStatus } from "@/domain/entities/order-status.enum";
 
 export const updateOrderStatusRequestDto = z.object({
   orderId: z.number().int().positive(),
-  status: z.nativeEnum(OrderStatus),
+  status: z.enum(OrderStatus),
 });
 
 export type UpdateOrderStatusRequestDto = z.infer<

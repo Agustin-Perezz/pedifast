@@ -7,7 +7,7 @@ export const shopItemSchema = z.object({
   shopId: z.number().int().positive(),
   name: z.string().min(1),
   price: z.number().nonnegative(),
-  category: z.nativeEnum(ShopItemCategory),
+  category: z.enum(ShopItemCategory),
   images: z.array(z.string()).default(() => []),
   description: z.string().nullable(),
   createdAt: z.string(),
