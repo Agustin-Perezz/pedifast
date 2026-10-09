@@ -24,16 +24,12 @@ export function createPanelContainer(supabase: SupabaseClient<Database>) {
     ),
     listOrders: new ListOrdersByShopUseCase(listOrdersRepository),
     confirmOrder: new ConfirmOrderUseCase({
-      findByShopId:
-        listOrdersRepository.findByShopId.bind(listOrdersRepository),
-      updateStatus: updateStatusRepository.updateStatus.bind(
+      updateStatusForShop: updateStatusRepository.updateStatusForShop.bind(
         updateStatusRepository,
       ),
     }),
     rejectOrder: new RejectOrderUseCase({
-      findByShopId:
-        listOrdersRepository.findByShopId.bind(listOrdersRepository),
-      updateStatus: updateStatusRepository.updateStatus.bind(
+      updateStatusForShop: updateStatusRepository.updateStatusForShop.bind(
         updateStatusRepository,
       ),
     }),

@@ -8,16 +8,15 @@ export class ConfirmOrderUseCase {
   constructor(private readonly repository: ConfirmOrderRepository) {}
 
   async execute(dto: ConfirmOrderRequestDto): Promise<ConfirmOrderResponseDto> {
-    const orders = await this.repository.findByShopId(dto.shopId);
-
-    if (!orders.some((order) => order.id === dto.orderId)) {
-      throw new OrderNotOwnedByShopError();
-    }
-
-    const order = await this.repository.updateStatus(
+    const order = await this.repository.updateStatusForShop(
       dto.orderId,
+      dto.shopId,
       OrderStatus.Confirmed,
     );
+
+    if (!order) {
+      throw new OrderNotOwnedByShopError();
+    }
 
     return { order };
   }
