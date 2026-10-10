@@ -3,9 +3,8 @@
 import { useState } from "react";
 
 import { AR_LOCALE } from "@/lib/utils/format";
-
-import type { PlainShop } from "../../lib/serialize-shop";
-import { fetchDeliveryCost } from "./fetch-delivery-cost";
+import { fetchDeliveryCost } from "../lib/fetchDeliveryCost";
+import type { PlainShop } from "../lib/serialize-shop";
 
 type CalculateStatus = "idle" | "calculating" | "error" | "done";
 

@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FieldErrorText } from "../../components/FieldErrorText";
+import { useCalculateDeliveryCost } from "../../hooks/useCalculateDeliveryCost";
 import type { PlainShop } from "../../lib/serialize-shop";
-import { FieldErrorText } from "../FieldErrorText";
-import { useCalculateDeliveryCost } from "./use-calculate-delivery-cost";
 
 type AddressSectionProps = {
   readonly shop: PlainShop;

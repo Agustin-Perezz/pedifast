@@ -1,7 +1,7 @@
 "use client";
 
-import type { CheckoutFormState } from "../../components/checkout/use-checkout-form";
-import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
+import type { CheckoutFormState } from "../../hooks/useCheckoutForm";
+import type { PatchCheckoutForm } from "../hooks/useCheckoutScreen";
 import { PaymentSection } from "./PaymentSection";
 import { TipSection } from "./TipSection";
 

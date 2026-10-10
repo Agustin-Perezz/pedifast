@@ -2,7 +2,7 @@
 
 import { PaymentMethod } from "@/domain/entities/payment-method.enum";
 
-import type { PatchCheckoutForm } from "../hooks/use-checkout-screen";
+import type { PatchCheckoutForm } from "../hooks/useCheckoutScreen";
 import { CashOptionCard } from "./CashOptionCard";
 import { MercadoPagoOptionCard } from "./MercadopagoOptionCard";
 import { PaymentProtectedBadge } from "./PaymentProtectedBadge";

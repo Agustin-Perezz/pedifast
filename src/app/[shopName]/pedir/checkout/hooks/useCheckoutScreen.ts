@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import {
   type CheckoutFormState,
   useCheckoutForm,
-} from "../../components/checkout/use-checkout-form";
+} from "../../hooks/useCheckoutForm";
 import type {
   PlainAccessoryGroup,
   PlainShopItem,

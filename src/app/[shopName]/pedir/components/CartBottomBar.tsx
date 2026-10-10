@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { formatPrice } from "@/lib/utils/format";
 
-import { useCart } from "../context/use-cart";
+import { useCart } from "../context/useCart";
 import { DockIcon } from "./CartDockIcon";
 import { VerPedidoButton } from "./VerPedidoButton";
 

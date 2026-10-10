@@ -1,5 +1,5 @@
-import type { PatchCheckoutForm } from "../checkout/hooks/use-checkout-screen";
-import type { CheckoutSubmissionState } from "../checkout/hooks/use-checkout-submission";
+import type { PatchCheckoutForm } from "../checkout/hooks/useCheckoutScreen";
+import type { CheckoutSubmissionState } from "../checkout/hooks/useCheckoutSubmission";
 
 type UpdateCheckoutForm = (patch: PatchCheckoutForm) => void;
 

@@ -1,7 +1,4 @@
-import {
-  calculateDeliveryCostAction,
-  geocodeAddressAction,
-} from "../../actions";
+import { calculateDeliveryCostAction, geocodeAddressAction } from "../actions";
 
 const SHOP_DEFAULT_LAT = 0;
 const SHOP_DEFAULT_LNG = 0;

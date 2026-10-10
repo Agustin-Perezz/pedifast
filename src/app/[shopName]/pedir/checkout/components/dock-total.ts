@@ -1,5 +1,5 @@
 import { DeliveryMethod } from "@/domain/entities/delivery-method.enum";
-import type { CheckoutFormState } from "../../components/checkout/use-checkout-form";
+import type { CheckoutFormState } from "../../hooks/useCheckoutForm";
 
 export function dockTotal(totalPrice: number, form: CheckoutFormState): number {
   const isDelivery = form.deliveryMethod === DeliveryMethod.Delivery;

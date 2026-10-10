@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { vibrateAddToCart } from "@/lib/utils/vibrate";
 
-import { useCart } from "../context/use-cart";
+import { useCart } from "../context/useCart";
 import { MinusButton, PlusButton } from "./QuantityButton";
 
 type AddToCartButtonProps = {
