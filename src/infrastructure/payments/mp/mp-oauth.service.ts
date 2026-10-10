@@ -3,6 +3,7 @@ import { MercadoPagoConfig, OAuth } from "mercadopago";
 import {
   mpAppId,
   mpClientSecret,
+  mpOauthTestToken,
   mpRedirectUri,
 } from "@/lib/shared/infrastructure/env";
 import type { MpOAuthClient, MpOAuthTokens } from "./interfaces";
@@ -33,7 +34,8 @@ export class MpOAuthService implements MpOAuthClient {
         client_secret: mpClientSecret,
         code,
         redirect_uri: mpRedirectUri,
-      },
+        test_token: mpOauthTestToken,
+      } as never,
     });
 
     return {
@@ -54,7 +56,8 @@ export class MpOAuthService implements MpOAuthClient {
         client_id: mpAppId,
         client_secret: mpClientSecret,
         refresh_token: refreshToken,
-      },
+        test_token: mpOauthTestToken,
+      } as never,
     });
 
     return {

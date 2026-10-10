@@ -151,6 +151,7 @@ jobs:
           echo "MP_CLIENT_SECRET=test-mp-client-secret" >> .env.test
           echo "MP_REDIRECT_URI=http://localhost:3100/auth/mp/callback" >> .env.test
           echo "MP_OAUTH_STATE_SECRET=test-oauth-state-secret" >> .env.test
+          echo "MP_OAUTH_TEST_TOKEN=false" >> .env.test
           echo "GOOGLE_MAPS_API_KEY=test-google-maps-key" >> .env.test
           echo "GOOGLE_MAPS_BASE_URL=https://maps.googleapis.com/maps/api" >> .env.test
           echo "PANEL_SESSION_SECRET=test-panel-session-secret" >> .env.test
@@ -185,6 +186,7 @@ jobs:
           MP_CLIENT_SECRET: test-mp-client-secret
           MP_REDIRECT_URI: http://localhost:3000/auth/mp/callback
           MP_OAUTH_STATE_SECRET: test-oauth-state-secret
+          MP_OAUTH_TEST_TOKEN: "false"
           GOOGLE_MAPS_API_KEY: test-google-maps-key
           GOOGLE_MAPS_BASE_URL: https://maps.googleapis.com/maps/api
           PANEL_SESSION_SECRET: test-panel-session-secret
